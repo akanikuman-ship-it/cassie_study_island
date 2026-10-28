@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>社會複習島｜四上第一次段考</title>
+<style>
+:root{--bg:#f6f3ec;--fg:#26303a;--card:#fff;--line:#d9d3c5;--mut:#6b7280;--z1:#2f6fa3;--z2:#2f9e6a;--z3:#1b9aaa;--z4:#d9822b;--z5:#8e5bb5;--warn:#fff1ef;--warnl:#f1b9b2;--tip:#fff8e1;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171c22;--fg:#e8ecef;--card:#222a33;--line:#36404b;--mut:#9aa5b1;--warn:#3a2523;--warnl:#7a423d;--tip:#3a3420}}
+:root[data-theme="dark"]{--bg:#171c22;--fg:#e8ecef;--card:#222a33;--line:#36404b;--mut:#9aa5b1;--warn:#3a2523;--warnl:#7a423d;--tip:#3a3420}
+*{box-sizing:border-box}html{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;line-height:1.6}
+header{padding:16px 16px 8px;max-width:900px;margin:auto}
+h1{margin:0;font-size:24px}h1 small{display:block;font-size:13px;font-weight:400;color:var(--mut);margin-top:2px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.tab{border:1.5px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:20px;font-size:14px;cursor:pointer}
+.tab.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.prog{flex:1;min-width:140px;font-size:13px;color:var(--mut)}
+.pb{height:8px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:3px}.pb i{display:block;height:100%;background:var(--z2);width:0;transition:width .3s}
+main{max-width:900px;margin:auto;padding:4px 16px 60px}
+.zone{margin:14px 0;padding:10px 12px 12px;border-radius:16px;background:var(--card);border:1.5px solid var(--line);border-left:8px solid var(--c)}
+.zone h2{margin:0 0 8px;font-size:16px;color:var(--c)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.tile{position:relative;border:2px solid var(--c);background:transparent;color:var(--fg);border-radius:14px;padding:10px 6px;text-align:center;font-size:14px;cursor:pointer;font-family:inherit}
+.tile:active{transform:scale(.96)}.tile b{display:block;font-size:26px;font-weight:400}
+.tile.done{background:var(--c);color:#fff}.tile.done::after{content:"✓";position:absolute;top:3px;right:8px;font-size:13px}
+.item{border:1.5px solid var(--line);background:var(--card);border-radius:12px;margin:8px 0;border-left:6px solid var(--c)}
+.item summary{padding:10px 12px;cursor:pointer;font-weight:600}.item .in{padding:0 12px 10px}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:9}
+.sheet.on{display:flex}
+.panel{background:var(--card);width:100%;max-width:640px;max-height:85%;overflow:auto;border-radius:20px 20px 0 0;padding:16px 18px calc(18px + env(safe-area-inset-bottom,0px));border-top:8px solid var(--c)}
+.panel h3{margin:0 0 6px;font-size:20px;color:var(--c)}.panel p{margin:6px 0}
+.warn{background:var(--warn);border:1px solid var(--warnl);border-radius:8px;padding:6px 10px;margin:8px 0;font-size:14px}
+.tip{background:var(--tip);border-radius:8px;padding:6px 10px;margin:8px 0;font-size:14px}
+.rel{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.rel button{border:1px dashed var(--c);background:none;color:var(--c);border-radius:14px;padding:3px 10px;font-size:13px;cursor:pointer;font-family:inherit}
+.row{display:flex;gap:8px;margin-top:12px}.btn{flex:1;border:0;border-radius:12px;padding:10px;font-size:15px;cursor:pointer;background:var(--c);color:#fff;font-family:inherit}.btn.g{background:var(--line);color:var(--fg)}
+.quiz{text-align:center;padding:20px 8px}.qc{border:2px solid var(--c);border-radius:18px;background:var(--card);padding:26px 16px;font-size:19px;min-height:140px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.qa{margin-top:10px;font-size:15px;color:var(--mut)}
+</style></head><body>
+<header><h1>🏝️ 社會複習島<small>四上第一次段考（第一～二單元）｜一格一個重點，點開看、記住就打勾</small></h1>
+<div class="bar"><button class="tab on" data-v="map">全景</button><button class="tab" data-v="list">清單</button><button class="tab" data-v="quiz">抽考</button>
+<div class="prog"><span id="pt">已記住 0 / 0</span><div class="pb"><i id="pi"></i></div></div></div></header>
+<main id="m"></main>
+<div class="sheet" id="sh"><div class="panel" id="pn"></div></div>
+<script>
+const Z={a:['第一單元第1課　家鄉與地圖','--z1'],b:['第一單元第2課　家鄉的地形','--z2'],c:['第一單元第3課　氣候與水資源','--z3'],d:['第二單元第1課　傳統住屋','--z4'],e:['第二單元第2課　傳統生活器物','--z5']};
+// id, emoji, title, body, warn, question, answer, related
+const T=[
+['a1','🏠','家鄉','家鄉＝出生地、成長地，或長期生活的地方。可以不只一個。','','家鄉是指哪些地方？','出生地、成長地、長期生活的地方',['a2']],
+['a2','🗺️','四種地圖','行政區圖：看縣市範圍（沒有街道名）<br>交通路線圖：看交通路線（看不出地形）<br>觀光導覽圖：看景點、美食<br>電子地圖：可放大縮小、有衛星／街道模式','交通路線圖不能看地形；行政區圖不會標街道。','想知道怎麼搭車去別的縣市，看哪種地圖？','交通路線圖',['a3','a4']],
+['a3','🧭','地圖三寶','方向標→看方位<br>比例尺→知道實際距離縮小多少<br>圖例→符號代表什麼','比例尺看的是距離，不是方向！','要知道地圖上1公分是實際多遠，看什麼？','比例尺',['a2']],
+['a4','💻','電子地圖','可用「＋、－」放大縮小，有街道模式、衛星模式。衛星模式中深綠色區域可能是山地。','','電子地圖怎麼放大縮小？','點加減符號',['a2']],
+['b1','🌾','平原','平坦廣闊。例：宜蘭平原、嘉南平原。海岸邊有魚塭，也有大片稻田。','茶園通常在丘陵，不是平原。','哪種地形平坦廣闊、有稻田和魚塭？','平原',['b6']],
+['b2','⛰️','丘陵','高度低於一千公尺，坡度較平緩。例：苗栗丘陵，常見茶園。','','苗栗丘陵屬於哪種地形？','丘陵',['b3']],
+['b3','🏔️','山地','地勢高聳，高度超過一千公尺。例：中央山脈、雪山山脈。','','高度超過一千公尺、地勢高聳的是？','山地',['b2']],
+['b4','🥣','盆地','四周高、中間低平。例：臺北盆地、臺中盆地。','','四周高、中間低平的地形？','盆地',['b5']],
+['b5','🍰','臺地','地勢較高，頂部平坦，四周是陡坡。例：林口臺地、大肚臺地。','臺地不是四周高中間低（那是盆地）。','頂部平坦、四周陡坡的地形？','臺地',['b4']],
+['b6','🌍','地形與生活','地形＝地表高低起伏的型態。認識方式：實地觀察、空拍照片、閱讀地圖。地勢起伏大的地方，居民活動比較容易受限制。','','地形是什麼？','地表高低起伏的型態',['b1']],
+['c1','☀️','氣候差異','不同縣市氣候可能不同。夏季平均氣溫約25～35度。南部（高雄）夏季多雨、冬季少雨；北部一年四季都容易下雨。','','高雄的雨量特色？','夏季多雨、冬季少雨',['c2']],
+['c2','🌊','河川水量','河川水量會隨季節和降雨改變：夏季較多、冬季較少（降雨量不同）。','河川水量不是一年都一樣！','臺灣河川冬季水量？為什麼？','較少，因為降雨量減少',['c3','c4']],
+['c3','🏞️','水庫','建在河川上、中游。功能：民生用水、灌溉作物、工業用水、發電。','「保護水生植物」不是水庫功能。','水庫有哪4個功能？','民生用水、灌溉、工業用水、發電',['c2']],
+['c4','📊','看雨量圖','先看月分，再看雨量。雨量圖只能知道雨量，不能直接知道氣溫。','','雨量圖能看出氣溫嗎？','不能，只能看雨量',['c1']],
+['c5','💧','珍惜水資源','水圳、湖泊、河川、地下水都是水資源。工廠廢水、農藥會污染水質，要珍惜並適當使用。','','哪些會污染水質？','工廠廢水、農藥等',['c3']],
+['d1','🧱','就地取材','早期原住民族和漢人建住屋，大多就地取材；各族材料、形式都不一樣。','','早期建住屋怎麼找材料？','就地取材',['d2','d4']],
+['d2','🪨','石板屋','原住民族（排灣族七佳部落、魯凱族等）用石板疊成，冬暖夏涼、能預防土石流。','','哪種住屋冬暖夏涼、用石板蓋？','石板屋',['d3']],
+['d3','🌬️','地下屋','蘭嶼達悟族的半地下式住屋，可躲避強風。','不是高腳屋！','蘭嶼為躲強風蓋什麼屋？','半地下式的地下屋',['d2']],
+['d4','🏚️','土埆厝與竹管仔厝','漢人的傳統住屋。土埆厝：泥土＋稻草做成磚塊蓋牆；竹管仔厝：竹子當骨架、再抹泥土。','磚瓦要燒製，土埆不用。','土埆厝用什麼蓋？','泥土和稻草混合的磚塊',['d5']],
+['d5','🏯','三合院','漢人傳統住屋，磚瓦建成。中間是正身，左右兩側是護龍。神明、祖先牌位放正身，房間以左為尊。','','三合院左右兩側叫什麼？','護龍',['d4']],
+['d6','🛡️','保存傳統住屋','要保存：能呈現先民生活智慧、可能受天災或人為破壞、數量不多。有特色的住屋值得保留，不是全部拆除。','','為什麼要保存傳統住屋？','呈現先民智慧、易受破壞、數量不多',['d1']],
+['e1','🎋','傳統器物材料','竹子、藤、木頭、茅草、石頭等天然材料，是從自然環境就地取材。','','傳統器物的材料從哪來？','自然環境就地取材（竹、藤、木、石…）',['e2']],
+['e2','🔥','灶與魚筌','灶：燒木柴煮飯，灰燼餘溫可悶地瓜。魚筌：竹、藤編成，有空隙讓小魚逃走，放溪裡常用石頭固定。','魚筌是捕魚蝦，不能捕山豬。','魚筌用什麼編？有什麼設計？','竹、藤；留空隙讓小魚逃走',['e1']],
+['e3','🥄','木杵、砧板、蒸籠','木杵搗製食物、木砧板切菜肉、竹蒸籠蒸東西；葉子可以包粽子。','','木杵、砧板的材料？','木頭',['e1']],
+['e4','♻️','塑膠與減塑','現代器物多用塑膠：輕便便宜，但不易分解，垃圾難處理，海洋廢棄物中塑膠居多。響應減塑：重複使用、環保筷、拒用免洗餐具。','','為什麼要減塑？','塑膠不易分解、垃圾難處理',['e1']]
+];
+const by={};T.forEach(t=>by[t[0]]=t);
+let done={};try{done=JSON.parse(localStorage.getItem('socdone')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('socdone',JSON.stringify(done))}catch(e){}};
+const m=document.getElementById('m'),sh=document.getElementById('sh'),pn=document.getElementById('pn');
+let view='map',qid=null,rev=false;
+const col=id=>`var(${Z[id[0]][1]})`;
+function prog(){const n=Object.keys(done).filter(k=>done[k]).length;document.getElementById('pt').textContent=`已記住 ${n} / ${T.length}`;document.getElementById('pi').style.width=(n/T.length*100)+'%'}
+function render(){prog();
+ if(view=='map'){m.innerHTML=Object.keys(Z).map(z=>`<section class="zone" style="--c:${col(z)}"><h2>${Z[z][0]}</h2><div class="tiles">${T.filter(t=>t[0][0]==z).map(t=>`<button class="tile${done[t[0]]?' done':''}" style="--c:${col(t[0])}" data-id="${t[0]}"><b>${t[1]}</b>${t[2]}</button>`).join('')}</div></section>`).join('');}
+ else if(view=='list'){m.innerHTML=Object.keys(Z).map(z=>`<h2 style="font-size:16px;color:${col(z)};margin:16px 0 4px">${Z[z][0]}</h2>`+T.filter(t=>t[0][0]==z).map(t=>`<details class="item" style="--c:${col(z)}"><summary>${t[1]} ${t[2]} ${done[t[0]]?'✓':''}</summary><div class="in"><p>${t[3]}</p>${t[4]?`<div class="warn">⚠ ${t[4]}</div>`:''}</div></details>`).join('')).join('');}
+ else{const pool=T.filter(t=>!done[t[0]]);const list=pool.length?pool:T;
+  if(!qid||!by[qid]||(pool.length&&done[qid]))qid=list[Math.floor(Math.random()*list.length)][0];
+  const t=by[qid];m.innerHTML=`<div class="quiz" style="--c:${col(qid)}"><p style="color:var(--mut)">${pool.length?'還沒記住的格子，抽一題':'全部記住了！複習抽考'}（${Z[qid[0]][0].slice(0,9)}）</p><div class="qc" id="qc">${t[5]}</div><div class="qa" id="qa">${rev?'答案：<b style="color:var(--fg)">'+t[6]+'</b>':'點卡片看答案'}</div><div class="row"><button class="btn g" id="nx">下一題</button>${rev?'<button class="btn" id="ok">我答對了，記住！</button>':''}</div></div>`;
+  document.getElementById('qc').onclick=()=>{rev=true;render()};
+  document.getElementById('nx').onclick=()=>{qid=null;rev=false;render()};
+  const ok=document.getElementById('ok');if(ok)ok.onclick=()=>{done[qid]=1;save();qid=null;rev=false;render()};}
+}
+function open_(id){const t=by[id],c=col(id);pn.style.setProperty('--c',c);
+ pn.innerHTML=`<h3>${t[1]} ${t[2]}</h3><p>${t[3]}</p>${t[4]?`<div class="warn">⚠ 易錯：${t[4]}</div>`:''}<div class="tip">自己想想：${t[5]}</div><p style="color:var(--mut);font-size:13px;margin:4px 0 0">相關重點：</p><div class="rel">${t[7].map(r=>`<button data-r="${r}">${by[r][1]} ${by[r][2]}</button>`).join('')}</div><div class="row"><button class="btn g" id="sa">看答案</button><button class="btn" id="dn">${done[id]?'取消記住':'我記住了 ✓'}</button></div><div class="qa" id="ans"></div>`;
+ sh.classList.add('on');
+ document.getElementById('sa').onclick=()=>document.getElementById('ans').innerHTML='答案：<b style="color:var(--fg)">'+t[6]+'</b>';
+ document.getElementById('dn').onclick=()=>{done[id]=!done[id];save();sh.classList.remove('on');render()};
+ pn.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>open_(b.dataset.r));}
+m.addEventListener('click',e=>{const b=e.target.closest('.tile');if(b)open_(b.dataset.id)});
+sh.addEventListener('click',e=>{if(e.target===sh)sh.classList.remove('on')});
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');view=b.dataset.v;rev=false;qid=null;render()});
+render();
+</script></body></html>
