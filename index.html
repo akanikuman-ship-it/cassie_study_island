@@ -1,215 +1,1315 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>豬探長的自然辦案室</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="錯題本">
+<meta name="theme-color" content="#FBF6EE">
+<title>Cassie 錯題本</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='36' r='22' fill='%23F4A6B8'/%3E%3Cellipse cx='32' cy='42' rx='9' ry='6' fill='%23E07A93'/%3E%3Ccircle cx='29' cy='42' r='1.8' fill='%23743246'/%3E%3Ccircle cx='35' cy='42' r='1.8' fill='%23743246'/%3E%3Cpath d='M10 20h44l-6-9H16z' fill='%238A6A4A'/%3E%3C/svg%3E">
 <style>
-:root{--bg:#e8f3f1;--ink:#1f2a44;--pink:#f28aa5;--yel:#ffd56b;--ok:#2e9e6b;--no:#e8833a;--card:#fff}
+:root{
+  --bg:#FBF6EE; --paper:#FFFFFF; --ink:#2B2522; --ink2:#6B615A; --line:#E8DFD3;
+  --pig:#E8879F; --pig-d:#C25C78; --pig-l:#FCE5EC;
+  --ok:#2F8F5B; --ok-l:#E3F4EA; --bad:#C9433A; --bad-l:#FBE6E3;
+  --c1:#C25C78; --c2:#C98A1C; --c3:#3C7DB8;
+  --chip:#F3ECE2; --shadow:0 1px 2px rgba(60,40,20,.06),0 4px 14px rgba(60,40,20,.06);
+  --radius:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1E1A18; --paper:#29231F; --ink:#F2ECE6; --ink2:#B7ABA1; --line:#3D3530;
+    --pig:#E8879F; --pig-d:#F0A3B7; --pig-l:#3B2A2F;
+    --ok:#6CC995; --ok-l:#1F3328; --bad:#F08A80; --bad-l:#3D2522;
+    --c1:#F0A3B7; --c2:#E8B65A; --c3:#7DB4E6; --chip:#352E29; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1E1A18; --paper:#29231F; --ink:#F2ECE6; --ink2:#B7ABA1; --line:#3D3530;
+  --pig:#E8879F; --pig-d:#F0A3B7; --pig-l:#3B2A2F;
+  --ok:#6CC995; --ok-l:#1F3328; --bad:#F08A80; --bad-l:#3D2522;
+  --c1:#F0A3B7; --c2:#E8B65A; --c3:#7DB4E6; --chip:#352E29; --shadow:none;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.6 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
-main{max-width:720px;margin:0 auto;padding:16px}
-h1{font-size:26px;margin:4px 0}
-.sub{margin:0 0 12px;font-size:18px}
-.card{background:var(--card);border:3px solid var(--ink);border-radius:20px;padding:16px;margin:12px 0}
-.pass{background:#fff7d6;border-left:8px solid var(--yel);padding:10px 14px;border-radius:10px;font-size:18px;margin-bottom:10px}
-button{font:inherit;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:16px;padding:12px 16px;margin:6px 6px 6px 0;min-height:56px;cursor:pointer;text-align:left}
-button:focus-visible{outline:4px solid var(--pink);outline-offset:2px}
-.opt{display:block;width:100%}
-.unit{background:var(--yel)}
-.go{background:var(--pink);font-weight:700}
-.bad{background:#ffe3cf;border-color:var(--no);color:#7a3a10}
-.good{background:#d8f3e5;border-color:var(--ok)}
-.fb{margin-top:10px;font-size:19px}
-.step{font-weight:700;margin:6px 0}
-.tag{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:0 12px;font-size:16px}
-nav{display:flex;gap:6px;flex-wrap:wrap;padding:8px 16px;position:sticky;top:0;background:var(--bg);z-index:5}
-nav button{margin:0;min-height:48px;font-size:18px}
-summary{cursor:pointer;font-weight:700}
-h2{font-size:22px;margin:18px 0 4px}
-@media(min-width:900px){body{display:flex;align-items:flex-start}nav{flex-direction:column;flex-wrap:nowrap;width:180px;top:16px;padding:16px 8px 16px 16px}main{flex:1}}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+header.top{display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 0 10px}
+header.top h1{font-size:22px;margin:0;letter-spacing:.02em}
+header.top .sub{color:var(--ink2);font-size:14px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--paper);border-top:1px solid var(--line);display:flex;justify-content:center;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+nav.tabs button{flex:1;max-width:180px;border:0;background:none;padding:6px 4px;border-radius:12px;color:var(--ink2);font-size:14px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs button svg{width:26px;height:26px}
+nav.tabs button.on{color:var(--pig-d);background:var(--pig-l)}
+section.view{display:none}
+section.view.on{display:block}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp{flex:1}
+h2{font-size:20px;margin:18px 0 10px}
+h3{font-size:17px;margin:14px 0 8px}
+.muted{color:var(--ink2)}
+.small{font-size:14px}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:10px 16px;min-height:44px;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn.pri{background:var(--pig-d);border-color:var(--pig-d);color:#fff}
+.btn.ghost{background:transparent}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:15px}
+.btn:disabled{opacity:.45;cursor:default}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:7px 14px;min-height:40px;font-size:15px}
+.chip.on{background:var(--pig-d);border-color:var(--pig-d);color:#fff}
+.tag{display:inline-block;font-size:13px;padding:2px 10px;border-radius:999px;background:var(--chip);color:var(--ink2);white-space:nowrap}
+.tag.c-概念不懂{background:color-mix(in srgb,var(--c1) 16%,transparent);color:var(--c1)}
+.tag.c-讀題漏看{background:color-mix(in srgb,var(--c2) 18%,transparent);color:var(--c2)}
+.tag.c-粗心{background:color-mix(in srgb,var(--c3) 16%,transparent);color:var(--c3)}
+.tag.done{background:var(--ok-l);color:var(--ok)}
+label.f{display:block;font-size:14px;color:var(--ink2);margin:12px 0 4px}
+input.t,select.t,textarea.t{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;min-height:44px}
+textarea.t{min-height:90px;line-height:1.55}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+
+/* fractions */
+.fr{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .1em}
+.fr .w{margin-right:.08em}
+.fr .nd{display:inline-flex;flex-direction:column;align-items:center;font-size:.82em;line-height:1.1}
+.fr .nd span:first-child{border-bottom:1.5px solid currentColor;padding:0 .15em}
+
+/* pig */
+.pig{display:flex;gap:12px;align-items:flex-start}
+.pig svg{flex:none;width:56px;height:56px}
+.bubble{background:var(--pig-l);border-radius:16px;border-top-left-radius:4px;padding:10px 14px;flex:1}
+.bubble b{color:var(--pig-d)}
+
+/* practice */
+.hero{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.hero svg{width:96px;height:96px}
+.stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.stat{background:var(--chip);border-radius:12px;padding:8px 14px;font-size:15px}
+.stat b{font-size:20px;margin-right:2px}
+.qcard{margin-top:14px}
+.qhead{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.prog{height:8px;background:var(--chip);border-radius:99px;overflow:hidden;margin:6px 0 14px}
+.prog i{display:block;height:100%;background:var(--pig);border-radius:99px;transition:width .3s}
+.qtext{font-size:21px;line-height:1.75;margin:4px 0 16px}
+.look{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--pig-d);background:var(--pig-l);border-radius:999px;padding:3px 12px;margin-bottom:8px}
+.opts{display:grid;gap:10px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opts.ten{grid-template-columns:repeat(5,1fr)}
+.opt{border:2px solid var(--line);background:var(--paper);border-radius:14px;padding:14px 16px;min-height:56px;text-align:left;font-size:19px;display:flex;gap:12px;align-items:center}
+.opt .n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--chip);display:grid;place-items:center;font-size:15px;color:var(--ink2)}
+.opt.big{justify-content:center;font-size:30px;min-height:72px}
+.opt.sel{border-color:var(--pig-d);background:var(--pig-l)}
+.opt.right{border-color:var(--ok);background:var(--ok-l)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-l)}
+.opt:disabled{cursor:default}
+.numin{display:flex;gap:10px;align-items:center}
+.numin input{font-size:26px;letter-spacing:.06em;max-width:320px}
+.result{margin-top:16px}
+.answerbox{border-radius:14px;padding:12px 16px;margin-top:10px}
+.answerbox.ok{background:var(--ok-l)}
+.answerbox.bad{background:var(--bad-l)}
+.bigans{font-size:34px;font-weight:600;letter-spacing:.06em}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.chat{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+.msg{margin:8px 0;padding:10px 14px;border-radius:14px;max-width:88%;white-space:pre-wrap}
+.msg.me{margin-left:auto;background:var(--chip)}
+.msg.pg{background:var(--pig-l)}
+.fig{width:100%;max-width:560px;display:block;margin:4px 0 14px;color:var(--ink)}
+
+/* book */
+.statbars{display:grid;gap:8px;margin-top:8px}
+.sb{display:grid;grid-template-columns:5.5em 1fr 2.5em;gap:10px;align-items:center;font-size:15px}
+.sb .bar{height:12px;background:var(--chip);border-radius:99px;overflow:hidden}
+.sb .bar i{display:block;height:100%;border-radius:99px}
+.items{display:grid;gap:12px;margin-top:14px}
+.item .q{font-size:18px;line-height:1.7;margin:6px 0 10px}
+.item .ol{margin:0 0 10px;padding-left:0;list-style:none;display:grid;gap:4px;font-size:16px;color:var(--ink2)}
+.ab{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:16px}
+.ab dt{color:var(--ink2)}
+.ab dd{margin:0}
+.ab .stu{color:var(--bad)}
+.ab .cor{color:var(--ok);font-weight:600}
+.exp{background:var(--chip);border-radius:12px;padding:10px 14px;margin-top:10px;font-size:15.5px;white-space:pre-wrap}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+details.more summary{cursor:pointer;color:var(--ink2);font-size:14px;margin-top:8px}
+.empty{text-align:center;padding:40px 10px;color:var(--ink2)}
+
+/* settings */
+.keyrow{display:flex;gap:8px}
+.keyrow input{flex:1}
+.stylebtns{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 10px}
+.stylebtn{border:2px solid var(--line);background:var(--paper);border-radius:12px;padding:8px 14px;min-height:44px;display:flex;gap:8px;align-items:center}
+.stylebtn .dot{width:12px;height:12px;border-radius:50%}
+.stylebtn.on{border-color:var(--pig-d);background:var(--pig-l)}
+.subjrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:90vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.cand{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px;background:var(--bg)}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.thumbs img{width:88px;height:88px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.photo-view img{max-width:100%;border-radius:12px;margin-top:8px}
+.spin{display:inline-block;width:18px;height:18px;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:40}
+.modal.on{display:flex}
+.modal .sheet{background:var(--paper);width:100%;max-width:760px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+@media (min-width:700px){.modal{align-items:center}.modal .sheet{border-radius:20px}}
 </style>
 </head>
 <body>
-<nav id="nav"><button data-n="h">🏠 首頁</button><button data-n="b">📒 錯題本</button><button data-n="a">📖 詳細解答</button></nav>
-<main id="app"></main>
+<div class="wrap">
+  <header class="top">
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><use href="#pigface"/></svg>
+    <div><h1>Cassie 的錯題本</h1><div class="sub" id="subline">四上・國語 社會 數學</div></div>
+  </header>
+
+  <!-- 練習 -->
+  <section class="view" id="v-practice">
+    <div id="p-home"></div>
+    <div id="p-run" hidden></div>
+  </section>
+
+  <!-- 錯題本 -->
+  <section class="view" id="v-book">
+    <div class="chips" id="b-subj"></div>
+    <div class="card" style="margin-top:12px">
+      <div class="row">
+        <select class="t" id="b-unit" style="max-width:220px"></select>
+        <select class="t" id="b-state" style="max-width:160px">
+          <option value="todo">待練習</option><option value="done">已克服</option><option value="all">全部</option>
+        </select>
+        <input class="t" id="b-q" placeholder="搜尋題目" style="flex:1;min-width:140px">
+      </div>
+      <div class="chips" id="b-cause" style="margin-top:10px"></div>
+      <div class="statbars" id="b-stats"></div>
+    </div>
+    <div class="items" id="b-items"></div>
+  </section>
+
+  <!-- 新增 -->
+  <section class="view" id="v-add">
+    <h2>上傳考卷照片</h2>
+    <div class="card">
+      <div class="grid2">
+        <div><label class="f">科目</label><select class="t" id="a-subj"></select></div>
+        <div><label class="f">考卷名稱</label><input class="t" id="a-exam" placeholder="例：國語第七課平時考"></div>
+      </div>
+      <label class="f">照片（可一次選多張，最好是錯題的近照）</label>
+      <input type="file" id="a-files" accept="image/*" multiple class="t">
+      <div class="thumbs" id="a-thumbs"></div>
+      <div class="actions">
+        <button class="btn pri" id="a-run">AI 辨識錯題</button>
+        <button class="btn" id="a-manual">手動新增一題</button>
+      </div>
+      <p class="small muted" id="a-msg">需要先在「設定」填入 Gemini API Key。AI 會先找出老師打叉或訂正的題目，你確認、修改後再存入。</p>
+    </div>
+    <div id="a-cands"></div>
+  </section>
+
+  <!-- 設定 -->
+  <section class="view" id="v-set">
+    <h2>AI 智能助理配置</h2>
+    <div class="card">
+      <div class="grid2">
+        <div>
+          <label class="f">Gemini API Key</label>
+          <div class="keyrow"><input class="t" id="s-key" type="password" autocomplete="off" placeholder="貼上 API Key"><button class="btn sm" id="s-eye" type="button">顯示</button></div>
+          <div class="small muted" style="margin-top:4px">只存在這台裝置的瀏覽器，不會放進備份檔。</div>
+        </div>
+        <div>
+          <label class="f">模型名稱</label>
+          <select class="t" id="s-model">
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+            <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+            <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite</option>
+          </select>
+          <div class="row" style="margin-top:6px"><button class="btn sm" id="s-test">測試連線</button><span class="small muted" id="s-testmsg"></span></div>
+        </div>
+      </div>
+      <label class="f" style="margin-top:18px"><b>快速套用教學風格</b>（點按鈕切換要編輯的指令）</label>
+      <div class="stylebtns">
+        <button class="stylebtn" data-p="expert"><span class="dot" style="background:#D9483B"></span>精簡專家模式（家長診斷用）</button>
+        <button class="stylebtn" data-p="pig"><span class="dot" style="background:#3BA55C"></span>豬探長引導模式（Cassie 練習用）</button>
+      </div>
+      <label class="f" id="s-plabel">AI 教師自定義人格指令（System Prompt）</label>
+      <textarea class="t" id="s-prompt" style="min-height:260px"></textarea>
+      <div class="row" style="margin-top:6px"><span class="small muted">最終以輸入框的內容作為 AI 的行為準則。</span><span class="sp"></span><button class="btn sm" id="s-reset">還原預設</button></div>
+    </div>
+
+    <h2>年級與版本</h2>
+    <div class="card">
+      <div class="grid2" style="margin-bottom:8px"><div><label class="f">年級學期</label><input class="t" id="s-grade"></div></div>
+      <label class="f">科目與出版社（之後有自然平時考，在這裡加一科就能用）</label>
+      <div id="s-subjs"></div>
+      <button class="btn sm" id="s-addsubj">＋ 新增科目</button>
+    </div>
+
+    <h2>資料備份</h2>
+    <div class="card">
+      <p class="small muted" style="margin-top:0">錯題存在這台 iPad 的瀏覽器裡。清除 Safari 網站資料會一起清掉，建議每週匯出一次備份。</p>
+      <div class="actions" style="margin-top:0">
+        <button class="btn" id="s-export">匯出備份</button>
+        <label class="btn" for="s-import">匯入備份</label><input type="file" id="s-import" accept="application/json,.json" hidden>
+        <span class="sp"></span>
+        <button class="btn ghost" id="s-wipe" style="color:var(--bad)">清除全部資料</button>
+      </div>
+      <p class="small muted" id="s-info"></p>
+    </div>
+  </section>
+</div>
+
+<nav class="tabs">
+  <button data-v="practice"><svg viewBox="0 0 64 64"><use href="#pigface"/></svg>練習</button>
+  <button data-v="book"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21a2 2 0 0 1 2-2h13v2H6"/><path d="M9 8h6M9 12h4"/></svg>錯題本</button>
+  <button data-v="add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M8 6l1.5-2h5L16 6"/><circle cx="12" cy="13" r="3.5"/></svg>新增錯題</button>
+  <button data-v="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>設定</button>
+</nav>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="pigface" viewBox="0 0 64 64">
+    <ellipse cx="14" cy="26" rx="6" ry="8" fill="#E8879F" transform="rotate(-25 14 26)"/>
+    <ellipse cx="50" cy="26" rx="6" ry="8" fill="#E8879F" transform="rotate(25 50 26)"/>
+    <circle cx="32" cy="37" r="21" fill="#F6B3C3"/>
+    <ellipse cx="32" cy="44" rx="9.5" ry="6.5" fill="#E8879F"/>
+    <ellipse cx="28.5" cy="44" rx="1.8" ry="2.4" fill="#7A3347"/>
+    <ellipse cx="35.5" cy="44" rx="1.8" ry="2.4" fill="#7A3347"/>
+    <circle cx="24" cy="33" r="2.6" fill="#3A2A24"/>
+    <circle cx="40" cy="33" r="2.6" fill="#3A2A24"/>
+    <circle cx="40" cy="33" r="6.5" fill="none" stroke="#5B4636" stroke-width="2"/>
+    <path d="M45 38l6 7" stroke="#5B4636" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M12 20c4-10 36-10 40 0z" fill="#9C7B57"/>
+    <path d="M10 20h44" stroke="#7D5F42" stroke-width="3" stroke-linecap="round"/>
+    <path d="M24 12l8-5 8 5" fill="none" stroke="#7D5F42" stroke-width="2"/>
+  </symbol>
+</svg>
+
 <script>
-const U={1:"地表的變動與地震",2:"水域環境與水生生物",3:"聲音與光",4:"電路與電池"};
-// k: 0=題目問「正確的」、1=題目問「不正確的」（有 k 才會出現「仔細看一看」步驟；p=閱讀短文）
-const Q=[
-{u:1,q:"風或流水作用時，礫石、沙、土壤哪一種被搬得最遠？",o:["礫石","沙","土壤","都一樣遠"],a:2,w:"顆粒越小、越輕，被搬得越遠。"},
-{u:1,q:"水稻最適合長在哪裡？",o:["有黏性的溼潤土壤","鬆散、排水好的沙土","堅硬的岩石縫隙"],a:0,w:"稻田的泥土黏黏、溼溼的。"},
-{u:1,q:"下列關於地震相關名詞的敘述，哪一項是不正確的？",o:["震央是引發地震的位置","震源深度是震央到震源的距離","地震規模是震源釋放出的能量大小","震度是人體感受或建築物受破壞的程度"],a:0,k:1,w:"引發地震的位置叫「震源」，不是震央。"},
-{u:1,q:"下列哪一個行為無法保護地表環境？",o:["在高山大範圍種植蔬菜","不隨意砍伐森林","參加植樹活動","整治河川"],a:0,k:1,w:"大範圍開墾高山會破壞原本的生態環境。"},
-{u:2,q:"睡蓮的根和地下莖長在水底泥土裡，葉漂浮在水面，屬於哪一種水生植物？",o:["漂浮性","沉水性","浮葉性","挺水性"],a:2,w:"葉子浮在水面，就是浮葉性。"},
-{u:2,q:"魚的哪一個構造可以控制游動方向？",o:["魚鰓","魚鱗","魚鰭","鰓蓋"],a:2,w:"魚鰓幫助呼吸，魚鱗保護身體，魚鰭控制方向。"},
-{u:2,p:"大王蓮的葉子平貼在水面生長，葉面直徑約 1～3 公尺，可承受 50～70 公斤的重量。與一般蓮葉不同，它的葉子邊緣向上轉折、直立；葉背長了許多銳利小刺，葉脈明顯凸出，像網子一樣向外延伸。",q:"根據短文，下列關於大王蓮的敘述，哪一項是正確的？",o:["屬於沉水性水生植物","葉緣向上轉折、直立","葉子直徑可達 50～70 公尺","葉背的小刺是為了好看"],a:1,k:0,w:"短文說葉子邊緣向上轉折、直立；50～70 是公斤，不是公尺。"},
-{u:2,q:"下列關於保護水域環境的做法，哪一項是不正確的？",o:["定期清理校園的生態池","在溪邊烤肉或撈魚","撿拾海岸邊的垃圾","禁止在水源保護區設立工廠"],a:1,k:1,w:"在溪邊烤肉、撈魚會影響水域環境和生物。"},
-{u:3,q:"用手撥動橡皮筋時，如果用較大的力，聲音會怎樣？",o:["變小","變大","不會改變"],a:1,w:"振動越大，聲音越大。"},
-{u:3,q:"下列哪一項物品，不是光的反射現象的應用？",o:["彎道旁的反光導標","玩手影遊戲","汽車後視鏡","路邊的凸面鏡"],a:1,k:1,w:"手影是光被擋住形成影子，是直線行進。"},
-{u:3,p:"小宇把雷射筆的光射進一個透明容器，他發現容器裡如果充滿煙，就能清楚看到光走的路線。",q:"做光的反射實驗時，為什麼要讓透明容器中充滿煙？",o:["光碰到煙才會反射","光在煙中才會直線前進","煙可以吸收光線","方便觀察光的行進路線"],a:3,w:"煙讓我們看得到光走過的路。"},
-{u:4,q:"下列哪一個物品可以連接在電路中，使燈泡發亮？",o:["橡皮筋","硬幣","色紙","木尺"],a:1,w:"硬幣是金屬，是電的良導體。"},
-{u:4,p:"小琦把電池、電線和燈泡連接在一起，形成通路，結果燈泡只亮了一下子就不亮了。",q:"可能是哪一個問題造成的？",o:["電路連接錯誤","燈泡的數量太少","電池的電力不夠","電線太長"],a:2,w:"通路有亮過，表示接法沒錯；後來不亮是電力用完了。"},
-{u:4,q:"原本一個電池和一個燈泡的電路中，再增加 3 個燈泡並聯，燈泡亮度會如何？",o:["變得較暗","變得較亮","保持不變","全部不亮"],a:2,w:"燈泡並聯，每個燈泡的亮度不會變。"},
-{u:4,q:"製作簡易電風扇時，要怎麼改良才可以轉得更快？",o:["再並聯一個電池","再串聯一個電池","把電池反過來連接","多連接一個燈泡"],a:1,w:"電池串聯，電力變大，轉得更快。"}
+const SEED_DATE = '2026-10-30';
+const EX = {
+  KA: '國語期中平時複習考（第一至三課）',
+  KB: '國語期中平時複習考（第四至六課）',
+  M1: '數學期中平時考（一億以內的數）',
+  M2: '數學期中平時考（乘法）',
+  M3: '數學期中平時考（第三單元 角度）',
+  M4: '數學期中平時考（分數）',
+  M5: '數學期中平時考（公里）',
+  SA: '社會期中平時考（一）',
+  SB: '社會期中平時考（二）',
+  SC: '社會期中平時考（三）'
+};
+const CMP = ['＞', '＜', '＝'];
+const SEED = [
+/* ===== 國語 ===== */
+{id:'k01',s:'國語',unit:'第一至三課',exam:EX.KA,type:'write',
+ q:'改錯字：「打掃過後，教室的地板看起來光猾明亮。」把錯的字改正，寫在紙上。',
+ ans:'滑（猾→滑）',stu:'知道要改成「滑」，但字寫錯了',cause:'概念不懂',
+ exp:'「光滑」和水有關，部首是「氵」。「猾」是犬字旁，用在「狡猾」。',
+ hint:'地板很「ㄏㄨㄚˊ」，摸起來溜溜的，和水有關係。想想看是什麼部首？'},
+{id:'k02',s:'國語',unit:'第一至三課',exam:EX.KA,type:'choice',
+ q:'改錯字：「桌上那一東花讓客廳充滿生氣。」哪一個字寫錯了？',
+ opts:['東','花','客','氣'],ans:'東',stu:'改了「氣」，沒找到「東」',cause:'概念不懂',
+ exp:'「一束花」的「束」是把東西綁在一起，「東」是方向。「生氣」在這裡是有活力的意思，沒有錯。',
+ hint:'數花的時候說「一ㄕㄨˋ花」。哪個字長得很像，卻不是那個意思？'},
+{id:'k03',s:'國語',unit:'第一至三課',exam:EX.KA,type:'write',
+ q:'「夜晚的星星閃閃發光，雖然看起來很近，實際上卻是（　　　　）。」填入成語，寫在紙上。',
+ ans:'遙不可及',stu:'成語選對了，但「不」字寫錯',cause:'粗心',
+ exp:'答案「遙不可及」。連最簡單的字也要一筆一畫寫清楚，寫完再檢查一次。',
+ hint:'很遠很遠，怎麼樣都碰不到。四個字的成語，第一個字是「遙」。'},
+{id:'k04',s:'國語',unit:'第一至三課',exam:EX.KA,type:'choice',
+ q:'下列哪組詞語的關係和「晃動／搖晃」不同？',
+ opts:['緩緩／慢慢','遨遊／囚禁','煩惱／苦惱','晶亮／明亮'],ans:'遨遊／囚禁',stu:'晶亮／明亮',cause:'概念不懂',
+ exp:'「晃動／搖晃」意思相近。只有「遨遊（自由自在）／囚禁（被關住）」意思相反。',
+ hint:'先想：「晃動」和「搖晃」意思一樣還是相反？再一組一組比。'},
+{id:'k05',s:'國語',unit:'第一至三課',exam:EX.KA,type:'choice',
+ q:'根據〈我的籃球夢〉一文，主角是如何從被球彈到下巴，到可以享受運動帶來的喜悅？',
+ opts:['好朋友陪他練習','教練嚴格的訓練','最早到球場練習','同學為他打氣'],ans:'最早到球場練習',stu:'同學為他打氣',cause:'概念不懂',
+ exp:'課文中主角靠自己努力，每天最早到球場練習，才慢慢進步。',
+ hint:'回想課文：主角是靠別人幫忙，還是靠自己做了什麼？'},
+{id:'k06',s:'國語',unit:'第一至三課',exam:EX.KA,type:'choice',
+ q:'讀完〈我的籃球夢〉一文後，「無法」用下列哪個詞語說明作者想傳達的道理？',
+ opts:['半途而廢','熟能生巧','堅持不懈','持之以恆'],ans:'半途而廢',stu:'熟能生巧',cause:'讀題漏看',
+ exp:'題目問「無法」。其他三個都是努力不放棄的意思，只有「半途而廢」相反。',
+ hint:'先把「無法」兩個字圈起來！哪一個詞語和「不放棄」意思相反？'},
+{id:'k07',s:'國語',unit:'第四至六課',exam:EX.KB,type:'write',
+ q:'注音寫國字：「這塊地毯上面繡了許多花，色彩「ㄅㄧㄣ」紛。」把國字寫在紙上。',
+ ans:'繽（繽紛）',stu:'字形寫錯',cause:'概念不懂',
+ exp:'「繽紛」兩個字都是糸字旁，右邊是「賓」。',
+ hint:'色彩很多很漂亮，和線、布料有關，是什麼部首？右邊是「來賓」的「賓」。'},
+{id:'k08',s:'國語',unit:'第四至六課',exam:EX.KB,type:'write',
+ q:'注音寫國字：「他說，自己也曾接受他人恩惠，所以奉「ㄒㄧㄢˋ」自己的力量來幫助更多的人。」把國字寫在紙上。',
+ ans:'獻（奉獻）',stu:'「獻」寫錯（同一張考卷改錯字也錯了兩次）',cause:'概念不懂',
+ exp:'「獻」左邊是「鬳」（上面「虍」、下面「鬲」），右邊是「犬」。這個字是這次最常錯的字，要多寫幾次。',
+ hint:'這個字右邊是「犬」，左邊上面有個「虍」（老虎頭）。慢慢寫。'},
+{id:'k09',s:'國語',unit:'第四至六課',exam:EX.KB,type:'write',
+ q:'改錯字：「警方目前正全力調查這起綁架肋索案件。」把錯的字改正，寫在紙上。',
+ ans:'勒（肋→勒）',stu:'字形寫錯',cause:'概念不懂',
+ exp:'「勒索」的「勒」是革字旁加「力」。「肋」是月字旁，用在「肋骨」。',
+ hint:'用力拉緊的意思，左邊是「皮革」的「革」。'},
+{id:'k10',s:'國語',unit:'第四至六課',exam:EX.KB,type:'write',
+ q:'改錯字：「爺爺把珍惜的古董娟給博物館，這是一份無私的俸現。」有三個錯字，改正後寫在紙上。',
+ ans:'捐、奉、獻（娟→捐、俸→奉、現→獻）',stu:'「捐」對了，「奉」「獻」寫錯',cause:'概念不懂',
+ exp:'「捐」是手部動作所以是扌；「奉獻」的「奉」沒有人字旁；「獻」右邊是犬。',
+ hint:'一共要改三個字。把東西送出去要用手，是什麼部首？'},
+{id:'k11',s:'國語',unit:'第四至六課',exam:EX.KB,type:'choice',
+ q:'「登」的部首是什麼？',
+ opts:['癶','一','口','豆'],ans:'癶',stu:'口',cause:'概念不懂',
+ exp:'「登」的部首是上面的「癶」（ㄅㄛ），像兩隻腳往上走。',
+ hint:'「登」是往上爬的動作，部首在字的上面，像兩隻腳。'},
+{id:'k12',s:'國語',unit:'第四至六課',exam:EX.KB,type:'choice',
+ q:'下列哪一個詞語的意思是「無論什麼」？',
+ opts:['如何','任何','單憑','任憑'],ans:'任何',stu:'任憑',cause:'概念不懂',
+ exp:'「任何」＝不管什麼，例如「任何人都可以參加」。「任憑」是隨便別人怎麼做。',
+ hint:'把每個詞語放進「（　）人都可以參加」試試看，哪一個最通順？'},
+{id:'k13',s:'國語',unit:'第四至六課',exam:EX.KB,type:'choice',
+ q:'下列哪一組詞語的關係和「鼓舞／鼓勵」相同？',
+ opts:['危險／安全','辛苦／艱苦','雪白／漆黑','嚴格／寬容'],ans:'辛苦／艱苦',stu:'嚴格／寬容',cause:'概念不懂',
+ exp:'「鼓舞／鼓勵」意思相近。「辛苦／艱苦」也是相近；其他三組都是相反。',
+ hint:'先判斷「鼓舞」和「鼓勵」是相近還是相反，再找一樣關係的一組。'},
+
+/* ===== 數學 一億以內的數 ===== */
+{id:'m01',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'tf',
+ q:'20 張 1000 元的鈔票和 20 張 100 元的鈔票，合起來共有 20200 元。',
+ ans:'✗',stu:'○',cause:'粗心',
+ exp:'20 張 1000 元＝20000 元，20 張 100 元＝2000 元，合起來 22000 元。',
+ hint:'把兩種鈔票分開算，再加起來。20 張 100 元是多少呢？',
+ v:{type:'tf',q:'30 張 1000 元的鈔票和 30 張 100 元的鈔票，合起來共有 30300 元。',ans:'✗'}},
+{id:'m02',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'tf',
+ q:'「8716049」和「八千七百一十萬六千零四十九」一樣大。',
+ ans:'✗',stu:'○',cause:'概念不懂',
+ exp:'「八千七百一十萬六千零四十九」寫成數字是 87106049（八位數），8716049 只有七位數。',
+ hint:'先把國字寫成數字，再數數看兩個數各有幾位。',
+ v:{type:'tf',q:'「5308027」和「五百三十萬八千零二十七」一樣大。',ans:'○'}},
+{id:'m03',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'tf',
+ q:'999 個一萬再加上 1 個一萬，合起來是 1 億。',
+ ans:'✗',stu:'○',cause:'概念不懂',
+ exp:'999 個一萬＋1 個一萬＝1000 個一萬＝1000 萬（一千萬）。10000 個一萬才是 1 億。',
+ hint:'1000 個一萬是多少萬？1 億是多少個一萬？',
+ v:{type:'tf',q:'9999 個一萬再加上 1 個一萬，合起來是 1 億。',ans:'○'}},
+{id:'m04',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'choice',
+ q:'有 2000 張演唱會門票，編號從 1 到 2000，門票號碼後面二位數字為 68 的人會得到獎品。需要準備幾份獎品？',
+ opts:['18 份','19 份','20 份','21 份'],ans:'20 份',stu:'21 份',cause:'概念不懂',
+ exp:'68、168、268……1968，百位從 0 到 19，共 20 個。2068 超過 2000，不能算。',
+ hint:'把號碼列出來：68、168、268……最後一個是多少？不能超過 2000 喔。',
+ v:{type:'choice',q:'門票編號從 1 到 3000，號碼最後兩位是 25 的人可以得獎。需要準備幾份獎品？',opts:['29 份','30 份','31 份','32 份'],ans:'30 份'}},
+{id:'m05',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'choice',
+ q:'100 個千和 1000 個百一樣大，都是表示多少？',
+ opts:['1000','10000','100000','1000000'],ans:'100000',stu:'10000',cause:'概念不懂',
+ exp:'1 個千＝1000，100 個千＝100000（十萬）。1000 個百也是 100000。',
+ hint:'1000 後面再乘 100，要多加幾個 0？',
+ v:{type:'choice',q:'100 個萬和 1000 個千一樣大，都是表示多少？',opts:['10000','100000','1000000','10000000'],ans:'1000000'}},
+{id:'m06',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'check',
+ q:'48220000 ＞ 48□90000，□ 可以填入哪些數字？（全部選出來）',
+ opts:['0','1','2','3','4','5','6','7','8','9'],ans:['0','1'],stu:'答案寫錯（訂正後是 0、1）',cause:'概念不懂',
+ exp:'前兩位都是 48，接著比第三位。□ 放 2 時是 48290000，比 48220000 大，不行；所以 □ 只能比 2 小：0、1。',
+ hint:'先試試看 □ 放 2：48290000 和 48220000 哪個大？',
+ v:{type:'check',q:'63550000 ＞ 63□80000，□ 可以填入哪些數字？（全部選出來）',opts:['0','1','2','3','4','5','6','7','8','9'],ans:['0','1','2','3','4']}},
+{id:'m07',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'choice',
+ q:'50604090 讀作？',
+ opts:['五千零六十萬四千零九十','五千萬零六百萬四千零九十','五千零六百萬四千零九十','五百零六萬四千零九十'],ans:'五千零六十萬四千零九十',stu:'五千萬零六百萬四千零九十',cause:'概念不懂',
+ exp:'從右邊每四位分一節：5060｜4090，讀成「五千零六十」萬「四千零九十」。',
+ hint:'先從右邊數四位畫一條線，左邊那一節「5060」怎麼讀？',
+ v:{type:'choice',q:'30708060 讀作？',opts:['三千零七十萬八千零六十','三千萬零七百萬八千零六十','三千零七百萬八千零六十','三百零七萬八千零六十'],ans:'三千零七十萬八千零六十'}},
+{id:'m08',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'num',
+ q:'3 個千萬、16 個十萬、3 個萬、6 個千和 9 個十，合起來是多少？',
+ ans:'31636090',stu:'31636009',cause:'粗心',
+ exp:'30000000＋1600000＋30000＋6000＋90＝31636090。「9 個十」是 90，9 放在十位，個位是 0。',
+ hint:'「9 個十」是多少？9 要放在哪一位？',
+ v:{type:'num',q:'2 個千萬、15 個十萬、4 個萬、7 個千和 8 個十，合起來是多少？',ans:'21547080'}},
+{id:'m09',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'num',u:'萬',
+ q:'金鑽公司今年的業績目標是 8000 萬，現在的業績是 6 個千萬、13 個百萬、20 個十萬。現在的業績共是幾萬？（有沒有達到目標？）',
+ ans:'7500',stu:'先算成 7320 萬，後來訂正',cause:'概念不懂',
+ exp:'6 個千萬＝6000 萬，13 個百萬＝1300 萬，20 個十萬＝200 萬，共 7500 萬，比 8000 萬少，還沒達到目標。',
+ hint:'先把每一種都換成「幾萬」：1 個百萬是幾萬？1 個十萬是幾萬？',
+ v:{type:'num',u:'萬',q:'業績目標是 9000 萬，現在是 7 個千萬、15 個百萬、30 個十萬。現在的業績共是幾萬？（有沒有達到目標？）',ans:'8800'}},
+{id:'m10',s:'數學',unit:'一億以內的數',exam:EX.M1,type:'num',u:'元',
+ q:'幸福旅遊公司上個月收入是 492000 元，這個月的收入是 1510000 元。兩個月的收入共是幾元？',
+ ans:'2002000',stu:'直式加法算錯（後來訂正）',cause:'粗心',
+ exp:'492000＋1510000＝2002000。直式要從個位對齊，萬位 9＋1＝10 要進位。',
+ hint:'直式要從最右邊對齊喔！萬位 9＋1 會怎樣？',
+ v:{type:'num',u:'元',q:'上個月收入是 385000 元，這個月收入是 1625000 元。兩個月共是幾元？',ans:'2010000'}},
+
+/* ===== 數學 乘法 ===== */
+{id:'m11',s:'數學',unit:'乘法',exam:EX.M2,type:'choice',
+ q:'一箱餅乾有 36 包，天天超商訂了 187 箱，一共訂了多少包餅乾？',
+ opts:['6372 包','6382 包','6732 包','6832 包'],ans:'6732 包',stu:'6372 包',cause:'粗心',
+ exp:'36×187＝6732。6372 和答案很像，是數字順序看錯了。',
+ hint:'用直式算 36×187，算完再和選項一個數字一個數字對。',
+ v:{type:'choice',q:'一箱餅乾有 24 包，訂了 156 箱，一共訂了多少包？',opts:['3644 包','3744 包','3754 包','3844 包'],ans:'3744 包'}},
+{id:'m12',s:'數學',unit:'乘法',exam:EX.M2,type:'choice',
+ q:'已知「29×501＝14529」，下列哪一個算式的答案和 29×500 相同？',
+ opts:['14529－501','14529－29','14529＋29','14529＋501'],ans:'14529－29',stu:'14529＋501',cause:'概念不懂',
+ exp:'29×501 是 501 個 29，29×500 是 500 個 29，少了 1 個 29，所以是 14529－29。',
+ hint:'501 個 29 和 500 個 29，差了幾個 29？要加還是減？',
+ v:{type:'choice',q:'已知「37×201＝7437」，哪一個算式的答案和 37×200 相同？',opts:['7437－201','7437－37','7437＋37','7437＋201'],ans:'7437－37'}},
+{id:'m13',s:'數學',unit:'乘法',exam:EX.M2,type:'num',u:'元',
+ q:'不用直式計算：一盆玫瑰售價 500 元，買 99 盆玫瑰共要花幾元？',
+ ans:'49500',stu:'8000（後來訂正）',cause:'概念不懂',
+ exp:'99 盆＝100 盆少 1 盆：500×100－500＝50000－500＝49500。',
+ hint:'99 很接近 100。先算買 100 盆，再想想要減掉多少。',
+ v:{type:'num',u:'元',q:'不用直式計算：一本書 300 元，買 99 本共要花幾元？',ans:'29700'}},
+{id:'m14',s:'數學',unit:'乘法',exam:EX.M2,type:'num',
+ q:'4618 × 5 ＝ 23A9B，A＋B＝？（A、B 各代表一個數字）',
+ ans:'0',stu:'答錯（訂正後是 0）',cause:'粗心',
+ exp:'4618×5＝23090，對照 2 3 A 9 B：A＝0、B＝0，A＋B＝0。',
+ hint:'先把 4618×5 算出來，再一位一位對照 A 和 B 的位置。',
+ v:{type:'num',q:'2417 × 6 ＝ 14A0B，A＋B＝？',ans:'7'}},
+{id:'m15',s:'數學',unit:'乘法',exam:EX.M2,type:'num',u:'元',
+ q:'宜蘭太平山觀光旅行，一個人的報名費是 3000 元，亮亮全家一共 3 人報名，共要付多少元？',
+ ans:'9000',stu:'直式算對 9000，答案卻寫成 900 元',cause:'粗心',
+ exp:'3000×3＝9000。算式對了，寫答案時少抄一個 0。寫完要和算式結果對一次。',
+ hint:'算出來後，答案有沒有和算式的結果一模一樣？',
+ v:{type:'num',u:'元',q:'一張門票 2500 元，4 個人共要付多少元？',ans:'10000'}},
+
+/* ===== 數學 角度 ===== */
+{id:'m16',s:'數學',unit:'角度',exam:EX.M3,type:'tf',
+ q:'量角度時，只要把量角器的底線對齊角的任一邊，就可以量出角度。',
+ ans:'✗',stu:'○',cause:'概念不懂',
+ exp:'量角度要做兩件事：量角器的中心點對準角的頂點，0 度線對齊角的一邊。',
+ hint:'除了「邊」要對齊，量角器上還有哪一個「點」要對準？',
+ v:{type:'tf',q:'量角度時，量角器的中心點要對準角的頂點，0 度線要對齊角的一邊。',ans:'○'}},
+{id:'m17',s:'數學',unit:'角度',exam:EX.M3,type:'choice',
+ q:'已知 ∠1＋∠2＋∠3＋∠4 是一個周角，∠1 是直角，∠2＋∠3 是一個平角，∠4 是幾度？',
+ opts:['45°','90°','180°','270°'],ans:'90°',stu:'180°',cause:'概念不懂',
+ exp:'周角 360°、直角 90°、平角 180°。∠4＝360－90－180＝90°。',
+ hint:'周角、直角、平角各是幾度？先寫在旁邊。',
+ v:{type:'choice',q:'∠1＋∠2＋∠3＋∠4 是一個周角，∠1 是平角，∠2 是 50°，∠3 是 70°，∠4 是幾度？',opts:['60°','70°','90°','120°'],ans:'60°'}},
+{id:'m18',s:'數學',unit:'角度',exam:EX.M3,type:'choice',
+ q:'量角器外圈刻度 40 的線和外圈刻度 70 的線，所形成的角是幾度？',
+ opts:['30°','40°','70°','110°'],ans:'30°',stu:'110°',cause:'概念不懂',
+ exp:'兩條線都看同一圈，角度就是兩個刻度相減：70－40＝30°。',
+ hint:'兩條線都在「外圈」，兩個刻度要用加的還是減的？',
+ v:{type:'choice',q:'量角器內圈刻度 20 的線和內圈刻度 85 的線，所形成的角是幾度？',opts:['65°','85°','105°','115°'],ans:'65°'}},
+{id:'m19',s:'數學',unit:'角度',exam:EX.M3,type:'num',u:'度',
+ q:'媽媽從下午 4 時 20 分開始烤蛋糕，分針從數字 4 的位置轉到數字 11 的位置時就烤好了。分針轉了幾度？',
+ ans:'210',stu:'180',cause:'概念不懂',
+ exp:'鐘面一大格是 30°。分針從 4 走到 11 是 7 大格，7×30＝210°。',
+ hint:'從 4 數到 11 是幾大格？一大格是幾度？',
+ v:{type:'num',u:'度',q:'分針從數字 2 順時針轉到數字 10，轉了幾度？',ans:'240'}},
+{id:'m20',s:'數學',unit:'角度',exam:EX.M3,type:'num',u:'度',
+ q:'黑線從鐘面 12 的位置開始，逆時針方向轉 1 大格，轉到 11 的位置，所形成的角是幾度？',
+ ans:'30',stu:'270',cause:'讀題漏看',
+ exp:'題目已經說只轉「1 大格」，一大格就是 30°。',
+ hint:'題目說轉了幾大格？先把它圈起來！',
+ v:{type:'num',u:'度',q:'黑線從鐘面 3 的位置開始，逆時針方向轉 2 大格，轉到 1 的位置，所形成的角是幾度？',ans:'60'}},
+{id:'m21',s:'數學',unit:'角度',exam:EX.M3,type:'num',u:'度',
+ q:'鐘面上的時針從數字 4 的位置開始，逆時針轉到 11 的位置，一共轉了幾度？',
+ ans:'150',stu:'180',cause:'概念不懂',
+ exp:'逆時針是往回走：4→3→2→1→12→11，共 5 大格，5×30＝150°。',
+ hint:'用手指在鐘面上，從 4「往回」數到 11，數數看是幾格。',
+ v:{type:'num',u:'度',q:'時針從數字 10 逆時針轉到數字 6，一共轉了幾度？',ans:'120'}},
+{id:'m22',s:'數學',unit:'角度',exam:EX.M3,type:'choice',
+ q:'使用量角器量角度時，角的頂點要對齊量角器的（　　）。',
+ opts:['中心點','0 度線','外圈刻度','底線'],ans:'中心點',stu:'只寫「中心」，少了「點」',cause:'粗心',
+ exp:'正確名稱是「中心點」，填答要寫完整。',
+ hint:'頂點是一個「點」，要對準量角器上的哪一個點？'},
+{id:'m23',s:'數學',unit:'角度',exam:EX.M3,type:'choice',
+ q:'用量角器畫 75° 的角：角的一邊對齊量角器「內圈」的 0 度線，接下來要在哪一個刻度點點？',
+ opts:['內圈 75','外圈 75','內圈 105','外圈 105'],ans:'內圈 75',stu:'畫出來的角不是 75°（看錯圈）',cause:'概念不懂',
+ exp:'0 度從哪一圈開始，就一直看同一圈。畫好可以檢查：75° 比直角小，是銳角。',
+ hint:'0 度是從哪一圈開始的？就跟著那一圈數下去。'},
+{id:'m24',s:'數學',unit:'角度',exam:EX.M3,type:'num',u:'度',
+ q:'時鐘上的時針從數字 4 的位置開始，沿順時針方向轉到 12 的位置，一共轉了幾度？',
+ ans:'240',stu:'60（往反方向數了）',cause:'讀題漏看',
+ exp:'順時針：4→5→…→12，共 8 大格，8×30＝240°。寫 60° 是往逆時針方向數了。',
+ hint:'先圈出「順時針」，順時針是和時鐘走的方向一樣喔。',
+ v:{type:'num',u:'度',q:'時針從數字 2 沿順時針方向轉到 9，一共轉了幾度？',ans:'210'}},
+{id:'m25',s:'數學',unit:'角度',exam:EX.M3,type:'num',u:'度',
+ q:'時鐘上的時針從數字 5 的位置開始，沿逆時針方向轉到 1 的位置，一共轉了幾度？',
+ ans:'120',stu:'答錯（已訂正）',cause:'讀題漏看',
+ exp:'逆時針：5→4→3→2→1，共 4 大格，4×30＝120°。',
+ hint:'逆時針是往哪個方向？從 5 往回數到 1 是幾格？',
+ v:{type:'num',u:'度',q:'時針從數字 7 沿逆時針方向轉到 4，一共轉了幾度？',ans:'90'}},
+
+/* ===== 數學 分數 ===== */
+{id:'m26',s:'數學',unit:'分數',exam:EX.M4,type:'tf',
+ q:'甲和乙兩個帶分數比較大小，甲的整數部分比乙大，但真分數的部分比乙小，所以甲分數比乙分數小。',
+ ans:'✗',stu:'○',cause:'概念不懂',
+ exp:'帶分數比大小先比整數部分，整數大的就比較大，不用再看分數部分。所以甲比乙大。',
+ hint:'帶分數比大小，要先比哪一部分？',
+ v:{type:'tf',q:'{3|1|5} 比 {2|4|5} 大。',ans:'○'}},
+{id:'m27',s:'數學',unit:'分數',exam:EX.M4,type:'tf',
+ q:'張媽媽家和王太太家都買了 4 條生乳捲，每條大小都相同。張媽媽家吃掉了 {3|1|6} 條，王太太家吃掉了 {|21|6} 條，張媽媽家剩下的生乳捲比王太太家的多。',
+ ans:'○',stu:'✗',cause:'讀題漏看',
+ exp:'{3|1|6}＝{|19|6}，比 {|21|6} 少，張媽媽家吃得比較少。兩家都是 4 條，所以張媽媽家剩下的比較多。',
+ hint:'題目問「吃掉」還是「剩下」？吃得少的，剩下的會比較多還是比較少？',
+ v:{type:'tf',q:'小美家和小華家都買了 3 個蛋糕。小美家吃了 {2|3|8} 個，小華家吃了 {|21|8} 個，小美家剩下的蛋糕比小華家多。',ans:'○'}},
+{id:'m28',s:'數學',unit:'分數',exam:EX.M4,type:'choice',
+ q:'{|5|5} 是？',
+ opts:['真分數','假分數','帶分數','整數'],ans:'假分數',stu:'整數',cause:'概念不懂',
+ exp:'分子和分母一樣大，或分子比分母大，都叫假分數。{|5|5} 的值等於 1，但寫法是假分數。',
+ hint:'看看分子和分母：一樣大的分數叫什麼分數？',
+ v:{type:'choice',q:'{|9|9} 是？',opts:['真分數','假分數','帶分數','整數'],ans:'假分數'}},
+{id:'m29',s:'數學',unit:'分數',exam:EX.M4,type:'choice',
+ q:'阿正將假分數 {|□|8} 換成帶分數，其中整數的部分是 5，下面哪一個敘述是正確的？',
+ opts:['□ 裡比 32 小','□ 裡比 40 小','□ 裡比 40 大','□ 裡比 48 大'],ans:'□ 裡比 40 大',stu:'□ 裡比 40 小',cause:'概念不懂',
+ exp:'整數部分是 5，代表至少有 5 個 1＝{|40|8}，還多一些但不到 6（{|48|8}），所以 □ 是 41～47，比 40 大。',
+ hint:'5 個 1 是幾個 {|1|8}？',
+ v:{type:'choice',q:'假分數 {|□|6} 換成帶分數，整數部分是 3，下面哪一個正確？',opts:['□ 裡比 12 小','□ 裡比 18 小','□ 裡比 18 大','□ 裡比 24 大'],ans:'□ 裡比 18 大'}},
+{id:'m30',s:'數學',unit:'分數',exam:EX.M4,type:'choice',
+ q:'把帶分數換成假分數：{3|8|11} ＝ ？',
+ opts:['{|41|11}','{|14|11}','{|38|11}','{|33|11}'],ans:'{|41|11}',stu:'{|14|11}',cause:'粗心',
+ exp:'3×11＝33，33＋8＝41，所以是 {|41|11}。',
+ hint:'整數 3 等於幾個 {|1|11}？再加上 8 個。',
+ v:{type:'choice',q:'{4|5|9} ＝ ？',opts:['{|41|9}','{|45|9}','{|36|9}','{|29|9}'],ans:'{|41|9}'}},
+{id:'m31',s:'數學',unit:'分數',exam:EX.M4,type:'choice',
+ q:'把假分數換成帶分數：{|26|12} ＝ ？',
+ opts:['{2|2|12}','{5|11|12}','{2|1|12}','{1|14|12}'],ans:'{2|2|12}',stu:'{5|11|12}',cause:'概念不懂',
+ exp:'26÷12＝2…2，商 2 是整數部分，餘數 2 是分子：{2|2|12}。',
+ hint:'26 裡面有幾個 12？還剩多少？',
+ v:{type:'choice',q:'{|29|12} ＝ ？',opts:['{2|5|12}','{2|7|12}','{3|5|12}','{1|17|12}'],ans:'{2|5|12}'}},
+{id:'m32',s:'數學',unit:'分數',exam:EX.M4,type:'choice',
+ q:'比大小：{|13|9} ○ {2|1|9}',
+ opts:CMP,ans:'＜',stu:'＞',cause:'概念不懂',
+ exp:'{2|1|9}＝{|19|9}，13＜19，所以 {|13|9}＜{2|1|9}。',
+ hint:'把帶分數換成假分數，分母一樣就比分子。',
+ v:{type:'choice',q:'比大小：{|17|7} ○ {2|4|7}',opts:CMP,ans:'＜'}},
+
+/* ===== 數學 公里 ===== */
+{id:'m33',s:'數學',unit:'公里',exam:EX.M5,type:'tf',
+ q:'媽媽昨天騎單車 8 公里 136 公尺，昨天比今天多騎了 1 公里 85 公尺，所以媽媽今天騎了 9 公里 221 公尺。',
+ ans:'✗',stu:'○',cause:'讀題漏看',
+ exp:'昨天比今天多，表示今天比較少，要用減法：8 公里 136 公尺－1 公里 85 公尺＝7 公里 51 公尺。',
+ hint:'「昨天比今天多」，那今天是比較多還是比較少？',
+ v:{type:'tf',q:'哥哥昨天跑了 5 公里 300 公尺，昨天比今天多跑 1 公里 150 公尺，所以哥哥今天跑了 4 公里 150 公尺。',ans:'○'}},
+{id:'m34',s:'數學',unit:'公里',exam:EX.M5,type:'choice',
+ q:'比大小：5 公里 325 公尺 ○ 5523 公尺',
+ opts:CMP,ans:'＜',stu:'＞',cause:'粗心',
+ exp:'5 公里 325 公尺＝5325 公尺，5325＜5523。',
+ hint:'先把公里換成公尺，再一位一位比。',
+ v:{type:'choice',q:'比大小：6 公里 450 公尺 ○ 6540 公尺',opts:CMP,ans:'＜'}},
+{id:'m35',s:'數學',unit:'公里',exam:EX.M5,type:'choice',
+ q:'比大小：200 公分 ○ 2 公尺',
+ opts:CMP,ans:'＝',stu:'沒有填「＝」',cause:'概念不懂',
+ exp:'1 公尺＝100 公分，2 公尺＝200 公分，一樣長。',
+ hint:'1 公尺是幾公分？',
+ v:{type:'choice',q:'比大小：500 公分 ○ 4 公尺',opts:CMP,ans:'＞'}},
+{id:'m36',s:'數學',unit:'公里',exam:EX.M5,type:'choice',
+ q:'司馬庫斯神木群步道長 5 公里 500 公尺，比拉拉山神木群步道長 1 公里 800 公尺。拉拉山神木群步道的長度是幾公里幾公尺？',
+ opts:['3 公里 700 公尺','7 公里 300 公尺','4 公里 300 公尺','3 公里 300 公尺'],ans:'3 公里 700 公尺',stu:'7 公里 300 公尺（用了加法）',cause:'讀題漏看',
+ exp:'司馬庫斯「比」拉拉山長，拉拉山比較短，用減法：5 公里 500 公尺－1 公里 800 公尺＝3 公里 700 公尺（公尺不夠減，向公里借 1000 公尺）。',
+ hint:'哪一條步道比較長？要找比較短的那一條，用加法還是減法？',
+ v:{type:'choice',q:'甲步道長 4 公里 200 公尺，比乙步道長 1 公里 600 公尺。乙步道長多少？',opts:['2 公里 600 公尺','5 公里 800 公尺','3 公里 400 公尺','2 公里 400 公尺'],ans:'2 公里 600 公尺'}},
+{id:'m37',s:'數學',unit:'公里',exam:EX.M5,type:'num',u:'公里',
+ q:'如下圖，甲、乙、丙、丁在同一條路上。從甲地到丙地是 124 公里，從丙地到乙地是 30 公里，從乙地到丁地是 152 公里。從甲地到丁地是多少公里？',
+ fig:{pts:['甲','乙','丙','丁'],pos:[0,.38,.48,1],arcs:[[0,2,'124 公里','top'],[1,3,'152 公里','top2'],[1,2,'30 公里','bottom']]},
+ ans:'246',stu:'306（三段直接相加）',cause:'概念不懂',
+ exp:'乙到丙這 30 公里，在「甲到丙」和「乙到丁」裡都被算到，重複了一次，要減掉：124＋152－30＝246 公里。',
+ hint:'看圖：乙到丙那一小段，是不是在 124 和 152 裡面都有？',
+ v:{type:'num',u:'公里',q:'甲、乙、丙、丁在同一條路上。甲地到丙地 80 公里，乙地到丙地 20 公里，乙地到丁地 100 公里。甲地到丁地是多少公里？',
+  fig:{pts:['甲','乙','丙','丁'],pos:[0,.38,.5,1],arcs:[[0,2,'80 公里','top'],[1,3,'100 公里','top2'],[1,2,'20 公里','bottom']]},ans:'160'}},
+
+/* ===== 社會 ===== */
+{id:'s01',s:'社會',unit:'地圖',exam:EX.SA,type:'tf',
+ q:'根據比例尺，可以算出地圖中兩點之間的實際距離。',
+ ans:'○',stu:'✗',cause:'概念不懂',
+ exp:'比例尺告訴我們地圖縮小了多少，用它就能算出兩點的實際距離。',
+ hint:'比例尺是用來做什麼的？'},
+{id:'s02',s:'社會',unit:'地圖',exam:EX.SA,type:'tf',
+ q:'欣悅想要了解家鄉的氣候，她可以到圖書館查詢家鄉行政區域地圖的資料。',
+ ans:'✗',stu:'○',cause:'概念不懂',
+ exp:'了解氣候要看氣溫圖、雨量圖。行政區域地圖是看縣市鄉鎮的位置和範圍。',
+ hint:'想知道冷熱、下雨多少，要看哪一種圖？'},
+{id:'s03',s:'社會',unit:'地形',exam:EX.SA,type:'tf',
+ q:'山地地形因為適合種植農作物，常可以看到一望無際的稻田與農田。',
+ ans:'✗',stu:'○',cause:'概念不懂',
+ exp:'一望無際的稻田在平坦的平原。山地高、坡度大，不適合大面積種稻。',
+ hint:'「一望無際」是什麼樣子？山地是平平的，還是高高低低的？'},
+{id:'s04',s:'社會',unit:'水資源',exam:EX.SA,type:'tf',
+ q:'海洋的水太鹹，無法飲用，所以不算家鄉的水資源。',
+ ans:'✗',stu:'○',cause:'概念不懂',
+ exp:'海洋也是重要的水資源：可以捕魚、養殖，海水也能淡化成淡水。（勾選題也因為這個觀念錯了）',
+ hint:'海水不能直接喝，但海洋能不能帶給我們其他東西？'},
+{id:'s05',s:'社會',unit:'氣候',exam:EX.SA,type:'choice',
+ q:'下列哪一個地方較可能屬於夏季多雨、冬季少雨的氣候型態？',
+ opts:['基隆','臺北','宜蘭','高雄'],ans:'高雄',stu:'宜蘭',cause:'概念不懂',
+ exp:'臺灣南部（如高雄）夏季多雨、冬季少雨；北部和東北部（基隆、宜蘭）冬天也常下雨。',
+ hint:'冬天常常下雨的是北部還是南部？'},
+{id:'s06',s:'社會',unit:'氣候',exam:EX.SA,type:'choice',
+ q:'文琪的家鄉在高雄，請問下列敘述何者正確？',
+ opts:['夏季多雨、冬季少雨','夏季少雨、冬季多雨','全年都少雨','全年都多雨'],ans:'夏季多雨、冬季少雨',stu:'全年都少雨',cause:'概念不懂',
+ exp:'高雄在南部，夏天有颱風和午後雷陣雨，雨很多；冬天很少下雨。',
+ hint:'高雄夏天常有午後雷陣雨嗎？冬天呢？'},
+{id:'s07',s:'社會',unit:'地形',exam:EX.SA,type:'choice',
+ q:'利城和家人出遊，爸爸說：「這裡氣候適宜，加上排水良好，從以前就有很多人在此地種茶與製茶。」這裡最有可能是在哪裡？',
+ opts:['臺北市 信義區','臺東縣 池上鄉','新北市 石碇區','臺中市 和平區'],ans:'新北市 石碇區',stu:'臺中市 和平區',cause:'概念不懂',
+ exp:'種茶需要氣候適宜、排水良好的丘陵地。石碇是有名的產茶地；和平區是高山。',
+ hint:'排水良好、適合種茶，通常是哪一種地形？哪個地方是丘陵？'},
+{id:'s08',s:'社會',unit:'地形',exam:EX.SA,type:'choice',
+ q:'住在屏東縣枋寮鄉的育安到表哥家玩，表哥說：「你家住在海邊，附近有很多魚塭；我家住在高山上，附近有很多果園。」表哥家最可能位在哪裡？',
+ opts:['臺北市 信義區','臺東縣 池上鄉','新北市 石碇區','臺中市 和平區'],ans:'臺中市 和平區',stu:'臺東縣 池上鄉',cause:'讀題漏看',
+ exp:'題目問的是「表哥家」，在高山上。和平區在中央山脈，有高山果園；池上鄉是平原，種稻米。',
+ hint:'題目問誰的家？他家在哪一種地方？'},
+{id:'s09',s:'社會',unit:'水資源',exam:EX.SA,type:'check',
+ q:'關於家鄉河川與水資源的敘述，哪些正確？（全部選出來）',
+ opts:['雨量的多寡會影響河川的水量','雨季時較容易看到河床裸露','有些水庫具有發電的功能','農民多利用海水來灌溉農田','珍惜水資源是每個人的責任'],
+ ans:['雨量的多寡會影響河川的水量','有些水庫具有發電的功能','珍惜水資源是每個人的責任'],stu:'漏選「有些水庫具有發電的功能」',cause:'概念不懂',
+ exp:'有些水庫可以水力發電（例如日月潭）。雨季水多，河床不容易露出來；海水太鹹不能灌溉。',
+ hint:'一個一個想：水庫除了存水，還可以做什麼？'},
+{id:'s10',s:'社會',unit:'水資源',exam:EX.SA,type:'check',
+ q:'下列哪些是家鄉重要的水資源？（全部選出來）',
+ opts:['湖泊','河川','海洋','地下水','工廠廢水'],ans:['湖泊','河川','海洋','地下水'],stu:'漏選「海洋」',cause:'概念不懂',
+ exp:'海洋也是水資源（捕魚、養殖、海水淡化）。只有工廠廢水不是。',
+ hint:'跟「海水太鹹」那一題是同一個觀念喔！'},
+{id:'s11',s:'社會',unit:'傳統住屋',exam:EX.SB,type:'tf',
+ q:'三合院呈ㄇ字形，中間的稻埕是一家人乘涼聊天、彈唱戲曲的地方。',
+ ans:'○',stu:'✗',cause:'概念不懂',
+ exp:'稻埕除了曬穀，也是家人乘涼、聊天、辦活動、請客的地方。',
+ hint:'稻埕只能曬穀嗎？沒有曬穀的時候，大家會在那裡做什麼？'},
+{id:'s12',s:'社會',unit:'生活器物',exam:EX.SB,type:'choice',
+ q:'下列關於漢人傳統生活器物的敘述，哪一項「錯誤」？',
+ opts:['善用竹子、木頭為製作材料','有些生活器物具有一種以上的功能','大多的生活器物使用過後可回歸大自然','大多比現代的塑膠製品更輕便'],ans:'大多比現代的塑膠製品更輕便',stu:'有些生活器物具有一種以上的功能',cause:'讀題漏看',
+ exp:'題目問「錯誤」。竹、木、陶做的器物通常比塑膠重，所以「更輕便」是錯的。',
+ hint:'先圈出「錯誤」！竹子木頭做的東西和塑膠比，哪一個比較重？'},
+{id:'s13',s:'社會',unit:'傳統住屋',exam:EX.SB,type:'check',
+ q:'家興要創業，想利用老家三合院的空間吸引遊客，可以改建成什麼？（全部選出來）',
+ opts:['咖啡館','特色書店','垃圾回收場','私房菜餐廳'],ans:['咖啡館','特色書店','私房菜餐廳'],stu:'漏選「私房菜餐廳」',cause:'粗心',
+ exp:'咖啡館、特色書店、私房菜餐廳都能吸引遊客，只有垃圾回收場不行。',
+ hint:'哪些地方會讓遊客想去？每一個都想一想再決定。'},
+{id:'s14',s:'社會',unit:'地圖',exam:EX.SC,type:'tf',
+ q:'電子地圖都是以黑白色呈現，有時候會看不太清楚。',
+ ans:'✗',stu:'○',cause:'概念不懂',
+ exp:'電子地圖是彩色的，可以切換地圖、衛星模式，還能放大縮小。',
+ hint:'用平板打開地圖，它是什麼顏色？'},
+{id:'s15',s:'社會',unit:'氣候',exam:EX.SC,type:'tf',
+ q:'基隆四季多雨，只有夏季七月的平均降雨量低於 200 毫米。',
+ ans:'○',stu:'✗',cause:'概念不懂',
+ exp:'基隆被叫作「雨港」，一年四季都多雨，只有七月雨比較少。',
+ hint:'基隆被叫作什麼「港」？'},
+{id:'s16',s:'社會',unit:'氣候',exam:EX.SC,type:'tf',
+ q:'曉君的家鄉氣候夏天熱，冬天冷，她的家鄉可能是位於臺灣的北部。',
+ ans:'○',stu:'✗',cause:'概念不懂',
+ exp:'臺灣北部夏天熱、冬天比較冷；南部冬天也很溫暖。',
+ hint:'冬天比較冷的是北部還是南部？'},
+{id:'s17',s:'社會',unit:'傳統住屋',exam:EX.SC,type:'tf',
+ q:'依照漢人傳統的「左大右小」觀念，倩茹的二叔叔應該住在三合院中的右護龍，而三叔叔住在左護龍。',
+ ans:'✗',stu:'○',cause:'概念不懂',
+ exp:'左大右小：排行大的住左邊。二叔比三叔大，應住左護龍，三叔住右護龍。',
+ hint:'二叔和三叔誰比較大？「左大」是說大的住哪一邊？'},
+{id:'s18',s:'社會',unit:'傳統住屋',exam:EX.SC,type:'choice',
+ q:'下列何者是正廳的主要功能？',
+ opts:['飼養牲畜','供奉神明和祖先','儲存穀物','烹煮食物'],ans:'供奉神明和祖先',stu:'儲存穀物',cause:'概念不懂',
+ exp:'正廳在三合院正中間，是供奉神明、祭拜祖先、接待客人的地方。',
+ hint:'三合院最中間、最重要的那一間，用來做什麼？'},
+{id:'s19',s:'社會',unit:'地形',exam:EX.SC,type:'choice',
+ q:'晴和參加夏令營，見到一大片稻田，領隊說：「這裡有平坦的地形、充足的水源，是種植水稻的好地方。」這裡最有可能是在哪裡？',
+ opts:['臺北市 信義區','臺東縣 池上鄉','新北市 石碇區','臺中市 和平區'],ans:'臺東縣 池上鄉',stu:'新北市 石碇區',cause:'概念不懂',
+ exp:'池上鄉在花東縱谷，地形平坦、水源充足，以池上米聞名。石碇是丘陵，種茶。',
+ hint:'種稻需要平坦的地。四個地方哪一個是平原？'},
+{id:'s20',s:'社會',unit:'氣候',exam:EX.SC,type:'check',
+ q:'關於家鄉的氣候，下列敘述哪些正確？（全部選出來）',
+ opts:['不同季節的變化會影響氣候','臺灣不論北部或南部，氣候都相同','觀察氣溫圖和雨量圖可以了解氣候','居民從事的工作不同，會造成氣候改變','氣候是指一個地區長時間的天氣平均狀況'],
+ ans:['不同季節的變化會影響氣候','觀察氣溫圖和雨量圖可以了解氣候','氣候是指一個地區長時間的天氣平均狀況'],stu:'漏選最後一項（氣候的定義）',cause:'概念不懂',
+ exp:'「天氣」是短時間的，「氣候」是一個地區長時間的天氣平均狀況。',
+ hint:'「天氣」說的是一天，「氣候」說的是多久？'},
+{id:'s21',s:'社會',unit:'傳統住屋',exam:EX.SC,type:'check',
+ q:'下列關於三合院中「正廳」的功能敘述，哪些正確？（全部選出來）',
+ opts:['供奉神明的地方','祭拜祖先的地方','接待客人的場所'],ans:['供奉神明的地方','祭拜祖先的地方','接待客人的場所'],stu:'漏選「接待客人的場所」',cause:'概念不懂',
+ exp:'正廳三種功能都有：供奉神明、祭拜祖先、接待客人。',
+ hint:'客人來家裡，會請他到哪裡坐？'},
+{id:'s22',s:'社會',unit:'地圖',exam:EX.SC,type:'check',
+ q:'使用電子地圖的地圖模式時，可以看到哪些資訊？（全部選出來）',
+ opts:['氣候的狀況','街道的名稱','河川的名稱','商店的名稱'],ans:['街道的名稱','河川的名稱','商店的名稱'],stu:'漏選「商店的名稱」',cause:'粗心',
+ exp:'地圖模式可以看到街道、河川、商店的名稱，看不到氣候。',
+ hint:'打開地圖，會在路邊看到哪些名字？'}
 ];
-// 期中（單元1、2）A、B卷：是非題「單元|題目|○或╳」，選擇題「單元|題目|選項;選項|答案編號」
-const TF=`1|除了風、流水等自然因素，有些人類行為也會改變地表環境|○
-1|地球表面上的環境只有高山和海洋，沒有其他環境|╳
-1|地表上的空氣、水和不會移動的植物等都屬於非生物|╳
-1|沙丘上的地表面貌較容易受外力而變動，在上面生長的植物通常呈低矮的匍匐狀|○
-1|整治河川可以防止河水持續沖刷河岸|○
-1|地震是人類行為造成的，可能造成地表變動，並危害我們的安全|╳
-1|中央氣象署會在地震發生前發出國家級警報，提醒民眾提早準備|╳
-2|不同的環境有不同生物生存，例如松鼠在森林中棲息、溪流中可見到蝦和蟹|○
-2|生態池的水通常比較淺，陽光可以照射到池底，常有睡蓮、鯉魚和龜等生物生存|○
-2|布袋蓮和大萍都具有可儲存空氣的構造，可以漂浮在水面上生長|○
-2|水生植物大致可分為沉水性、漂浮性、浮葉性、挺水性等類型|○
-2|水蘊草的莖和葉可以伸出水面生長，屬於挺水性水生植物|╳
-2|魚的身體扁扁的，頭和尾比較細，中間比較粗，方便在水中運動|○
-2|所有的水生動物都只能利用鰓在水中呼吸，無法離開水中生活|╳
-2|水域環境是水生生物的家，乾淨的水域環境能讓水生生物健康的生長，因此我們應該愛護水域環境|○
-1|地球上有高山、平原、河流、海洋等地表環境，不同的地表環境各有特色|○
-1|不同植物適合的生長環境不同，例如水稻適合種在沙丘上、西瓜會從岩縫中長出|╳
-1|岩石、沙和土壤各有不同的特性，生活中的應用也不相同|○
-1|用放大鏡觀察，可以發現礫石、沙和土壤的顆粒大小都一樣，只是顏色不同|╳
-1|風和流水會把地表物質搬到其他地方堆起來，作用越強時，地表物質會被搬得越遠|○
-1|如果過度開發森林，下大雨後，裸露的地表便容易發生土石流|○
-1|在中央氣象署的地震報告中，震央是指引發地震的位置|╳
-1|地震發生時，應立即採「趴下、掩護、穩住」的動作，躲在桌下或牆角並保護頭部|○
-2|不同環境有不同的生物生存，例如松鼠是潮間帶常見的動物、生態池中常可見到溪蝦等|╳
-2|不同水域環境的水質、水流及陽光照射情形等都不太一樣，生長的水生生物也不同|○
-2|睡蓮的根和地下莖生長在水底的泥土裡，葉會漂浮在水面，屬於浮葉性水生植物|○
-2|水蘊草的莖、葉柔軟，會隨著水位高低而伸展或彎曲，也會隨水流擺動，減少水流的衝擊|○
-2|魚呼吸時會不斷擺動魚鰭，幫助含有空氣的水流入和流出身體|╳
-2|蛙在水中會用後腳的蹼游水，用肺和潮溼的皮膚呼吸|○
-2|把稀有的水生動物帶回家飼養，細心照顧，是保護動物的好方法|╳
-1|小翔平時進行防震演練，熟悉逃生路線，是正確的防災準備|○
-1|地震時應繼續看電視，關心最新地震資訊，是正確的防災準備|╳
-1|地震時應保護頭部，注意掉落物，是正確的防災準備|○
-1|地震後，檢查房屋是否有龜裂，是正確的防災準備|○
-1|地震可能引發火災|○|?
-1|地震可能造成河水乾涸|╳|?
-1|地震可能造成建築倒塌|○|?
-1|地震可能造成地層隆起|○|?
-1|地震可能形成堰塞湖|○|?
-1|地震可能造成水壩破裂|○|?
-2|水域環境調查時，觀察要注意安全，不可單獨行動，也不要去水深的地方|○|?
-2|水域環境調查時，看到荷花開得好美，可以摘下來帶回家種|╳|?
-2|水域環境調查時，發現不認識的水生動物，可以先拍照後再回家查詢|○|?
-2|把家中的金魚帶到水域環境放生，是正確的做法|╳|?`;
-const P=`荷花（蓮花）自古就被比喻為花中的君子，生長在泥濘的池水中仍能一塵不染。當水滴在荷葉上，荷葉並不會被沾溼，而是呈現一顆顆圓滾滾的水珠，原來荷葉表面布滿眼睛看不見的纖毛，纖毛上具有蠟質，灰塵和水珠不容易附著在葉面上。小水珠在葉面上滾動後會聚集成大水珠，並順便帶走葉面上的灰塵，達到清潔荷葉表面的效果，這種現象稱為「蓮葉效應」。現今，科學家已經能將蓮葉效應的原理應用在日常生活中，例如製造布料、清潔劑、光電產品等，以達到抗菌除臭、環保等功效。`;
-const PB=`大王蓮的根生長在水底的泥土裡，葉子平貼在水面生長。葉背的葉脈明顯凸出，像網子一樣向外延伸，形成許多四邊形小方格，小方格結構可提供表面張力作用所需的界面，分散葉子承受的重量。葉面有許多小凸起，增加葉片的浮力。`;
-const MC=`1|下列哪一項不是地震可能造成的地表變動？|斷層瀑布;乾旱;堰塞湖;地面隆起斷裂|2
-1|下列生物和生長環境的配對，哪一組是不正確的？|西瓜：鬆散、排水性良好的土壤;栗喉蜂虎：堅硬的岩石縫隙;招潮蟹：鬆軟的海濱泥灘地;水稻：有點黏性的溼潤土壤|2
-1|下列關於地表環境的敘述，哪一項是不正確的？|森林中有許多動物棲息;人類在地表興建各式建築物;沙丘沙塵飛揚，沒有生物能在此生存;地表有河流經過|3
-1|下列關於地表上岩石、沙和土壤的敘述，哪一項是正確的？|岩石由礫石碎裂而成;土壤可以種植農作物;土壤和沙的顆粒大小一樣大;建築物蓋在堅固的岩石上，其他的地表物質對人類來說可有可無|2
-1|在流水作用的實驗中，可以觀察到土堆產生了下列哪一種變化？|沙被搬得最遠;礫石被搬得最遠;土壤被搬得最遠;礫石、沙、土壤被搬得一樣遠|3
-1|下列哪一個行為可以保護地表環境？|不隨意開墾山坡地，保持原本的生態環境;砍伐森林改建為遊樂園;在河川地開挖砂石;在山區開闢礦場|1
-1|臺灣經常發生地震，下列哪一項是平時應做好的防災準備？|準備旅行背包;不用瓦斯爐烹煮食物;進行防震演練並熟悉逃生路線;將重物移到櫥櫃上方|3
-2|有水的環境就是水域環境，下列哪一項屬於水域環境？|生態池;高山;草地;森林|1
-2|將下列哪一種水生植物的葉柄切開後，可以觀察到一條條中空的管道？|布袋蓮;大萍;水蘊草;荷花|4
-2|大萍能漂浮在水面上的原理，和下列哪一種生活現象相同？|潮溼的衣服掛在太陽下晒乾;在游泳圈中打入空氣;水放入冷凍庫後變成冰塊;水會在細縫中移動|2
-2|下列哪一個不是荷花的特徵呢？|葉片能防水;有儲存空氣的構造;葉漂浮在水面;有生長在泥土裡的地下莖|3
-2|下列關於魚身體構造的敘述，哪一項是不正確的？|魚鰓可以幫助呼吸;鰓蓋可以開合幫助魚進食;魚鱗可以保護魚的身體;魚鰭可以控制游動方向|2
-2|下列環境和其所提供的生物資源配對，哪一項是不正確的？|山區：海帶;海洋：黑鮪魚;海邊：牡蠣;山區：茶葉|1
-1|下列生物與適合生存環境的配對，哪一項是正確的？|水稻：有黏性的溼潤土壤;西瓜：岩石縫隙;招潮蟹：海邊的沙丘;栗喉蜂虎：鬆散、排水性好的土壤|1
-1|下列關於岩石、沙和土壤的敘述，哪一項是不正確的？|是大部分生物生存的場所;岩石碎裂成的礫石顆粒最大;土壤的顆粒最小，摸起來細細的;農作物不論是種植在岩石、沙或土壤中，都可以生長良好|4
-1|進行風的作用實驗，哪一種地表物質會被搬得最遠？|都一樣遠;土壤;沙;礫石|2
-1|下列關於流水作用實驗的敘述，哪一項是正確的？|流水會把地表物質搬到其他地方堆積起來;顆粒越大的地表物質被搬得越遠;流水的作用越強，地表物質會被搬得更近;流水的強弱不會影響地表物質被搬運的情形|1
-1|在河川地開挖砂石，對周圍環境會造成什麼影響？|不會有任何影響;讓河岸更加牢固;改變河流和河岸邊的生態;河流由黃濁變清澈|3
-1|下列關於地震的敘述，哪一項是正確的？|地震可以在發生前準確的預測;震度越大，建築物受破壞的程度越小;世界通用的地震規模為芮氏規模;同一場地震中，每個地區的地震規模不一樣|3
-1|下列哪一項不是地震時應做的行為呢？|注意掉落物;釘牢櫥櫃;走樓梯逃生;關閉瓦斯|2
-2|拜訪水域環境時，攜帶下列哪一物品可以幫助我們對照水生生物的資料？|撈網;水生生物圖鑑;水桶;望遠鏡|2
-2|下列水生生物和生存環境的組合，哪一項是不正確的？|海豚：海洋;珊瑚：河流;睡蓮：生態池;藤壺：潮間帶|2
-2|下列哪一項不屬於睡蓮的特徵？|根生長在水底;葉柄會隨著水位而彎曲或伸展;葉面總是平貼在水面;整株沉在水中|4
-2|下列有關魚的敘述，哪一項是正確的？|魚鰓可維持平衡;魚鱗可幫助呼吸;魚鰭可控制游動方向;魚鰓可保護魚的身體|3
-2|下列水生動物的敘述，哪一項不正確？|蛙的後腳粗壯，能夠在陸地上跳躍;龜的腳上有蹼，能夠在水中游水;蟹用尾巴在水中游水;螺有殼，利用腹足爬行|3
-2|下列關於臺灣不同環境與資源應用的敘述，哪一項是正確的呢？|沙丘產茶葉，可做成飲品;山區產海帶，可做成湯品或涼拌小菜;鮪魚是蘭嶼重要的食物;西部海岸地區盛行蚵的美食文化|4
-2|我們可以採取什麼行動，來保護水域環境？|將家庭廢水直接排入河中;主動清理水域環境附近的垃圾;將水生生物帶回家飼養;砍伐河流上游的森林|2
-2|生態池的水位降低時，哪一種植物的花和葉會保持挺直伸出水面？|大萍;荷花;睡蓮;水蘊草|2
-2|生態池的水位降低時，哪一種植物會保持沉在水中，莖和葉在水中彎曲？|大萍;荷花;睡蓮;水蘊草|4
-2|生態池的水位降低時，哪一種植物的葉柄會跟著彎曲，但葉面仍然平貼在水面？|大萍;荷花;睡蓮;水蘊草|3
-2|如果生態池的水滿出來，哪一種植物最有可能整株隨著水流漂出來？|大萍;荷花;睡蓮;水蘊草|1
-2|下列何者常被比喻為「花中君子」？|牡丹;玫瑰;荷花;百合|3|${P}
-2|把水滴在荷葉上會呈現什麼現象？|呈現一顆顆圓滾滾的水珠;水會消失不見;水會被荷葉吸乾;水會均勻的分散在整片荷葉表面|1|${P}
-2|下列哪一項不是運用蓮葉效應可以達到的功效？|抗菌;除臭;環保;發亮|4|${P}
-2|大王蓮的根生長在水底的泥土裡，且葉子平貼在水面，屬於哪一種類型的水生植物？|漂浮性;沉水性;浮葉性;挺水性|3|${PB}
-2|大王蓮能載重，除了浮力之外，另一個重要因素是什麼？|表面張力;彈力;風力;磁力|1|${PB}`;
-TF.split("\n").forEach(l=>{const[u,s,a,f]=l.split("|");Q.push({u:+u,q:"是非題："+s+"（對嗎？）",o:["○ 對","╳ 錯"],a:a=="○"?0:1,w:"標準答案是「"+a+"」。"+(f?"（卷面文字看不到這題答案，依課文判斷，請大人核對）":"")})});
-MC.split("\n").forEach(l=>{const[u,s,o,a,p]=l.split("|"),op=o.split(";"),q={u:+u,q:s,o:op,a:a-1,w:"標準答案是「"+op[a-1]+"」。"},k=/不正確|不是|不屬於/.test(s)?1:/正確/.test(s)?0:undefined;if(k!==undefined)q.k=k;if(p)q.p=p;Q.push(q)});
-const FIG=`<svg viewBox="0 0 400 130" style="width:100%;max-width:480px;display:block;margin:8px 0 0" role="img" aria-label="四種水生植物示意圖：甲大萍、乙荷花、丙睡蓮、丁水蘊草"><rect y="62" width="400" height="56" fill="#bfe3f2"/><rect y="118" width="400" height="12" fill="#b9966b"/><g stroke="#2e7d4f" fill="none" stroke-width="3"><path d="M50 62v14M40 62l-5 12M60 62l5 12"/><path d="M150 118V30"/><path d="M250 118C250 90 262 78 262 62"/><path d="M340 118c-8-20 8-34 0-50M355 118c-8-20 8-34 0-44"/></g><g fill="#4caf6e"><ellipse cx="40" cy="58" rx="16" ry="6"/><ellipse cx="62" cy="58" rx="16" ry="6"/><ellipse cx="150" cy="30" rx="26" ry="7"/><ellipse cx="262" cy="60" rx="26" ry="5"/><ellipse cx="336" cy="86" rx="9" ry="4"/><ellipse cx="350" cy="98" rx="9" ry="4"/><ellipse cx="345" cy="72" rx="9" ry="4"/></g><circle cx="150" cy="18" r="8" fill="#f28aa5"/><circle cx="262" cy="55" r="5" fill="#fff" stroke="#f28aa5"/><g font-size="12" fill="#1f2a44" text-anchor="middle"><text x="50" y="127">甲 大萍</text><text x="150" y="127">乙 荷花</text><text x="250" y="127">丙 睡蓮</text><text x="345" y="127">丁 水蘊草</text></g></svg><div style="font-size:14px;margin-bottom:8px">示意圖：藍色是水，棕色是泥土</div>`;
-Q.forEach(q=>{if(q.u==2&&/睡蓮|大萍|荷花|水蘊草|浮葉性/.test(q.q))q.img=1});
-const CAUSE=["概念不懂","讀題漏看","粗心"];
-const $=document.getElementById("app");
-let pool=[],i=0,st={},score=0,sess=[];
-function load(){try{return JSON.parse(localStorage.getItem("pigWrong")||"[]")}catch(e){return[]}}
-function save(r){try{localStorage.setItem("pigWrong",JSON.stringify(r))}catch(e){}}
-function home(){
- $.innerHTML=`<h1>🐷 豬探長的自然辦案室</h1><p class="sub">仔細看一看，用心想一想。選一個案件區開始吧！</p><div class="card">`+
- Object.keys(U).map(k=>`<button class="unit opt" data-u="${k}">第 ${k} 單元：${U[k]}</button>`).join("")+
- `<button class="go opt" data-u="0">全部混合辦案</button><button class="opt" data-book="1">📒 看我的錯題本</button></div>`;
- $.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>start(+b.dataset.u));
- $.querySelector("[data-book]").onclick=book;
+
+</script>
+<script>
+"use strict";
+/* ---------- defaults ---------- */
+const CAUSES = ['概念不懂','讀題漏看','粗心'];
+const CAUSE_COLOR = {'概念不懂':'var(--c1)','讀題漏看':'var(--c2)','粗心':'var(--c3)'};
+const TYPE_NAME = {choice:'選擇',tf:'是非',check:'勾選（多選）',num:'填數字',write:'寫字（自己對答案）'};
+const PROMPT_EXPERT = `你是一位精通台灣國小教材的專業導師。
+【核心準則】：
+1. 嚴格對齊：必須根據使用者提供的「年級」與「出版社版本」之單元架構進行診斷。
+2. 風格：精簡專家模式。語氣冷靜專業，不使用冗長贅字，直擊問題核心。
+3. 診斷要求：
+  ● 定位錯誤：直接指出錯誤的知識點或邏輯缺漏。
+  ● 解題步驟：提供邏輯嚴密、分步驟的正確解法。
+  ● 教材關聯：簡短說明此題對應該版本的哪一個重點觀念。
+  ● 錯因判斷：從「概念不懂／讀題漏看／粗心」選一個，並用一句話說明理由。
+4. 呈現方式：強制使用『列點』或『短句』，確保資訊密度高且易於閱讀。使用繁體中文。`;
+const PROMPT_PIG = `你是「豬探長」，陪四年級的 Cassie 訂正錯題的偵探老師。口頭禪是「仔細看一看，用心想一想」。
+【陪伴規則】：
+1. 一次只問一個小問題，句子短、用詞簡單，使用繁體中文。
+2. 先問「你覺得呢？」讓她說想法，再引導。
+3. 絕對不要先說出答案。她答對了才確認，並用一兩句話說明為什麼對。
+4. 題目很長時，帶她「仔細看一看」：先圈出題目在問什麼、有哪些條件；再「用心想一想」：一個選項一個選項檢查。
+5. 她答錯時不要說「錯了」就結束，要給一個小提示，讓她再試一次。
+6. 適度鼓勵，但不要浮誇；不要一次講太多。`;
+const DEFAULT_SETTINGS = () => ({
+  model:'gemini-2.5-flash', grade:'四上',
+  subjects:[{name:'國語',ver:'康軒'},{name:'社會',ver:'康軒'},{name:'數學',ver:'翰林'}],
+  prompts:{expert:PROMPT_EXPERT, pig:PROMPT_PIG}, roundSize:5
+});
+const LS_DATA='ctb-data-v1', LS_KEY='ctb-gemini-key', LS_UI='ctb-ui';
+
+/* ---------- storage ---------- */
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v);return true}catch(e){return false}}
+let DB;
+function load(){
+  let d=null; try{d=JSON.parse(lsGet(LS_DATA)||'null')}catch(e){}
+  if(!d||!Array.isArray(d.items)){
+    d={v:1,items:SEED.map(x=>({...x,date:SEED_DATE,hist:[],mastered:false,streak:0,photos:[]})),settings:DEFAULT_SETTINGS()};
+  }
+  d.settings={...DEFAULT_SETTINGS(),...(d.settings||{})};
+  d.settings.prompts={...DEFAULT_SETTINGS().prompts,...(d.settings.prompts||{})};
+  DB=d; save();
 }
-function start(u){pool=Q.filter(q=>!u||q.u==u).sort(()=>Math.random()-.5).slice(0,10);i=0;score=0;sess=[];ask()}
-function ask(){st={tried:[],ok1:false,miss:false,wrong:false,done:false};draw("")}
-function draw(msg){
- if(i>=pool.length)return end();
- const q=pool[i],gate=q.k!==undefined&&!st.ok1;
- let h=`<p class="sub"><span class="tag">案件 ${i+1} / ${pool.length}</span> 第 ${q.u} 單元</p><div class="card">`;
- if(q.p)h+=`<div class="pass">${q.p}</div>`;
- if(q.img)h+=FIG;
- h+=`<div><b>${q.q}</b></div>`;
- if(gate){
-  h+=`<p class="step">🔍 仔細看一看：這題要選哪一種？</p><button data-k="0">選「正確的」</button><button data-k="1">選「不正確的」</button>`;
- }else{
-  if(q.k!==undefined)h+=`<p class="step">🧠 用心想一想：每個選項都檢查一遍。</p>`;
-  h+=q.o.map((t,j)=>`<button class="opt ${st.tried.includes(j)?"bad":""} ${st.done&&j==q.a?"good":""}" data-o="${j}" ${st.tried.includes(j)||st.done?"disabled":""}>${"①②③④"[j]} ${t}</button>`).join("");
- }
- h+=`<div class="fb" id="fb">${msg}</div></div>`;
- $.innerHTML=h;
- $.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{
-  if(+b.dataset.k===q.k){st.ok1=true;draw("✅ 看清楚了！")}
-  else{st.miss=true;draw("線索還沒找齊，再讀一次題目：它問的是「正確」還是「不正確」？")}});
- $.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>pick(+b.dataset.o));
+function save(){ if(!lsSet(LS_DATA,JSON.stringify(DB))) toast('儲存失敗：瀏覽器空間不足或被封鎖'); }
+const getKey=()=>lsGet(LS_KEY)||'';
+
+/* IndexedDB for photos */
+const idb={db:null,
+  open(){return new Promise((res)=>{ if(this.db) return res(this.db);
+    try{const r=indexedDB.open('ctb-photos',1);
+      r.onupgradeneeded=()=>r.result.createObjectStore('p');
+      r.onsuccess=()=>{this.db=r.result;res(this.db)}; r.onerror=()=>res(null);
+    }catch(e){res(null)}})},
+  async put(k,v){const db=await this.open(); if(!db) return false; return new Promise(r=>{const t=db.transaction('p','readwrite');t.objectStore('p').put(v,k);t.oncomplete=()=>r(true);t.onerror=()=>r(false)})},
+  async get(k){const db=await this.open(); if(!db) return null; return new Promise(r=>{const q=db.transaction('p').objectStore('p').get(k);q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)})},
+  async del(k){const db=await this.open(); if(!db) return; db.transaction('p','readwrite').objectStore('p').delete(k)},
+  async all(){const db=await this.open(); if(!db) return {}; return new Promise(r=>{const out={};const c=db.transaction('p').objectStore('p').openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out[cur.key]=cur.value;cur.continue()}else r(out)};c.onerror=()=>r(out)})},
+  async clear(){const db=await this.open(); if(!db) return; db.transaction('p','readwrite').objectStore('p').clear()}
+};
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function fmt(s){
+  return esc(s).replace(/\{([^|{}]*)\|([^|{}]+)\|([^|{}]+)\}/g,(m,w,n,d)=>`<span class="fr">${w?`<span class="w">${w}</span>`:''}<span class="nd"><span>${n}</span><span>${d}</span></span></span>`).replace(/\n/g,'<br>');
 }
-function pick(j){
- const q=pool[i];
- if(j===q.a){
-  st.done=true;
-  if(!st.wrong&&!st.miss)score++;
-  draw(`🎉 推理得好！${q.w}<br><button class="go" id="nx">下一題</button>`);
-  document.getElementById("nx").onclick=()=>{i++;ask()};
- }else{
-  st.tried.push(j);st.wrong=true;
-  draw(`線索還沒找齊，我們再查一次！<br>這次的線索是哪一種？<br>`+CAUSE.map(c=>`<button data-c="${c}">${c}</button>`).join(""));
-  $.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{
-   const r=load();r.push({q:q.q,u:q.u,c:b.dataset.c});save(r);sess.push(b.dataset.c);
-   draw("📒 記進錯題本了，再選一次吧！")});
- }
+const plain=s=>String(s??'').replace(/\{([^|{}]*)\|([^|{}]+)\|([^|{}]+)\}/g,(m,w,n,d)=>(w?w+'又':'')+n+'/'+d);
+const uid=()=>'u'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+let toastT; function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2400)}
+const subjNames=()=>DB.settings.subjects.map(s=>s.name);
+const verOf=n=>(DB.settings.subjects.find(s=>s.name===n)||{}).ver||'';
+function ansText(it){ return Array.isArray(it.ans)? it.ans.join('、') : it.ans + (it.u&&it.type==='num'?' '+it.u:''); }
+const normNum=s=>String(s??'').replace(/[\s,，、。]/g,'').replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-65248)).replace(/(度|°|元|萬|公里|公尺|包|份)$/,'');
+const isCmp=o=>Array.isArray(o)&&o.length===3&&o.join('')==='＞＜＝';
+const hintOf=(it,q)=>q&&q.isVariant?'和剛剛那一題是同一種題目，只是換了數字。用一樣的方法想一想！':(it.hint||'先把題目再讀一次，圈出題目在問什麼。');
+const isLong=q=>plain(q).length>=45;
+function uiGet(){try{return JSON.parse(lsGet(LS_UI)||'{}')}catch(e){return {}}}
+function uiSet(p){lsSet(LS_UI,JSON.stringify({...uiGet(),...p}))}
+
+/* ---------- figure (segment diagram) ---------- */
+function figSVG(f){
+  if(!f) return '';
+  const W=560,H=176,x0=40,x1=W-40,y=86;
+  const X=i=>x0+(x1-x0)*f.pos[i];
+  let s=`<svg class="fig" viewBox="0 0 ${W} ${H}" role="img" aria-label="路線圖"><g stroke="currentColor" fill="none" stroke-width="2"><line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}"/>`;
+  f.pts.forEach((p,i)=>{s+=`<line x1="${X(i)}" y1="${y-7}" x2="${X(i)}" y2="${y+7}"/>`});
+  f.arcs.forEach(([a,b,lab,where])=>{
+    const xa=X(a),xb=X(b),mx=(xa+xb)/2;
+    if(where==='bottom'){ s+=`<path d="M${xa} ${y+12} V${y+56} H${xb} V${y+12}" stroke-dasharray="4 4"/>`; }
+    else{ const yy=where==='top2'?y-34:y-52; s+=`<path d="M${xa} ${y-10} V${yy} H${xb} V${y-10}" stroke-dasharray="4 4"/>`; }
+  });
+  s+='</g><g fill="currentColor" font-size="17" text-anchor="middle">';
+  f.pts.forEach((p,i)=>{s+=`<text x="${X(i)}" y="${y+46}">${esc(p)}</text>`});
+  f.arcs.forEach(([a,b,lab,where])=>{
+    const mx=(X(a)+X(b))/2;
+    if(where==='bottom') s+=`<text x="${mx}" y="${y+76}" font-size="15">${esc(lab)}</text>`;
+    else{const yy=where==='top2'?y-34:y-52; s+=`<rect x="${mx-44}" y="${yy-13}" width="88" height="24" rx="6" fill="var(--paper)"/><text x="${mx}" y="${yy+5}" font-size="15">${esc(lab)}</text>`;}
+  });
+  return s+'</g></svg>';
 }
-function topCause(a){const m={};a.forEach(c=>m[c]=(m[c]||0)+1);return Object.keys(m).sort((x,y)=>m[y]-m[x])[0]}
-function end(){
- const t=topCause(sess);
- $.innerHTML=`<h1>🎖 結案！</h1><div class="card"><p>一次就答對：<b>${score}</b> / ${pool.length} 題</p><p>${t?`這次最常出現的是「<b>${t}</b>」，下次我們一起想辦法改進！`:"全部一次就破案，你是最棒的偵探！"}</p><button class="go" id="h">回辦案室</button><button id="b">📒 錯題本</button></div>`;
- document.getElementById("h").onclick=home;document.getElementById("b").onclick=book;
+
+/* ---------- Gemini ---------- */
+async function gemini(parts,{system='',json=false,history=null}={}){
+  const key=getKey(); if(!key) throw new Error('還沒有設定 Gemini API Key');
+  const model=DB.settings.model||'gemini-2.5-flash';
+  const body={contents: history? history : [{role:'user',parts}]};
+  if(system) body.system_instruction={parts:[{text:system}]};
+  if(json) body.generationConfig={responseMimeType:'application/json'};
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,{
+    method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error((j.error&&j.error.message)||('連線失敗 '+r.status));
+  const txt=(j.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('');
+  if(!txt) throw new Error('AI 沒有回覆內容');
+  return txt;
 }
-function book(){
- const r=load(),t=topCause(r.map(x=>x.c));
- $.innerHTML=`<h1>📒 錯題本</h1><div class="card">`+(r.length?
-  `<p>最常出現：<b>${t}</b>（共 ${r.length} 筆）</p>`+r.slice(-30).reverse().map(x=>`<p>【${x.c}】第 ${x.u} 單元：${x.q}</p>`).join("")+`<button id="clr">清空錯題本</button>`
-  :`<p>目前沒有錯題，繼續保持！</p>`)+`<button class="go" id="h">回辦案室</button></div>`;
- document.getElementById("h").onclick=home;
- const c=document.getElementById("clr");if(c)c.onclick=()=>{if(confirm("確定要清空嗎？")){save([]);book()}};
+function ctxLine(subj){return `年級：${DB.settings.grade}；科目：${subj}；版本：${verOf(subj)||'未填'}。`}
+function itemBrief(it,withAns=true){
+  let s=`題型：${TYPE_NAME[it.type]||it.type}\n題目：${plain(it.q)}`;
+  if(it.opts&&it.opts.length) s+='\n選項：'+it.opts.map((o,i)=>`(${i+1})${plain(o)}`).join(' ');
+  if(withAns) s+=`\n正確答案：${plain(ansText(it))}`;
+  return s;
 }
-function ans(){
- let h=`<h1>📖 詳細解答</h1><p class="sub">先自己想一想，再點開題目看答案喔！</p>`;
- for(const u in U)h+=`<h2>第 ${u} 單元：${U[u]}</h2>`+Q.filter(q=>q.u==u).map(q=>`<details class="card"><summary>${q.q}</summary>${q.p?`<div class="pass">${q.p}</div>`:""}<p>${q.o.map((t,j)=>(j==q.a?"✅ ":"▫️ ")+"①②③④"[j]+" "+t).join("<br>")}</p><p>${q.w}</p></details>`).join("");
- $.innerHTML=h;
+
+/* ---------- nav ---------- */
+function show(v){
+  document.querySelectorAll('section.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  uiSet({view:v}); window.scrollTo(0,0);
+  if(v==='practice') renderPracticeHome();
+  if(v==='book') renderBook();
+  if(v==='add') renderAdd();
+  if(v==='set') renderSettings();
 }
-document.querySelectorAll("#nav [data-n]").forEach(b=>b.onclick=()=>{({h:home,b:book,a:ans})[b.dataset.n]();scrollTo(0,0)});
-home();
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+
+/* ================= PRACTICE ================= */
+let RUN=null;
+function pigSay(html){return `<div class="pig"><svg viewBox="0 0 64 64"><use href="#pigface"/></svg><div class="bubble">${html}</div></div>`}
+function renderPracticeHome(){
+  $('#p-run').hidden=true; const h=$('#p-home'); h.hidden=false;
+  const ui=uiGet(); const sel=ui.pSubj||'全部';
+  const pool=s=>DB.items.filter(i=>!i.mastered&&(s==='全部'||i.s===s));
+  const done=DB.items.filter(i=>i.mastered).length;
+  const n=DB.settings.roundSize||5;
+  h.innerHTML=`
+  <div class="card hero">
+    <svg viewBox="0 0 64 64"><use href="#pigface"/></svg>
+    <div>
+      <div style="font-size:20px;font-weight:600">嗨 Cassie，我是豬探長！</div>
+      <div class="muted">今天一起破解幾題錯題吧。記得：<b style="color:var(--pig-d)">仔細看一看，用心想一想。</b></div>
+      <div class="stat-row">
+        <div class="stat"><b>${pool('全部').length}</b> 題待練習</div>
+        <div class="stat"><b>${done}</b> 題已克服</div>
+      </div>
+    </div>
+  </div>
+  <h2>選一科</h2>
+  <div class="chips" id="p-subj">${['全部',...subjNames()].map(s=>`<button class="chip ${s===sel?'on':''}" data-s="${esc(s)}">${esc(s)}（${pool(s).length}）</button>`).join('')}</div>
+  <h2>一次練幾題？</h2>
+  <div class="chips" id="p-n">${[3,5,8,10].map(k=>`<button class="chip ${k===n?'on':''}" data-n="${k}">${k} 題</button>`).join('')}</div>
+  <div class="actions" style="margin-top:22px"><button class="btn pri" id="p-start" style="font-size:19px;padding:12px 28px">開始練習</button></div>`;
+  h.querySelectorAll('#p-subj .chip').forEach(b=>b.onclick=()=>{uiSet({pSubj:b.dataset.s});renderPracticeHome()});
+  h.querySelectorAll('#p-n .chip').forEach(b=>b.onclick=()=>{DB.settings.roundSize=+b.dataset.n;save();renderPracticeHome()});
+  $('#p-start').onclick=()=>startRun(sel,n);
+}
+function startRun(subj,n){
+  let pool=DB.items.filter(i=>!i.mastered&&(subj==='全部'||i.s===subj));
+  if(!pool.length){toast('這一科沒有待練習的題目了，太厲害了！');return}
+  const last=i=>i.hist.length?i.hist[i.hist.length-1].t:0;
+  pool.sort((a,b)=>((a.streak||0)-(b.streak||0))||(last(a)-last(b))||(Math.random()-.5));
+  RUN={queue:pool.slice(0,n).map(i=>({id:i.id,variant:false})),idx:0,ok:0,chat:[]};
+  $('#p-home').hidden=true; $('#p-run').hidden=false; renderQ();
+}
+function curQ(){const e=RUN.queue[RUN.idx];const it=DB.items.find(i=>i.id===e.id);if(!it) return null;
+  const src=e.variant&&it.v? {...it,...it.v,isVariant:true}:{...it,isVariant:false};
+  return {e,it,q:src};}
+function renderQ(){
+  const box=$('#p-run');
+  if(RUN.idx>=RUN.queue.length){return renderEnd()}
+  const {e,it,q}=curQ(); RUN.state={tries:0,sel:[],done:false}; RUN.chat=[];
+  const total=RUN.queue.length;
+  let opts='';
+  if(q.type==='tf') opts=`<div class="opts two">${['○','✗'].map(o=>`<button class="opt big" data-o="${o}">${o}</button>`).join('')}</div>`;
+  else if(q.type==='choice'){
+    const cls=q.opts.length===3&&q.opts.every(o=>o.length<=2)?'three':'';
+    opts=`<div class="opts ${cls}">${q.opts.map((o,i)=>`<button class="opt ${cls?'big':''}" data-o="${esc(o)}">${cls?'':`<span class="n">${i+1}</span>`}<span>${fmt(o)}</span></button>`).join('')}</div>`;
+  }
+  else if(q.type==='check'){
+    const ten=q.opts.length>=8&&q.opts.every(o=>o.length<=2);
+    opts=`<div class="opts ${ten?'ten':''}">${q.opts.map((o,i)=>`<button class="opt ${ten?'big':''}" data-o="${esc(o)}">${ten?'':`<span class="n">☐</span>`}<span>${fmt(o)}</span></button>`).join('')}</div><div class="actions"><button class="btn pri" id="q-submit">選好了，送出</button></div>`;
+  }
+  else if(q.type==='num') opts=`<div class="numin"><input class="t" id="q-num" inputmode="decimal" autocomplete="off" placeholder="寫答案">${q.u?`<span style="font-size:20px">${esc(q.u)}</span>`:''}<button class="btn pri" id="q-submit">送出</button></div>`;
+  else if(q.type==='write') opts=pigSay('請拿紙筆，<b>一筆一畫</b>寫寫看。寫好了再按「看答案」。')+`<div class="actions"><button class="btn pri" id="q-reveal">我寫好了，看答案</button></div>`;
+  box.innerHTML=`
+  <div class="row"><button class="btn sm ghost" id="q-quit">← 結束</button><span class="sp"></span><span class="muted small">第 ${RUN.idx+1} / ${total} 題</span></div>
+  <div class="prog"><i style="width:${(RUN.idx/total)*100}%"></i></div>
+  <div class="card qcard">
+    <div class="qhead"><span class="tag">${esc(it.s)}</span><span class="tag">${esc(it.unit||'')}</span>${q.isVariant?'<span class="tag" style="background:var(--pig-l);color:var(--pig-d)">換數字挑戰</span>':''}</div>
+    ${isLong(q.q)?`<div class="look">🔍 仔細看一看：先找出題目在問什麼</div>`:''}
+    <div class="qtext">${fmt(q.q)}</div>
+    ${figSVG(q.fig)}
+    <div id="q-area">${opts}</div>
+    <div class="result" id="q-res"></div>
+    <div class="actions" id="q-help">
+      <button class="btn sm" id="q-hint">💡 豬探長的提示</button>
+      ${getKey()?'<button class="btn sm" id="q-chat">🐷 問豬探長</button>':''}
+    </div>
+    <div id="q-chatbox"></div>
+  </div>`;
+  $('#q-quit').onclick=()=>{RUN=null;renderPracticeHome()};
+  $('#q-hint').onclick=()=>{ $('#q-res').innerHTML=pigSay(`<b>仔細看一看，用心想一想。</b><br>${fmt(hintOf(it,q))}`); };
+  if($('#q-chat')) $('#q-chat').onclick=openChat;
+  const area=$('#q-area');
+  if(q.type==='tf'||q.type==='choice') area.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(b.dataset.o,b));
+  if(q.type==='check'){
+    area.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ if(RUN.state.done) return; b.classList.toggle('sel'); const n=b.querySelector('.n'); if(n) n.textContent=b.classList.contains('sel')?'☑':'☐'; });
+    $('#q-submit').onclick=()=>{const sel=[...area.querySelectorAll('.opt.sel')].map(b=>b.dataset.o); if(!sel.length){toast('至少選一個喔');return} answer(sel)};
+  }
+  if(q.type==='num'){ const inp=$('#q-num'); inp.focus({preventScroll:true}); inp.onkeydown=ev=>{if(ev.key==='Enter')$('#q-submit').click()};
+    $('#q-submit').onclick=()=>{ if(!inp.value.trim()){toast('先寫答案喔');return} answer(inp.value) }; }
+  if(q.type==='write') $('#q-reveal').onclick=revealWrite;
+}
+function isRight(q,v){
+  if(q.type==='check'){const a=[...q.ans].sort().join('|');return [...v].sort().join('|')===a}
+  if(q.type==='num'){const ok=[q.ans,...(q.acc||[])].map(normNum);return ok.includes(normNum(v))}
+  return v===q.ans;
+}
+function answer(v,btn){
+  const {e,it,q}=curQ(); const st=RUN.state; if(st.done) return;
+  st.tries++;
+  const right=isRight(q,v);
+  const area=$('#q-area');
+  if(right){
+    st.done=true;
+    if(btn) btn.classList.add('right');
+    if(q.type==='check') area.querySelectorAll('.opt').forEach(b=>{if(q.ans.includes(b.dataset.o)) b.classList.add('right')});
+    lockOpts();
+    record(it,st.tries===1);
+    finishCard(true);
+  }else{
+    if(btn){btn.classList.add('wrong');btn.disabled=true}
+    if(st.tries===1){
+      if(q.type==='check') area.querySelectorAll('.opt.sel').forEach(b=>{b.classList.remove('sel');const n=b.querySelector('.n');if(n)n.textContent='☐'});
+      if(q.type==='num') $('#q-num').select();
+      $('#q-res').innerHTML=pigSay(`嗯…還不是喔。<b>仔細看一看，用心想一想。</b><br>${fmt(hintOf(it,curQ().q))}<br>再試一次！`);
+    }else{
+      st.done=true; lockOpts();
+      if(q.type==='tf'||q.type==='choice') area.querySelectorAll('.opt').forEach(b=>{if(b.dataset.o===q.ans) b.classList.add('right')});
+      if(q.type==='check') area.querySelectorAll('.opt').forEach(b=>{if(q.ans.includes(b.dataset.o)) b.classList.add('right')});
+      record(it,false);
+      finishCard(false);
+    }
+  }
+}
+function lockOpts(){ $('#q-area').querySelectorAll('.opt,#q-submit,#q-num').forEach(b=>b.disabled=true); }
+function revealWrite(){
+  const {it,q}=curQ();
+  $('#q-area').innerHTML=`<div class="answerbox ok"><div class="muted small">正確答案</div><div class="bigans">${fmt(q.ans)}</div></div>
+    <div class="exp">${fmt(it.exp||'')}</div>
+    <p style="margin:14px 0 6px">和你寫的對照看看，每一筆都一樣嗎？</p>
+    <div class="actions" style="margin-top:4px"><button class="btn ok" id="w-ok">我寫對了</button><button class="btn" id="w-bad">有寫錯，我再練習</button></div>`;
+  $('#w-ok').onclick=()=>{record(it,true);RUN.state.done=true;finishCard(true,true)};
+  $('#w-bad').onclick=()=>{record(it,false);RUN.state.done=true;finishCard(false,true)};
+}
+function record(it,ok){
+  it.hist.push({t:Date.now(),ok});
+  it.streak=ok?(it.streak||0)+1:0;
+  const need=2;
+  const wasM=it.mastered; it.mastered=it.streak>=need;
+  if(ok) RUN.ok++;
+  save();
+  if(it.mastered&&!wasM) setTimeout(()=>toast('🎉 這題已克服！'),300);
+}
+function finishCard(ok,isWrite){
+  const {e,it,q}=curQ();
+  const praise=['答對了！','好厲害！','完全正確！','你有仔細看喔！'][Math.floor(Math.random()*4)];
+  let html='';
+  if(!isWrite){
+    html+= ok? pigSay(`<b>${RUN.state.tries>1?'第二次答對了！有用心想喔。':praise}</b>${it.mastered?' 這題已經克服了！':''}`)
+             : pigSay(`沒關係，我們一起看答案。<b>錯了才知道哪裡要加強！</b>`);
+    html+=`<div class="answerbox ${ok?'ok':'bad'}"><div class="muted small">正確答案</div><div style="font-size:20px;font-weight:600">${fmt(ansText(q))}</div></div>`;
+    if(!q.isVariant&&it.exp) html+=`<div class="exp">${fmt(it.exp)}</div>`;
+  }else{
+    html+= pigSay(ok?`<b>${praise}</b>`:'寫錯沒關係，把正確的字再寫三次，下次就會了！');
+  }
+  const canVar= ok && it.v && !e.variant && !RUN.queue.some((x,i)=>i>RUN.idx&&x.id===it.id&&x.variant);
+  html+=`<div class="actions">${canVar?'<button class="btn" id="q-var">換數字再挑戰一題</button>':''}<button class="btn pri" id="q-next">${RUN.idx+1>=RUN.queue.length&&!canVar?'完成':'下一題'} →</button></div>`;
+  $('#q-res').innerHTML=html;
+  if(e.variant&&q.isVariant){ /* show variant explanation note */ }
+  $('#q-help').querySelector('#q-hint')?.remove();
+  if(canVar) $('#q-var').onclick=()=>{RUN.queue.splice(RUN.idx+1,0,{id:it.id,variant:true});RUN.idx++;renderQ()};
+  $('#q-next').onclick=()=>{RUN.idx++;renderQ()};
+  $('#q-res').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function renderEnd(){
+  const total=RUN.queue.length, ok=RUN.ok;
+  $('#p-run').innerHTML=`<div class="card" style="margin-top:14px;text-align:center">
+    <svg viewBox="0 0 64 64" width="110" height="110"><use href="#pigface"/></svg>
+    <h2 style="margin-top:6px">練習完成！</h2>
+    <p style="font-size:19px">這次 ${total} 題，第一次就答對 <b style="color:var(--ok)">${ok}</b> 題。</p>
+    <p class="muted">答對兩次的題目會變成「已克服」。明天再來破案吧！</p>
+    <div class="actions" style="justify-content:center"><button class="btn pri" id="e-home">回練習首頁</button></div></div>`;
+  $('#e-home').onclick=()=>{RUN=null;renderPracticeHome()};
+}
+/* chat with 豬探長 */
+function openChat(){
+  const box=$('#q-chatbox');
+  if(box.innerHTML){box.innerHTML='';return}
+  box.innerHTML=`<div class="chat"><div id="c-msgs"></div>
+    <div class="row" style="margin-top:8px"><input class="t" id="c-in" placeholder="跟豬探長說你的想法…" style="flex:1"><button class="btn pri" id="c-send">送出</button></div></div>`;
+  const draw=()=>{$('#c-msgs').innerHTML=RUN.chat.map(m=>`<div class="msg ${m.role==='user'?'me':'pg'}">${esc(m.text)}</div>`).join('')};
+  const send=async(text)=>{
+    const {it,q}=curQ();
+    if(text) RUN.chat.push({role:'user',text});
+    draw(); $('#c-msgs').insertAdjacentHTML('beforeend','<div class="msg pg"><span class="spin"></span></div>');
+    const sys=DB.settings.prompts.pig+`\n\n【這一題的資料（只給你看，不可以直接說出正確答案）】\n${ctxLine(it.s)}\n${itemBrief(q)}\nCassie 上次考試的答案：${plain(it.stu||'')}\n錯因：${it.cause||''}`;
+    const hist=RUN.chat.length?RUN.chat.map(m=>({role:m.role==='user'?'user':'model',parts:[{text:m.text}]})):[{role:'user',parts:[{text:'（Cassie 打開了這一題，請你用一句話打招呼，然後問她「你覺得呢？」）'}]}];
+    try{const r=await gemini(null,{system:sys,history:hist});RUN.chat.push({role:'model',text:r.trim()})}
+    catch(err){RUN.chat.push({role:'model',text:'豬探長暫時連不上線：'+err.message})}
+    draw(); $('#c-msgs').lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'});
+  };
+  $('#c-send').onclick=()=>{const v=$('#c-in').value.trim();if(!v)return;$('#c-in').value='';send(v)};
+  $('#c-in').onkeydown=ev=>{if(ev.key==='Enter'&&!ev.isComposing)$('#c-send').click()};
+  send(null);
+}
+
+/* ================= BOOK ================= */
+function renderBook(){
+  const ui=uiGet(); const subj=ui.bSubj&&subjNames().concat('全部').includes(ui.bSubj)?ui.bSubj:'全部';
+  const cause=ui.bCause||'全部', state=ui.bState||'todo', unit=ui.bUnit||'全部';
+  $('#b-subj').innerHTML=['全部',...subjNames()].map(s=>`<button class="chip ${s===subj?'on':''}" data-s="${esc(s)}">${esc(s)}（${DB.items.filter(i=>s==='全部'||i.s===s).length}）</button>`).join('');
+  $('#b-subj').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{uiSet({bSubj:b.dataset.s,bUnit:'全部'});renderBook()});
+  const inSubj=DB.items.filter(i=>subj==='全部'||i.s===subj);
+  const units=[...new Set(inSubj.map(i=>i.unit).filter(Boolean))];
+  $('#b-unit').innerHTML=['全部',...units].map(u=>`<option ${u===unit?'selected':''} value="${esc(u)}">${u==='全部'?'全部單元':esc(u)}</option>`).join('');
+  $('#b-unit').onchange=e=>{uiSet({bUnit:e.target.value});renderBook()};
+  $('#b-state').value=state; $('#b-state').onchange=e=>{uiSet({bState:e.target.value});renderBook()};
+  $('#b-cause').innerHTML=['全部',...CAUSES].map(c=>`<button class="chip ${c===cause?'on':''}" data-c="${c}">${c==='全部'?'全部錯因':c}</button>`).join('');
+  $('#b-cause').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{uiSet({bCause:b.dataset.c});renderBook()});
+  // stats
+  const base=inSubj.filter(i=>unit==='全部'||i.unit===unit);
+  const max=Math.max(1,...CAUSES.map(c=>base.filter(i=>i.cause===c).length));
+  $('#b-stats').innerHTML=`<div class="small muted" style="margin-top:10px">錯因統計（${esc(subj)}${unit!=='全部'?'・'+esc(unit):''}，共 ${base.length} 題，已克服 ${base.filter(i=>i.mastered).length} 題）</div>`+
+    CAUSES.map(c=>{const n=base.filter(i=>i.cause===c).length;return `<div class="sb"><span>${c}</span><span class="bar"><i style="width:${n/max*100}%;background:${CAUSE_COLOR[c]}"></i></span><span>${n}</span></div>`}).join('');
+  drawItems();
+  $('#b-q').oninput=drawItems;
+}
+function drawItems(){
+  const ui=uiGet(); const subj=ui.bSubj||'全部',cause=ui.bCause||'全部',state=ui.bState||'todo',unit=ui.bUnit||'全部';
+  const kw=$('#b-q').value.trim();
+  const list=DB.items.filter(i=>(subj==='全部'||i.s===subj)&&(unit==='全部'||i.unit===unit)&&(cause==='全部'||i.cause===cause)&&(state==='all'||(state==='done')===!!i.mastered)&&(!kw||plain(i.q).includes(kw)));
+  const box=$('#b-items');
+  if(!list.length){box.innerHTML=`<div class="empty">${state==='todo'?'這裡沒有待練習的題目 🎉':'沒有符合的題目'}</div>`;return}
+  box.innerHTML=list.map(it=>{
+    const okN=it.hist.filter(h=>h.ok).length, n=it.hist.length;
+    return `<div class="card item" data-id="${it.id}">
+      <div class="row"><span class="tag">${esc(it.s)}</span><span class="tag">${esc(it.unit||'')}</span><span class="tag c-${esc(it.cause)}">${esc(it.cause||'未分類')}</span>${it.mastered?'<span class="tag done">已克服</span>':''}<span class="sp"></span><span class="small muted">${esc(it.date||'')}</span></div>
+      <div class="q">${fmt(it.q)}</div>
+      ${figSVG(it.fig)}
+      ${it.opts&&it.opts.length&&!isCmp(it.opts)&&it.opts.length<8?`<ul class="ol">${it.opts.map((o,i)=>`<li>(${i+1}) ${fmt(o)}</li>`).join('')}</ul>`:''}
+      <dl class="ab"><dt>她的答案</dt><dd class="stu">${fmt(it.stu||'—')}</dd><dt>正確答案</dt><dd class="cor">${fmt(ansText(it))}</dd></dl>
+      ${it.exp?`<div class="exp">${fmt(it.exp)}</div>`:''}
+      ${it.diag?`<details class="more"><summary>AI 診斷</summary><div class="exp">${esc(it.diag)}</div></details>`:''}
+      <details class="more"><summary>更多：提示、考卷、練習紀錄${it.v?'、換數字題':''}</summary>
+        <div class="small" style="margin-top:6px"><b>豬探長提示：</b>${fmt(it.hint||'—')}</div>
+        <div class="small"><b>考卷：</b>${esc(it.exam||'—')}</div>
+        <div class="small"><b>練習：</b>${n?`${n} 次，答對 ${okN} 次，目前連續答對 ${it.streak||0} 次`:'還沒練習'}</div>
+        ${it.v?`<div class="small"><b>換數字題：</b>${fmt(it.v.q)}（答案：${fmt(ansText(it.v))}）</div>`:''}
+      </details>
+      <div class="toolbar">
+        <select class="t" data-act="cause" style="max-width:150px;min-height:36px;padding:4px 10px">${CAUSES.map(c=>`<option ${c===it.cause?'selected':''}>${c}</option>`).join('')}</select>
+        <button class="btn sm" data-act="edit">編輯</button>
+        <button class="btn sm" data-act="diag">AI 診斷</button>
+        ${it.photos&&it.photos.length?'<button class="btn sm" data-act="photo">看照片</button>':''}
+        <button class="btn sm" data-act="toggle">${it.mastered?'改回待練習':'標記已克服'}</button>
+        <span class="sp"></span>
+        <button class="btn sm ghost" data-act="del" style="color:var(--bad)">刪除</button>
+      </div>
+    </div>`}).join('');
+  box.querySelectorAll('.item').forEach(card=>{
+    const it=DB.items.find(i=>i.id===card.dataset.id);
+    card.querySelector('[data-act="cause"]').onchange=e=>{it.cause=e.target.value;save();renderBook()};
+    card.querySelector('[data-act="edit"]').onclick=()=>openEditor(it);
+    card.querySelector('[data-act="toggle"]').onclick=()=>{it.mastered=!it.mastered;if(!it.mastered)it.streak=0;save();renderBook()};
+    card.querySelector('[data-act="del"]').onclick=()=>{if(confirm('確定要刪除這一題嗎？')){DB.items=DB.items.filter(x=>x!==it);(it.photos||[]).forEach(p=>idb.del(p));save();renderBook()}};
+    card.querySelector('[data-act="diag"]').onclick=e=>diagnose(it,e.target);
+    const ph=card.querySelector('[data-act="photo"]'); if(ph) ph.onclick=()=>showPhotos(it);
+  });
+}
+async function diagnose(it,btn){
+  if(!getKey()){toast('請先到「設定」填入 Gemini API Key');return}
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> 診斷中';
+  try{
+    const r=await gemini([{text:`${ctxLine(it.s)}\n${itemBrief(it)}\n學生的答案：${plain(it.stu||'')}\n請診斷這一題。`}],{system:DB.settings.prompts.expert});
+    it.diag=r.trim(); save(); renderBook(); toast('診斷完成，已存在題目下方');
+  }catch(err){toast(err.message);btn.disabled=false;btn.textContent='AI 診斷'}
+}
+async function showPhotos(it){
+  const imgs=await Promise.all((it.photos||[]).map(p=>idb.get(p)));
+  openModal(`<div class="row"><h3 style="margin:0">考卷照片</h3><span class="sp"></span><button class="btn sm" id="m-close">關閉</button></div><div class="photo-view">${imgs.filter(Boolean).map(s=>`<img src="${s}" alt="考卷照片">`).join('')||'<p class="muted">照片不見了</p>'}</div>`);
+  $('#m-close').onclick=closeModal;
+}
+function openModal(html){$('#sheet').innerHTML=html;$('#modal').classList.add('on')}
+function closeModal(){$('#modal').classList.remove('on')}
+$('#modal').onclick=e=>{if(e.target.id==='modal')closeModal()};
+
+/* ---------- editor (shared) ---------- */
+function editorHTML(it,pfx){
+  const optsTxt=(it.opts||[]).join('\n');
+  const ansTxt=Array.isArray(it.ans)?it.ans.join('\n'):(it.ans||'');
+  return `<div class="grid2">
+    <div><label class="f">科目</label><select class="t" id="${pfx}s">${subjNames().map(s=>`<option ${s===it.s?'selected':''}>${esc(s)}</option>`).join('')}</select></div>
+    <div><label class="f">單元</label><input class="t" id="${pfx}unit" value="${esc(it.unit||'')}"></div>
+    <div><label class="f">題型</label><select class="t" id="${pfx}type">${Object.entries(TYPE_NAME).map(([k,v])=>`<option value="${k}" ${k===it.type?'selected':''}>${v}</option>`).join('')}</select></div>
+    <div><label class="f">錯因</label><select class="t" id="${pfx}cause">${CAUSES.map(c=>`<option ${c===it.cause?'selected':''}>${c}</option>`).join('')}</select></div>
+  </div>
+  <label class="f">題目（分數寫法：{3|1|6} 是三又六分之一，{|21|6} 是六分之二十一）</label><textarea class="t" id="${pfx}q">${esc(it.q||'')}</textarea>
+  <label class="f">選項（一行一個；是非題、填數字、寫字題不用填）</label><textarea class="t" id="${pfx}opts" style="min-height:70px">${esc(optsTxt)}</textarea>
+  <div class="grid2">
+    <div><label class="f">正確答案（是非填 ○ 或 ✗；選擇填選項文字；勾選題一行一個）</label><textarea class="t" id="${pfx}ans" style="min-height:60px">${esc(ansTxt)}</textarea></div>
+    <div><label class="f">她的答案</label><textarea class="t" id="${pfx}stu" style="min-height:60px">${esc(it.stu||'')}</textarea></div>
+  </div>
+  <div class="grid2"><div><label class="f">單位（填數字題用，例如 元、度）</label><input class="t" id="${pfx}u" value="${esc(it.u||'')}"></div><div><label class="f">考卷名稱</label><input class="t" id="${pfx}exam" value="${esc(it.exam||'')}"></div></div>
+  <label class="f">說明（給家長看的精簡解析）</label><textarea class="t" id="${pfx}exp" style="min-height:70px">${esc(it.exp||'')}</textarea>
+  <label class="f">豬探長提示（不能說出答案）</label><textarea class="t" id="${pfx}hint" style="min-height:60px">${esc(it.hint||'')}</textarea>`;
+}
+function readEditor(pfx,base){
+  const g=k=>document.getElementById(pfx+k).value.trim();
+  const type=g('type'); const lines=s=>s.split('\n').map(x=>x.trim()).filter(Boolean);
+  let opts=lines(g('opts')); let ans=g('ans');
+  if(type==='tf'){ans=/✗|x|X|×|錯|叉/.test(ans)?'✗':'○';opts=undefined}
+  if(type==='check') ans=lines(ans);
+  if(type==='num'||type==='write') opts=undefined;
+  const it={...base,s:g('s'),unit:g('unit'),type,cause:g('cause'),q:g('q'),opts,ans,stu:g('stu'),u:g('u')||undefined,exam:g('exam'),exp:g('exp'),hint:g('hint')};
+  if(!it.q) return [null,'題目不能空白'];
+  if((type==='choice'||type==='check')&&(!opts||opts.length<2)) return [null,'選擇題至少要有兩個選項'];
+  if(type==='choice'&&!opts.includes(ans)) return [null,'正確答案要和其中一個選項文字完全一樣'];
+  if(type==='check'&&!ans.every(a=>opts.includes(a))) return [null,'勾選題的每個正確答案都要和選項文字一樣'];
+  if(!it.ans||(Array.isArray(it.ans)&&!it.ans.length)) return [null,'請填正確答案'];
+  return [it,null];
+}
+function openEditor(it){
+  openModal(`<div class="row"><h3 style="margin:0">${it?'編輯錯題':'新增錯題'}</h3><span class="sp"></span><button class="btn sm" id="m-close">取消</button></div>${editorHTML(it||{s:subjNames()[0],type:'choice',cause:CAUSES[0]},'e-')}
+    <div class="actions"><button class="btn pri" id="m-save">儲存</button></div>`);
+  $('#m-close').onclick=closeModal;
+  $('#m-save').onclick=()=>{
+    const base=it||{id:uid(),date:today(),hist:[],mastered:false,streak:0,photos:[]};
+    const [n,err]=readEditor('e-',base); if(err){toast(err);return}
+    if(it){Object.assign(it,n)}else DB.items.unshift(n);
+    save(); closeModal(); toast('已儲存'); if($('#v-book').classList.contains('on')) renderBook();
+  };
+}
+
+/* ================= ADD (photo → AI) ================= */
+let PICKED=[]; let CANDS=[];
+function renderAdd(){
+  $('#a-subj').innerHTML=subjNames().map(s=>`<option>${esc(s)}</option>`).join('');
+  $('#a-msg').textContent=getKey()?'AI 會先找出老師打叉或訂正的題目，你確認、修改後再存入錯題本。':'需要先在「設定」填入 Gemini API Key 才能用 AI 辨識；也可以先手動新增。';
+  drawCands();
+}
+function resizeImage(file,max,q){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const img=new Image();img.onload=()=>{const s=Math.min(1,max/Math.max(img.width,img.height));const c=document.createElement('canvas');c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q))};img.onerror=()=>rej(new Error('無法讀取圖片（請用 JPG 或 PNG）'));img.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
+$('#a-files').onchange=async e=>{
+  PICKED=[]; $('#a-thumbs').innerHTML='';
+  for(const f of e.target.files){ try{ const big=await resizeImage(f,1600,.85); const small=await resizeImage(f,1100,.72); PICKED.push({big,small}); $('#a-thumbs').insertAdjacentHTML('beforeend',`<img src="${small}" alt="">`);}catch(err){toast(err.message)} }
+};
+$('#a-manual').onclick=()=>openEditor(null);
+$('#a-run').onclick=async()=>{
+  if(!getKey()){toast('請先到「設定」填入 Gemini API Key');return}
+  if(!PICKED.length){toast('請先選照片');return}
+  const subj=$('#a-subj').value, exam=$('#a-exam').value.trim();
+  const btn=$('#a-run'); btn.disabled=true;
+  const sys=DB.settings.prompts.expert;
+  const ask=`${ctxLine(subj)}
+這是孩子的考卷照片。請找出「老師打叉、扣分或用紅筆訂正」的錯題，每一題輸出一個物件，只輸出 JSON 陣列：
+[{"type":"choice|tf|check|num|write","q":"完整題目（含必要情境，不含題號）","opts":["選項文字"],"ans":"正確答案","u":"單位","stu":"孩子原本寫的答案","cause":"概念不懂|讀題漏看|粗心","unit":"單元或課次","exp":"給家長的精簡說明（2~3 句）","hint":"給孩子的引導提示，不能說出答案","v":{"type":"…","q":"…","opts":[],"ans":"…","u":"…"}}]
+規則：
+- type：選擇題 choice；是非題 tf（ans 填 ○ 或 ✗）；勾選多選題 check（ans 是陣列）；答案是一個數字的填充題 num（ans 只寫數字，單位放 u）；國字、注音、改錯字等要孩子手寫的題目 write。
+- choice 和 check 的 ans 必須和 opts 裡的文字完全一樣；比大小題用 choice，opts 為 ["＞","＜","＝"]。
+- 分數寫成 {整數|分子|分母}，例如 {3|1|6}；假分數寫成 {|21|6}。
+- 正確答案若老師有寫就照老師的；沒有的話請你算出正確答案。
+- v 只有數學題要給：同類型、換數字的新題目，答案要正確；其他科目省略 v。
+- 照片看不清楚的題目請略過，不要猜。`;
+  const all=[];
+  for(let i=0;i<PICKED.length;i++){
+    btn.innerHTML=`<span class="spin"></span> 辨識第 ${i+1}/${PICKED.length} 張`;
+    try{
+      const txt=await gemini([{text:ask},{inline_data:{mime_type:'image/jpeg',data:PICKED[i].big.split(',')[1]}}],{system:sys,json:true});
+      let arr=JSON.parse(txt.replace(/^```json|```$/g,'').trim()); if(!Array.isArray(arr)) arr=arr.items||[];
+      arr.forEach(a=>all.push(normalizeCand(a,subj,exam,i)));
+    }catch(err){toast(`第 ${i+1} 張：${err.message}`)}
+  }
+  btn.disabled=false; btn.textContent='AI 辨識錯題';
+  CANDS=CANDS.concat(all); drawCands();
+  if(all.length) toast(`找到 ${all.length} 題，請確認後存入`); else toast('沒有辨識到錯題，可以改用手動新增');
+};
+function normalizeCand(a,subj,exam,photoIdx){
+  const types=Object.keys(TYPE_NAME); let type=types.includes(a.type)?a.type:'write';
+  let opts=Array.isArray(a.opts)?a.opts.map(String):undefined; let ans=a.ans;
+  if(type==='check'&&!Array.isArray(ans)) ans=String(ans||'').split(/[、,，\n]/).map(s=>s.trim()).filter(Boolean);
+  if(type!=='check') ans=String(ans??'');
+  if(type==='tf') ans=/✗|x|X|×|錯/.test(ans)?'✗':'○';
+  const c={id:uid(),s:subj,unit:a.unit||'',exam,date:today(),type,q:String(a.q||''),opts,ans,u:a.u||undefined,stu:String(a.stu||''),cause:CAUSES.includes(a.cause)?a.cause:CAUSES[0],exp:String(a.exp||''),hint:String(a.hint||''),hist:[],mastered:false,streak:0,photos:[],_photo:photoIdx,_keep:true};
+  if(a.v&&a.v.q&&subj==='數學'){const vt=types.includes(a.v.type)?a.v.type:type;let va=a.v.ans;if(vt==='check'&&!Array.isArray(va))va=String(va||'').split(/[、,，]/).map(s=>s.trim());if(vt!=='check')va=String(va??'');c.v={type:vt,q:String(a.v.q),opts:Array.isArray(a.v.opts)&&a.v.opts.length?a.v.opts.map(String):undefined,ans:va,u:a.v.u||c.u}}
+  return c;
+}
+function drawCands(){
+  const box=$('#a-cands');
+  if(!CANDS.length){box.innerHTML='';return}
+  box.innerHTML=`<h2>確認 AI 找到的錯題（${CANDS.length} 題）</h2><p class="small muted">修改不對的地方，取消勾選不要的題目，再按最下面的「存入錯題本」。</p>`+
+  CANDS.map((c,i)=>`<div class="cand"><label class="row" style="font-weight:600"><input type="checkbox" data-k="${i}" ${c._keep?'checked':''} style="width:22px;height:22px"> 第 ${i+1} 題</label>${editorHTML(c,'c'+i+'-')}</div>`).join('')+
+  `<div class="actions"><button class="btn pri" id="a-save">存入錯題本</button><button class="btn ghost" id="a-clear">全部放棄</button></div>`;
+  box.querySelectorAll('input[type=checkbox][data-k]').forEach(cb=>cb.onchange=()=>{CANDS[+cb.dataset.k]._keep=cb.checked});
+  $('#a-clear').onclick=()=>{CANDS=[];drawCands()};
+  $('#a-save').onclick=async()=>{
+    const keep=[];
+    for(let i=0;i<CANDS.length;i++){ if(!CANDS[i]._keep) continue;
+      const [n,err]=readEditor('c'+i+'-',CANDS[i]); if(err){toast(`第 ${i+1} 題：${err}`);return} keep.push(n); }
+    const photoIds={};
+    for(const n of keep){
+      const pi=n._photo;
+      if(pi!=null&&PICKED[pi]){ if(!photoIds[pi]){photoIds[pi]=uid(); await idb.put(photoIds[pi],PICKED[pi].small)} n.photos=[photoIds[pi]]; }
+      delete n._photo; delete n._keep; DB.items.unshift(n);
+    }
+    save(); CANDS=[]; PICKED=[]; $('#a-thumbs').innerHTML=''; $('#a-files').value=''; drawCands();
+    toast(`已存入 ${keep.length} 題`);
+  };
+}
+
+/* ================= SETTINGS ================= */
+let PEDIT='expert';
+function renderSettings(){
+  const S=DB.settings;
+  $('#s-key').value=getKey(); $('#s-model').value=S.model; $('#s-grade').value=S.grade;
+  $('#s-key').onchange=e=>{lsSet(LS_KEY,e.target.value.trim());toast(e.target.value.trim()?'API Key 已存在這台裝置':'已移除 API Key')};
+  $('#s-eye').onclick=()=>{const k=$('#s-key');k.type=k.type==='password'?'text':'password';$('#s-eye').textContent=k.type==='password'?'顯示':'隱藏'};
+  $('#s-model').onchange=e=>{S.model=e.target.value;save()};
+  $('#s-grade').onchange=e=>{S.grade=e.target.value.trim()||'四上';save();updateSub()};
+  $('#s-test').onclick=async()=>{lsSet(LS_KEY,$('#s-key').value.trim());$('#s-testmsg').innerHTML='<span class="spin"></span>';
+    try{const r=await gemini([{text:'請只回覆「連線成功」四個字。'}]);$('#s-testmsg').textContent='✅ '+r.trim().slice(0,20)}catch(err){$('#s-testmsg').textContent='❌ '+err.message}};
+  const drawP=()=>{document.querySelectorAll('.stylebtn').forEach(b=>b.classList.toggle('on',b.dataset.p===PEDIT));
+    $('#s-plabel').textContent=PEDIT==='expert'?'AI 教師自定義人格指令（家長診斷、照片辨識使用）':'AI 教師自定義人格指令（Cassie 練習時「問豬探長」使用）';
+    $('#s-prompt').value=S.prompts[PEDIT]};
+  document.querySelectorAll('.stylebtn').forEach(b=>b.onclick=()=>{PEDIT=b.dataset.p;drawP()});
+  $('#s-prompt').oninput=e=>{S.prompts[PEDIT]=e.target.value;save()};
+  $('#s-reset').onclick=()=>{S.prompts[PEDIT]=PEDIT==='expert'?PROMPT_EXPERT:PROMPT_PIG;save();drawP();toast('已還原預設')};
+  drawP();
+  const drawS=()=>{
+    $('#s-subjs').innerHTML=S.subjects.map((s,i)=>`<div class="subjrow"><input class="t" data-i="${i}" data-f="name" value="${esc(s.name)}" placeholder="科目"><input class="t" data-i="${i}" data-f="ver" value="${esc(s.ver)}" placeholder="出版社"><button class="btn sm ghost" data-del="${i}" title="移除">✕</button></div>`).join('');
+    $('#s-subjs').querySelectorAll('input').forEach(inp=>inp.onchange=()=>{
+      const s=S.subjects[+inp.dataset.i]; const old=s.name; s[inp.dataset.f]=inp.value.trim();
+      if(inp.dataset.f==='name'&&old&&s.name&&old!==s.name) DB.items.forEach(it=>{if(it.s===old)it.s=s.name});
+      save();updateSub()});
+    $('#s-subjs').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const s=S.subjects[+b.dataset.del];
+      if(DB.items.some(i=>i.s===s.name)){toast(`「${s.name}」還有錯題，不能移除`);return}
+      S.subjects.splice(+b.dataset.del,1);save();drawS();updateSub()});
+  };
+  drawS();
+  $('#s-addsubj').onclick=()=>{S.subjects.push({name:'自然',ver:'康軒'});save();drawS();updateSub()};
+  $('#s-export').onclick=exportData;
+  $('#s-import').onchange=importData;
+  $('#s-wipe').onclick=async()=>{if(!confirm('確定清除全部錯題和設定？建議先匯出備份。'))return;if(!confirm('真的要清除嗎？這個動作無法復原。'))return;
+    try{localStorage.removeItem(LS_DATA)}catch(e){} await idb.clear(); DB={v:1,items:[],settings:DEFAULT_SETTINGS()};save();toast('已清除');renderSettings()};
+  $('#s-info').textContent=`目前共 ${DB.items.length} 題（已克服 ${DB.items.filter(i=>i.mastered).length} 題）。`;
+}
+async function exportData(){
+  const photos=await idb.all();
+  const blob=new Blob([JSON.stringify({app:'cassie-ctb',exported:new Date().toISOString(),data:DB,photos})],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`錯題本備份-${today()}.json`;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000); toast('已匯出備份檔');
+}
+async function importData(e){
+  const f=e.target.files[0]; if(!f) return;
+  try{const j=JSON.parse(await f.text()); const d=j.data||j; if(!Array.isArray(d.items)) throw new Error('不是錯題本的備份檔');
+    if(!confirm(`備份裡有 ${d.items.length} 題。匯入會取代目前的資料，確定嗎？`)) return;
+    DB={v:1,items:d.items,settings:{...DEFAULT_SETTINGS(),...d.settings}};
+    for(const [k,v] of Object.entries(j.photos||{})) await idb.put(k,v);
+    save(); toast('匯入完成'); renderSettings(); updateSub();
+  }catch(err){toast('匯入失敗：'+err.message)} finally{e.target.value=''}
+}
+function updateSub(){ $('#subline').textContent=`${DB.settings.grade}・`+DB.settings.subjects.map(s=>`${s.name}（${s.ver}）`).join(' '); }
+
+/* ---------- boot ---------- */
+load(); updateSub();
+show(uiGet().view||'practice');
 </script>
 </body>
 </html>
