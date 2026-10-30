@@ -109,7 +109,8 @@ textarea.t{min-height:90px;line-height:1.55}
 .opt.wrong{border-color:var(--bad);background:var(--bad-l)}
 .opt:disabled{cursor:default}
 .numin{display:flex;gap:10px;align-items:center}
-.numin input{font-size:26px;letter-spacing:.06em;max-width:320px}
+.numin input{font-size:26px;letter-spacing:.06em;max-width:320px;min-width:0;flex:1}
+.numin span,.numin .btn{white-space:nowrap;flex:none}
 .result{margin-top:16px}
 .answerbox{border-radius:14px;padding:12px 16px;margin-top:10px}
 .answerbox.ok{background:var(--ok-l)}
@@ -166,7 +167,7 @@ details.more summary{cursor:pointer;color:var(--ink2);font-size:14px;margin-top:
 <div class="wrap">
   <header class="top">
     <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><use href="#pigface"/></svg>
-    <div><h1>Cassie 的錯題本</h1><div class="sub" id="subline">四上・國語 社會 數學</div></div>
+    <div><h1>Cassie 的錯題本</h1><div class="sub" id="subline">四上</div></div>
   </header>
 
   <!-- 練習 -->
@@ -722,6 +723,148 @@ const SEED = [
  hint:'打開地圖，會在路邊看到哪些名字？'}
 ];
 
+/* 觀念名稱 */
+const CONCEPTS = {
+  'k-typo':'形近字・錯別字','k-write':'字要寫完整','k-rel':'詞語關係（相近／相反）','k-mean':'詞語意思','k-radical':'部首','k-read':'圈出題目關鍵字',
+  'm-place':'大數的位值與讀寫','m-compare':'大數比大小','m-count':'找規律數一數','m-money':'錢與數量合起來','m-mul':'乘法與湊整',
+  'm-protractor':'量角器怎麼看','m-anglesum':'角度加減','m-clock':'鐘面轉動方向','m-frac-type':'分數的種類','m-frac-conv':'假分數與帶分數互換','m-frac-cmp':'分數比大小',
+  'm-unit':'長度單位換算','m-word':'「比…多／比…少」用加還是減','m-overlap':'重疊的路段',
+  's-map':'地圖的種類與要素','s-terrain':'地形與居民活動','s-climate':'北部和南部的氣候','s-water':'家鄉的水資源','s-house':'三合院','s-tools':'傳統生活器物',
+  'n-surface':'地表物質與生物','n-change':'地表環境的變動','n-quake':'地震與防災','n-water-env':'水域環境','n-plant':'水生植物','n-animal':'水生動物','n-protect':'愛護環境'
+};
+/* 原錯題對應的觀念 */
+const CMAP = {
+  k01:'k-typo',k02:'k-typo',k03:'k-write',k04:'k-rel',k05:'k-read',k06:'k-read',k07:'k-typo',k08:'k-typo',k09:'k-typo',k10:'k-typo',k11:'k-radical',k12:'k-mean',k13:'k-rel',
+  m01:'m-money',m02:'m-place',m03:'m-place',m04:'m-count',m05:'m-place',m06:'m-compare',m07:'m-place',m08:'m-place',m09:'m-money',m10:'m-money',
+  m11:'m-mul',m12:'m-mul',m13:'m-mul',m14:'m-mul',m15:'m-mul',
+  m16:'m-protractor',m17:'m-anglesum',m18:'m-protractor',m19:'m-clock',m20:'m-clock',m21:'m-clock',m22:'m-protractor',m23:'m-protractor',m24:'m-clock',m25:'m-clock',
+  m26:'m-frac-cmp',m27:'m-frac-cmp',m28:'m-frac-type',m29:'m-frac-conv',m30:'m-frac-conv',m31:'m-frac-conv',m32:'m-frac-cmp',
+  m33:'m-word',m34:'m-unit',m35:'m-unit',m36:'m-word',m37:'m-overlap',
+  s01:'s-map',s02:'s-map',s03:'s-terrain',s04:'s-water',s05:'s-climate',s06:'s-climate',s07:'s-terrain',s08:'s-terrain',s09:'s-water',s10:'s-water',
+  s11:'s-house',s12:'s-tools',s13:'s-house',s14:'s-map',s15:'s-climate',s16:'s-climate',s17:'s-house',s18:'s-house',s19:'s-terrain',s20:'s-climate',s21:'s-house',s22:'s-map'
+};
+const YN = ['○','✗'];
+/* 新題目（依期中範圍改寫，x:1 為對照題） */
+const BANK = [
+/* ---------- 國語 第一～六課 ---------- */
+{id:'bk01',s:'國語',c:'k-typo',type:'choice',q:'「地板剛打過蠟，非常光（　），走路要小心。」括號裡應該填哪一個字？',opts:['滑','猾','骨','渦'],ans:'滑',exp:'光滑和水有關，用「氵」。',hint:'會讓人溜一下的地板，跟水有關係。'},
+{id:'bk02',s:'國語',c:'k-typo',x:1,type:'choice',q:'「故事裡的狐狸很狡（　），常常騙人。」括號裡應該填哪一個字？',opts:['滑','猾','骨','渦'],ans:'猾',exp:'狡猾是在說動物或人很會騙，用「犭」。和「光滑」的「滑」比一比。',hint:'在說動物的個性，部首和動物有關。'},
+{id:'bk03',s:'國語',c:'k-typo',type:'choice',q:'「爸爸送給媽媽一（　）漂亮的玫瑰花。」括號裡應該填哪一個字？',opts:['束','東','速','刺'],ans:'束',exp:'一束花：把花綁在一起。「東」是方向。',hint:'把花綁成一把，是「一ㄕㄨˋ」花。'},
+{id:'bk04',s:'國語',c:'k-typo',x:1,type:'choice',q:'「每天早上，太陽從（　）邊升起。」括號裡應該填哪一個字？',opts:['束','東','速','刺'],ans:'東',exp:'太陽從東邊升起，「東」是方向，中間是「日」。',hint:'這裡說的是方向。'},
+{id:'bk05',s:'國語',c:'k-typo',type:'choice',q:'「哥哥把存了一年的零用錢（　）給育幼院。」括號裡應該填哪一個字？',opts:['捐','娟','絹','涓'],ans:'捐',exp:'把東西送出去要用手，所以是「扌」。',hint:'送東西出去要用到身體哪個部位？'},
+{id:'bk06',s:'國語',c:'k-typo',type:'choice',q:'下列哪一個詞語「沒有」錯字？',opts:['奉獻','俸獻','奉現','奉憲'],ans:'奉獻',exp:'「奉」沒有人字旁；「獻」右邊是犬。',hint:'先圈「沒有錯字」。「奉」旁邊要不要加人？'},
+{id:'bk07',s:'國語',c:'k-typo',type:'choice',q:'「壞人打電話向他（　）索一大筆錢。」括號裡應該填哪一個字？',opts:['勒','肋','勤','革'],ans:'勒',exp:'勒索的「勒」：左邊革、右邊力。「肋」是肋骨。',hint:'用力逼人拿錢，右邊是「力」，左邊是「皮革」的革。'},
+{id:'bk08',s:'國語',c:'k-typo',type:'choice',q:'「春天到了，公園裡開滿了（　）紛的花朵。」括號裡應該填哪一個字？',opts:['繽','濱','賓','檳'],ans:'繽',exp:'繽紛兩個字都是「糸」部，和顏色、布料有關。',hint:'「紛」是什麼部首？兩個字是一樣的部首喔。'},
+{id:'bk09',s:'國語',c:'k-radical',type:'choice',q:'「獻」的部首是什麼？',opts:['犬','虍','鬲','口'],ans:'犬',exp:'「獻」的部首在右邊，是「犬」。',hint:'看看這個字的右半邊。'},
+{id:'bk10',s:'國語',c:'k-radical',x:1,type:'choice',q:'「發」的部首是什麼？',opts:['癶','弓','殳','又'],ans:'癶',exp:'「發」和「登」一樣，部首都是上面的「癶」。',hint:'和「登」的上面長得一樣。'},
+{id:'bk11',s:'國語',c:'k-rel',type:'choice',q:'下列哪一組詞語的意思「相反」？',opts:['寧靜／喧鬧','稱讚／誇獎','照顧／看護','悲傷／難過'],ans:'寧靜／喧鬧',exp:'寧靜是很安靜，喧鬧是很吵，意思相反。其他三組意思相近。',hint:'先圈「相反」。哪一組一個安靜、一個很吵？'},
+{id:'bk12',s:'國語',c:'k-rel',x:1,type:'choice',q:'下列哪一組詞語的意思「相近」？',opts:['緩慢／迅速','熟悉／陌生','鼓勵／鼓舞','安全／危險'],ans:'鼓勵／鼓舞',exp:'鼓勵和鼓舞都是給人打氣，意思相近。其他三組都是相反。',hint:'先圈「相近」。哪一組兩個詞可以互換？'},
+{id:'bk13',s:'國語',c:'k-mean',type:'choice',q:'「這個遊戲很簡單，（　）人都可以玩。」括號裡最適合填哪一個詞語？',opts:['任何','任憑','如何','單憑'],ans:'任何',exp:'「任何」＝不管是誰、不管什麼。',hint:'把每個詞放進句子讀讀看。'},
+{id:'bk14',s:'國語',c:'k-read',type:'choice',q:'下列哪一個詞語「不能」用來形容做事堅持到底、不放棄？',opts:['持之以恆','鍥而不捨','有始有終','虎頭蛇尾'],ans:'虎頭蛇尾',exp:'虎頭蛇尾是開頭很認真、後來就放棄，和堅持相反。',hint:'先圈「不能」！哪一個是做到一半就停了？'},
+{id:'bk15',s:'國語',c:'k-read',x:1,type:'choice',q:'讀題練習：下列哪一個「不是」水果？',opts:['蘋果','香蕉','白菜','芒果'],ans:'白菜',exp:'題目問「不是」，白菜是蔬菜。',hint:'先找出題目裡的「不是」，再一個一個看。'},
+{id:'bk16',s:'國語',c:'k-radical',type:'choice',q:'「溜」的部首是什麼？',opts:['氵','田','刀','留'],ans:'氵',exp:'溜的部首是左邊的「氵」。',hint:'看看字的左邊。'},
+
+/* ---------- 數學 第1～5單元 ---------- */
+{id:'bm01',s:'數學',c:'m-place',type:'num',q:'4 個千萬、7 個百萬、12 個萬和 5 個十，合起來是多少？',ans:'47120050',exp:'40000000＋7000000＋120000＋50＝47120050。',hint:'「12 個萬」是多少？「5 個十」要放在哪一位？'},
+{id:'bm02',s:'數學',c:'m-place',type:'choice',q:'「七千零八萬三百零六」寫成數字是？',opts:['70080306','7080306','70083006','700800306'],ans:'70080306',exp:'萬的那一節是 7008，後面一節是 0306，合起來 70080306。',hint:'先寫「七千零八」萬，後面一節要湊滿四位。'},
+{id:'bm03',s:'數學',c:'m-place',x:1,type:'tf',q:'1000 個十萬合起來是 1 億。',ans:'○',exp:'1 個十萬是 100000，1000 個是 100000000，就是 1 億。',hint:'十萬後面再加三個 0 是多少？'},
+{id:'bm04',s:'數學',c:'m-place',type:'choice',q:'6 個一萬加上 40 個一千，合起來是多少？',opts:['64000','100000','1000000','10000'],ans:'100000',exp:'60000＋40000＝100000（十萬）。',hint:'40 個一千是幾萬？'},
+{id:'bm05',s:'數學',c:'m-compare',type:'choice',q:'35700000 ＞ 35□40000，□ 裡可以填幾個不同的數字？',opts:['3 個','6 個','7 個','8 個'],ans:'7 個',exp:'□ 填 7 時是 35740000，比 35700000 大，不行；所以只能填 0～6，共 7 個。',hint:'先試 □＝7，比比看。'},
+{id:'bm06',s:'數學',c:'m-compare',x:1,type:'check',q:'62□50000 ＜ 62480000，□ 可以填入哪些數字？（全部選出來）',opts:['0','1','2','3','4','5','6','7','8','9'],ans:['0','1','2','3','4'],exp:'□＝4 時是 62450000，比 62480000 小，可以！□ 要比 4 大才不行。所以是 0～4。',hint:'先試 □＝4，再往下一位比：5 和 8 哪個大？'},
+{id:'bm07',s:'數學',c:'m-count',type:'choice',q:'號碼牌從 1 號到 1500 號，號碼最後兩位是 07 的共有幾張？',opts:['14 張','15 張','16 張','13 張'],ans:'15 張',exp:'7、107、207……1407，共 15 張；1507 超過 1500。',hint:'把號碼列出來，最後一張是多少？'},
+{id:'bm08',s:'數學',c:'m-money',type:'num',u:'元',q:'3 張千元鈔、15 張百元鈔和 8 個十元硬幣，共是幾元？',ans:'4580',exp:'3000＋1500＋80＝4580。',hint:'分開算，15 張百元是多少？'},
+{id:'bm09',s:'數學',c:'m-mul',type:'choice',q:'已知 48×302＝14496，那 48×300 等於下面哪一個算式？',opts:['14496－302','14496－96','14496－48','14496＋96'],ans:'14496－96',exp:'302 個 48 比 300 個 48 多了 2 個 48（96），要減掉 96。',hint:'302 和 300 差了幾個 48？'},
+{id:'bm10',s:'數學',c:'m-mul',x:1,type:'num',u:'元',q:'不用直式：一件外套 600 元，買 101 件要多少元？',ans:'60600',exp:'101 件＝100 件再多 1 件：60000＋600＝60600。',hint:'先算 100 件，再想要加還是減。'},
+{id:'bm11',s:'數學',c:'m-mul',type:'num',q:'25 × 4 × 37 ＝ ？（先想想哪兩個先乘比較快）',ans:'3700',exp:'25×4＝100，100×37＝3700。',hint:'25 和 4 乘起來是很整齊的數。'},
+{id:'bm12',s:'數學',c:'m-mul',type:'choice',q:'一箱蘋果有 48 顆，買了 125 箱，共有幾顆？',opts:['6000 顆','5000 顆','6400 顆','4800 顆'],ans:'6000 顆',exp:'48×125＝6000。',hint:'用直式算，算完再和選項逐位比對。'},
+{id:'bm13',s:'數學',c:'m-mul',type:'num',u:'元',q:'一張車票 1250 元，8 個人共要付多少元？',ans:'10000',exp:'1250×8＝10000。寫答案時要和算式結果一模一樣。',hint:'算完數一數有幾個 0。'},
+{id:'bm14',s:'數學',c:'m-clock',type:'num',u:'度',q:'分針從 12 順時針轉到 5，轉了幾度？',ans:'150',exp:'5 大格，5×30＝150°。',hint:'一大格幾度？從 12 到 5 是幾大格？'},
+{id:'bm15',s:'數學',c:'m-clock',type:'num',u:'度',q:'時針從 9「逆時針」轉到 6，轉了幾度？',ans:'90',exp:'逆時針往回走：9→8→7→6，共 3 大格，3×30＝90°。',hint:'先圈「逆時針」，往回數。'},
+{id:'bm16',s:'數學',c:'m-clock',x:1,type:'num',u:'度',q:'時針從 9「順時針」轉到 6，轉了幾度？',ans:'270',exp:'順時針：9→10→11→12→1→…→6，共 9 大格，9×30＝270°。和上一題方向相反，答案不一樣！',hint:'順時針是和時鐘一樣的方向，從 9 往 10 走。'},
+{id:'bm17',s:'數學',c:'m-protractor',type:'choice',q:'量角器外圈刻度 20 的線和外圈刻度 145 的線，夾出的角是幾度？',opts:['125°','165°','55°','145°'],ans:'125°',exp:'同一圈的兩個刻度相減：145－20＝125°。',hint:'兩條線看同一圈，用加的還是減的？'},
+{id:'bm18',s:'數學',c:'m-protractor',type:'tf',q:'量角時，角的一邊對齊「外圈」的 0 度線，就要看「內圈」的刻度。',ans:'✗',exp:'從外圈 0 開始，就要一直看外圈。',hint:'0 度從哪一圈開始，就跟著哪一圈。'},
+{id:'bm19',s:'數學',c:'m-anglesum',type:'choice',q:'一個周角減掉一個平角，再減掉 35°，是幾度？',opts:['145°','235°','55°','325°'],ans:'145°',exp:'360－180－35＝145°。',hint:'周角和平角各是幾度？'},
+{id:'bm20',s:'數學',c:'m-anglesum',type:'choice',q:'一個直角加上 45°，是哪一種角？',opts:['銳角','直角','鈍角','平角'],ans:'鈍角',exp:'90＋45＝135°，比直角大、比平角小，是鈍角。',hint:'先算出幾度，再和 90°、180° 比。'},
+{id:'bm21',s:'數學',c:'m-frac-type',type:'choice',q:'下面哪一個是假分數？',opts:['{|7|7}','{|6|7}','{1|1|7}','{|3|8}'],ans:'{|7|7}',exp:'分子和分母一樣大，或分子比較大，就是假分數。',hint:'找分子不比分母小的那一個。'},
+{id:'bm22',s:'數學',c:'m-frac-conv',type:'choice',q:'{|38|7} 換成帶分數是？',opts:['{5|3|7}','{3|5|7}','{4|10|7}','{6|3|7}'],ans:'{5|3|7}',exp:'38÷7＝5…3，所以是 {5|3|7}。',hint:'38 裡面有幾個 7？剩多少？'},
+{id:'bm23',s:'數學',c:'m-frac-conv',x:1,type:'choice',q:'{6|2|9} 換成假分數是？',opts:['{|56|9}','{|62|9}','{|17|9}','{|54|9}'],ans:'{|56|9}',exp:'6×9＝54，54＋2＝56，所以是 {|56|9}。',hint:'6 等於幾個 {|1|9}？再加 2 個。'},
+{id:'bm24',s:'數學',c:'m-frac-cmp',type:'choice',q:'比大小：{3|2|5} ○ {|16|5}',opts:CMP,ans:'＞',exp:'{3|2|5}＝{|17|5}，17＞16。',hint:'把帶分數換成假分數再比。'},
+{id:'bm25',s:'數學',c:'m-frac-conv',type:'choice',q:'假分數 {|□|9} 換成帶分數後，整數部分是 4。□ 最小是多少？',opts:['36','37','40','44'],ans:'37',exp:'{|36|9}＝4 剛好是整數，不是帶分數；要比 36 多才行，最小是 37。',hint:'{|36|9} 是多少？它是帶分數嗎？'},
+{id:'bm26',s:'數學',c:'m-frac-cmp',type:'tf',q:'兩家都有 4 個蛋糕。甲家吃掉 {|11|4} 個，乙家吃掉 {2|1|4} 個，甲家剩下的蛋糕比較少。',ans:'○',exp:'{2|1|4}＝{|9|4}，甲家吃得多（11＞9），所以剩下的比較少。',hint:'先比誰吃得多，吃得多的剩比較多還是比較少？'},
+{id:'bm27',s:'數學',c:'m-unit',type:'choice',q:'比大小：4 公里 75 公尺 ○ 4705 公尺',opts:CMP,ans:'＜',exp:'4 公里 75 公尺＝4075 公尺，4075＜4705。',hint:'75 公尺寫進去時，百位要補 0。'},
+{id:'bm28',s:'數學',c:'m-unit',type:'choice',q:'比大小：3 公尺 ○ 300 公分',opts:CMP,ans:'＝',exp:'1 公尺＝100 公分，3 公尺＝300 公分。',hint:'1 公尺是幾公分？'},
+{id:'bm29',s:'數學',c:'m-unit',x:1,type:'choice',q:'比大小：7 公里 8 公尺 ○ 7080 公尺',opts:CMP,ans:'＜',exp:'7 公里 8 公尺＝7008 公尺，不是 7080。',hint:'8 公尺放在哪一位？要補幾個 0？'},
+{id:'bm30',s:'數學',c:'m-word',type:'choice',q:'小明跑了 2 公里 600 公尺，比小華「少」跑 900 公尺。小華跑了多遠？',opts:['3 公里 500 公尺','1 公里 700 公尺','3 公里 600 公尺','2 公里 300 公尺'],ans:'3 公里 500 公尺',exp:'小明比小華少，表示小華比較多，要用加法：2600＋900＝3500 公尺。',hint:'誰跑得比較多？要找的是多的那個人。'},
+{id:'bm31',s:'數學',c:'m-word',x:1,type:'choice',q:'甲路線長 6 公里 200 公尺，乙路線比甲路線「短」2 公里 700 公尺。乙路線長多少？',opts:['3 公里 500 公尺','8 公里 900 公尺','4 公里 500 公尺','3 公里 700 公尺'],ans:'3 公里 500 公尺',exp:'乙比較短，用減法：6200－2700＝3500 公尺。公尺不夠減要向公里借。',hint:'乙比甲長還是短？'},
+{id:'bm32',s:'數學',c:'m-word',type:'num',u:'公尺',q:'媽媽今天走了 3 公里 250 公尺，比昨天「多」走 800 公尺。昨天走了幾公尺？',ans:'2450',exp:'今天比較多，昨天比較少：3250－800＝2450 公尺。',hint:'今天多，那昨天是多還是少？'},
+{id:'bm33',s:'數學',c:'m-overlap',type:'num',u:'公里',q:'甲、乙、丙、丁在同一條路上。甲地到丙地 95 公里，乙地到丁地 130 公里，乙地到丙地 25 公里。甲地到丁地是多少公里？',
+ fig:{pts:['甲','乙','丙','丁'],pos:[0,.4,.52,1],arcs:[[0,2,'95 公里','top'],[1,3,'130 公里','top2'],[1,2,'25 公里','bottom']]},ans:'200',exp:'乙到丙那段算了兩次，要減掉一次：95＋130－25＝200。',hint:'看圖，哪一段被兩條虛線都包到了？'},
+{id:'bm34',s:'數學',c:'m-overlap',x:1,type:'num',u:'公分',q:'兩條緞帶各長 60 公分，接在一起時重疊了 8 公分。接好後全長幾公分？',ans:'112',exp:'60＋60＝120，重疊的 8 公分算了兩次，120－8＝112。',hint:'重疊的部分是不是被算了兩次？'},
+
+/* ---------- 社會 第一～二單元 ---------- */
+{id:'bs01',s:'社會',c:'s-map',type:'choice',q:'想知道家鄉有哪些鄉鎮市區、它們的界線在哪裡，最適合看哪一種地圖？',opts:['行政區域圖','交通路線圖','觀光導覽圖','雨量圖'],ans:'行政區域圖',exp:'行政區域圖畫出各區的名稱和界線。',hint:'「區」的範圍和界線，看名字最像的那種圖。'},
+{id:'bs02',s:'社會',c:'s-map',x:1,type:'choice',q:'小安想知道從家裡搭捷運到動物園要怎麼轉車，最適合看哪一種地圖？',opts:['行政區域圖','交通路線圖','觀光導覽圖','雨量圖'],ans:'交通路線圖',exp:'交通路線圖畫出道路、捷運和鐵路。',hint:'搭車、轉車，和什麼有關？'},
+{id:'bs03',s:'社會',c:'s-map',x:1,type:'tf',q:'想知道家鄉每個月下多少雨，可以看雨量圖。',ans:'○',exp:'氣候要看氣溫圖、雨量圖，不是行政區域圖。',hint:'問的是「雨」。'},
+{id:'bs04',s:'社會',c:'s-map',type:'tf',q:'比例尺可以告訴我們地圖上的方向。',ans:'✗',exp:'方向要看方向標；比例尺是用來算實際距離。',hint:'地圖上哪一個符號像箭頭，寫著「北」？'},
+{id:'bs05',s:'社會',c:'s-map',type:'choice',q:'地圖上說明各種符號代表什麼景物的地方叫做什麼？',opts:['圖名','圖例','方向標','比例尺'],ans:'圖例',exp:'圖例告訴我們每個符號代表的意思。',hint:'看不懂地圖上的小圖案時，要看哪裡？'},
+{id:'bs06',s:'社會',c:'s-terrain',type:'choice',q:'一大片平坦的稻田，最可能在哪一種地形？',opts:['平原','丘陵','山地','台地'],ans:'平原',exp:'平原平坦廣闊、水源充足，適合種稻。',hint:'「一望無際」的平地叫什麼？'},
+{id:'bs07',s:'社會',c:'s-terrain',x:1,type:'choice',q:'茶園大多分布在哪一種地形？',opts:['平原','丘陵','盆地','海岸'],ans:'丘陵',exp:'丘陵坡度平緩、排水良好，適合種茶。',hint:'種茶需要「排水良好」，哪一種地形有坡度但不高？'},
+{id:'bs08',s:'社會',c:'s-terrain',type:'choice',q:'地勢高聳、高度在 1000 公尺以上的是哪一種地形？',opts:['山地','丘陵','台地','盆地'],ans:'山地',exp:'1000 公尺以上是山地；丘陵比較低。',hint:'1000 公尺以上，最高的那一種。'},
+{id:'bs09',s:'社會',c:'s-terrain',type:'choice',q:'四周高、中間低平的是哪一種地形？',opts:['盆地','台地','平原','丘陵'],ans:'盆地',exp:'盆地像一個臉盆，四周高中間低，例如臺北盆地。',hint:'想像一個臉盆的形狀。'},
+{id:'bs10',s:'社會',c:'s-terrain',x:1,type:'choice',q:'頂部平坦，四周以陡坡和低地相接的是哪一種地形？',opts:['盆地','台地','平原','丘陵'],ans:'台地',exp:'台地像一張桌子，上面平、四周陡。和盆地剛好相反。',hint:'想像一張桌子。'},
+{id:'bs11',s:'社會',c:'s-climate',type:'choice',q:'下列哪一個地方冬天最常下雨？',opts:['基隆','高雄','屏東','臺南'],ans:'基隆',exp:'基隆在北部，冬天常下雨，被叫作「雨港」。其他三個在南部，冬天少雨。',hint:'哪一個在北部？'},
+{id:'bs12',s:'社會',c:'s-climate',x:1,type:'choice',q:'臺灣南部（例如高雄）一年中的雨量特色是什麼？',opts:['夏季多雨、冬季少雨','夏季少雨、冬季多雨','全年都少雨','全年都多雨'],ans:'夏季多雨、冬季少雨',exp:'南部夏天有颱風和午後雷陣雨，冬天很少下雨。',hint:'南部的冬天常下雨嗎？'},
+{id:'bs13',s:'社會',c:'s-climate',type:'tf',q:'一般來說，屏東的冬天比宜蘭溫暖。',ans:'○',exp:'屏東在南部，冬天比較溫暖；宜蘭在北部，冬天比較冷。',hint:'南部和北部，冬天哪裡比較暖？'},
+{id:'bs14',s:'社會',c:'s-climate',x:1,type:'tf',q:'「天氣」是指一個地區長時間的平均狀況。',ans:'✗',exp:'長時間的平均狀況是「氣候」；天氣是每天、短時間的變化。',hint:'「今天天氣好」說的是一天還是很多年？'},
+{id:'bs15',s:'社會',c:'s-water',type:'tf',q:'海洋可以提供魚、蝦等海產，也是家鄉重要的水資源。',ans:'○',exp:'海水雖然不能直接喝，海洋仍然是重要的水資源。',hint:'記得那一題「海水太鹹」嗎？'},
+{id:'bs16',s:'社會',c:'s-water',type:'check',q:'下列哪些屬於家鄉的水資源？（全部選出來）',opts:['河川','湖泊','海洋','地下水','柏油路'],ans:['河川','湖泊','海洋','地下水'],exp:'只有柏油路不是水資源。',hint:'有水的地方都想一想，海洋也算喔。'},
+{id:'bs17',s:'社會',c:'s-water',type:'check',q:'水庫有哪些功能？（全部選出來）',opts:['提供民生用水','灌溉農田','發電','丟棄垃圾'],ans:['提供民生用水','灌溉農田','發電'],exp:'水庫可以供水、灌溉，有些還能發電。',hint:'水庫存了很多水，可以拿來做哪些事？'},
+{id:'bs18',s:'社會',c:'s-water',type:'tf',q:'臺灣的河川在冬季時，水量通常比夏季少。',ans:'○',exp:'夏季雨多，河水多；冬季（尤其南部）雨少，水量少。',hint:'哪個季節雨比較多？'},
+{id:'bs19',s:'社會',c:'s-house',type:'choice',q:'依照「左大右小」，三合院中排行最大的兒子通常住在哪裡？',opts:['左邊的護龍','右邊的護龍','稻埕','廚房'],ans:'左邊的護龍',exp:'左大右小：排行大的住左邊。',hint:'「左大」是誰住左邊？'},
+{id:'bs20',s:'社會',c:'s-house',x:1,type:'tf',q:'三哥住在右護龍，四弟住在左護龍，這樣符合「左大右小」。',ans:'✗',exp:'三哥比較大，應該住左邊；四弟住右邊才對。',hint:'先想三哥和四弟誰大，大的住哪邊？'},
+{id:'bs21',s:'社會',c:'s-house',type:'choice',q:'三合院中，可以曬穀子、也可以辦喜事請客的地方是？',opts:['稻埕','正廳','護龍','竹林'],ans:'稻埕',exp:'稻埕是三合院前面的大空地，曬穀、乘涼、請客都在這裡。',hint:'三合院中間那一大片空地。'},
+{id:'bs22',s:'社會',c:'s-house',x:1,type:'choice',q:'三合院正中間的「正廳」主要用來做什麼？',opts:['供奉神明和祖先','曬穀子','養雞養鴨','煮飯'],ans:'供奉神明和祖先',exp:'正廳供奉神明、祭拜祖先，也接待客人。和稻埕比一比。',hint:'最中間、最重要的房間。'},
+{id:'bs23',s:'社會',c:'s-house',type:'choice',q:'下列哪一種是漢人的傳統住屋？',opts:['三合院','石板屋','地下屋','高腳屋'],ans:'三合院',exp:'石板屋、地下屋是原住民族的傳統住屋。',hint:'今天學的ㄇ字形房子。'},
+{id:'bs24',s:'社會',c:'s-tools',type:'choice',q:'下列關於傳統生活器物的敘述，哪一項「正確」？',opts:['大多用竹子、木頭等天然材料做成','大多比塑膠製品更輕便','都是工廠大量製造的','用過後很難回歸大自然'],ans:'大多用竹子、木頭等天然材料做成',exp:'傳統器物就地取材，用過可以回歸自然；通常比塑膠重。',hint:'先圈「正確」。以前的人用什麼材料做東西？'},
+{id:'bs25',s:'社會',c:'s-tools',x:1,type:'choice',q:'下列關於傳統生活器物的敘述，哪一項「錯誤」？',opts:['魚筌可以用來捕捉山豬','灶可以用來煮菜、蒸粿','砧板常用木頭做成','早期會用植物葉子包食物'],ans:'魚筌可以用來捕捉山豬',exp:'魚筌是放在溪裡抓魚蝦的，不能抓山豬。',hint:'先圈「錯誤」！魚筌放在哪裡用？'},
+
+/* ---------- 自然 第一～二單元（康軒） ---------- */
+{id:'bn01',s:'自然',c:'n-surface',type:'choice',q:'想種需要「排水良好」的作物，下列哪一種地方最適合？',opts:['鬆散的土壤','堅硬的岩縫','海邊的泥灘','積水的水田'],ans:'鬆散的土壤',exp:'鬆散的土壤顆粒間有空隙，水容易流走，排水好。',hint:'水比較容易從哪一種地方流掉？'},
+{id:'bn02',s:'自然',c:'n-surface',x:1,type:'choice',q:'水稻喜歡有水，最適合種在哪一種土壤？',opts:['有黏性、潮濕的土壤','乾燥的沙丘','岩石表面','陡峭的土丘'],ans:'有黏性、潮濕的土壤',exp:'有黏性的土壤能保住水分，適合種水稻。',hint:'水稻要一直泡在水裡，土要能留住水。'},
+{id:'bn03',s:'自然',c:'n-surface',type:'choice',q:'想比較土壤、沙和小石頭的顆粒大小，最適合用什麼方法？',opts:['用放大鏡看、用手摸','用嘴巴嘗','用鼻子聞','互相敲打聽聲音'],ans:'用放大鏡看、用手摸',exp:'看和摸最能比較顆粒大小，也最安全。',hint:'比「大小」要用眼睛和手。'},
+{id:'bn04',s:'自然',c:'n-surface',type:'tf',q:'一個地表環境中，只會住著一種生物。',ans:'✗',exp:'同一個環境裡可以有很多種生物，例如泥灘地有招潮蟹，也有鳥。',hint:'想想公園的草地上有幾種生物。'},
+{id:'bn05',s:'自然',c:'n-surface',type:'check',q:'下列哪些是生活中利用岩石、沙或土壤的例子？（全部選出來）',opts:['用石頭蓋房子','在土裡種蔬菜','用沙裝沙包防水','腳踏車放太久生鏽'],ans:['用石頭蓋房子','在土裡種蔬菜','用沙裝沙包防水'],exp:'生鏽和岩石、沙、土壤沒有關係。',hint:'哪一個和石頭、沙、土都沒有關係？'},
+{id:'bn06',s:'自然',c:'n-change',type:'choice',q:'用水沖一堆大小不同的顆粒，哪一種會被沖得最遠？',opts:['顆粒最小的','顆粒最大的','中等大小的','全部一樣遠'],ans:'顆粒最小的',exp:'顆粒越小越輕，越容易被流水搬得遠。',hint:'越小越輕的東西，水一沖會怎樣？'},
+{id:'bn07',s:'自然',c:'n-change',type:'tf',q:'強風可以把海邊的細沙吹走，讓沙丘的形狀改變。',ans:'○',exp:'風和流水都會改變地表環境。',hint:'在海邊被風吹到眼睛的是什麼？'},
+{id:'bn08',s:'自然',c:'n-change',type:'choice',q:'下列哪一種人類行為比較容易引起土石流？',opts:['過度砍伐山坡上的森林','在山坡種樹','整治河川','設立保護區'],ans:'過度砍伐山坡上的森林',exp:'樹根能抓住土壤，樹被砍光，下大雨時土石就容易滑下來。',hint:'樹根有什麼用？'},
+{id:'bn09',s:'自然',c:'n-change',x:1,type:'tf',q:'地表環境的改變都是自然造成的，和人類的行為沒有關係。',ans:'✗',exp:'開發山坡地、挖砂石等人類行為，也會改變地表環境。',hint:'人類開路、蓋房子，會不會改變地表？'},
+{id:'bn10',s:'自然',c:'n-change',type:'check',q:'下列哪些行為可以保護地表環境？（全部選出來）',opts:['在裸露的山坡種樹','整治河川','在河川隨意挖砂石','過度開發山坡地'],ans:['在裸露的山坡種樹','整治河川'],exp:'挖砂石、過度開發會破壞地表環境。',hint:'一個一個想：這樣做是保護，還是破壞？'},
+{id:'bn11',s:'自然',c:'n-quake',type:'choice',q:'在教室遇到地震，應該先怎麼做？',opts:['躲到桌子下、抓穩桌腳、保護頭部','馬上搭電梯下樓','跑到窗戶旁邊看','繼續坐著寫功課'],ans:'躲到桌子下、抓穩桌腳、保護頭部',exp:'先趴下、掩護、穩住，保護頭部最重要。不能搭電梯。',hint:'身體哪個部位最需要保護？'},
+{id:'bn12',s:'自然',c:'n-quake',type:'tf',q:'同一次地震，各地感受到的震度可能不一樣。',ans:'○',exp:'離震央遠近不同，各地震度就會不同。',hint:'離地震的中心近和遠，搖的感覺一樣嗎？'},
+{id:'bn13',s:'自然',c:'n-quake',x:1,type:'tf',q:'只要看新聞，就可以提前知道下一次地震的時間和地點。',ans:'✗',exp:'地震目前無法準確預測，所以平時就要做好準備。',hint:'地震可以預先知道嗎？'},
+{id:'bn14',s:'自然',c:'n-quake',type:'choice',q:'下列哪一項「不是」地震可能造成的？',opts:['降雨量減少','房屋倒塌','山坡崩塌','道路斷裂'],ans:'降雨量減少',exp:'下雨多少和天氣有關，不是地震造成的。',hint:'先圈「不是」。哪一個和地面搖晃無關？'},
+{id:'bn15',s:'自然',c:'n-quake',type:'choice',q:'想查詢最新、最完整的地震資訊，可以到哪一個單位的網站？',opts:['中央氣象署','環境部','農業部','民政局'],ans:'中央氣象署',exp:'地震報告由中央氣象署發布。',hint:'天氣預報是誰發的？地震也是同一個單位。'},
+{id:'bn16',s:'自然',c:'n-quake',type:'check',q:'下列哪些是正確的防震準備？（全部選出來）',opts:['準備避難包','固定大型家具','熟悉逃生路線','地震時立刻搭電梯'],ans:['準備避難包','固定大型家具','熟悉逃生路線'],exp:'地震時不能搭電梯，可能會被困住。',hint:'哪一個在地震時很危險？'},
+{id:'bn17',s:'自然',c:'n-water-env',type:'tf',q:'溪流、湖泊和海洋都屬於水域環境。',ans:'○',exp:'有水的環境就是水域環境。',hint:'它們都有什麼？'},
+{id:'bn18',s:'自然',c:'n-water-env',x:1,type:'choice',q:'下列哪一個「不是」水域環境？',opts:['森林','溪流','湖泊','水田'],ans:'森林',exp:'森林是陸域環境；水田有水，是水域環境。',hint:'先圈「不是」。哪一個沒有水？'},
+{id:'bn19',s:'自然',c:'n-water-env',type:'choice',q:'水流比較急的山中溪流裡，比較可能看到哪一種生物？',opts:['溪蝦','海豚','睡蓮','松鼠'],ans:'溪蝦',exp:'海豚在海洋、睡蓮在池塘、松鼠在森林。',hint:'名字裡有「溪」的那一個。'},
+{id:'bn20',s:'自然',c:'n-water-env',type:'choice',q:'水深較淺、水流平靜，常看到睡蓮和鯉魚的，是哪一種水域環境？',opts:['生態池','溪流','海洋','瀑布'],ans:'生態池',exp:'生態池（池塘）水靜止、水淺。',hint:'「水流平靜」，水幾乎不動。'},
+{id:'bn21',s:'自然',c:'n-water-env',type:'tf',q:'觀察完水域裡的生物，可以把牠們帶回家養。',ans:'✗',exp:'觀察後要放回原處，保護牠們的家。',hint:'牠們的家在哪裡？'},
+{id:'bn22',s:'自然',c:'n-plant',type:'choice',q:'布袋蓮能浮在水面上，主要是因為什麼？',opts:['葉柄膨大，裡面有空氣','根長得很長','葉子很重','莖很硬'],ans:'葉柄膨大，裡面有空氣',exp:'膨大的葉柄像小游泳圈，裡面有空氣。',hint:'游泳圈為什麼會浮？'},
+{id:'bn23',s:'自然',c:'n-plant',type:'choice',q:'整株沉在水中，莖和葉很柔軟、會隨水流擺動的是哪一種？',opts:['水蘊草','布袋蓮','香蒲','睡蓮'],ans:'水蘊草',exp:'水蘊草是沉水性植物。',hint:'全部都在水面下的那一種。'},
+{id:'bn24',s:'自然',c:'n-plant',x:1,type:'choice',q:'葉子平貼在水面，根長在水底泥土裡的是哪一種？',opts:['睡蓮','水蘊草','大萍','香蒲'],ans:'睡蓮',exp:'睡蓮是浮葉性：葉浮在水面，根在泥土裡。',hint:'葉子「浮」著，但根有抓住泥土。'},
+{id:'bn25',s:'自然',c:'n-plant',x:1,type:'choice',q:'根漂浮在水中，整株可以隨水流移動的是哪一種？',opts:['大萍','睡蓮','香蒲','水蘊草'],ans:'大萍',exp:'大萍是漂浮性植物，根沒有長在泥土裡。和睡蓮比一比。',hint:'哪一種的根沒有抓住泥土？'},
+{id:'bn26',s:'自然',c:'n-plant',type:'choice',q:'葉和花挺出水面，根長在水底泥土裡的是哪一種？',opts:['香蒲','大萍','水蘊草','布袋蓮'],ans:'香蒲',exp:'香蒲是挺水性植物，高高挺出水面。',hint:'「挺」出水面，長得高高的。'},
+{id:'bn27',s:'自然',c:'n-plant',type:'tf',q:'荷花的地下莖裡有中空的管道，可以儲存空氣。',ans:'○',exp:'切開蓮藕可以看到一個個孔洞。',hint:'蓮藕切開長什麼樣子？'},
+{id:'bn28',s:'自然',c:'n-animal',type:'choice',q:'魚在水中主要靠什麼控制游的方向？',opts:['擺動鰭','用肺呼吸','用腹足爬','用蹼划水'],ans:'擺動鰭',exp:'魚靠擺動鰭和尾巴游動、控制方向，用鰓呼吸。',hint:'魚身上像小扇子的部位。'},
+{id:'bn29',s:'自然',c:'n-animal',type:'choice',q:'下列哪一種動物「不是」用鰓呼吸？',opts:['斑龜','魚','蝦','蝌蚪'],ans:'斑龜',exp:'斑龜用肺呼吸，所以要浮上水面換氣。蝌蚪用鰓，長成青蛙後才用肺。',hint:'先圈「不是」。哪一種常把頭伸出水面？'},
+{id:'bn30',s:'自然',c:'n-animal',x:1,type:'choice',q:'腳上有蹼，能在水中游，也能到陸地上活動，用肺呼吸的是？',opts:['青蛙','魚','螺','蝦'],ans:'青蛙',exp:'青蛙的腳有蹼，長大後用肺呼吸。',hint:'哪一種會在岸上跳？'},
+{id:'bn31',s:'自然',c:'n-animal',type:'tf',q:'螺用腹足在水底或石頭上慢慢爬行。',ans:'○',exp:'螺用腹足爬行，用鰓呼吸。',hint:'螺有腳嗎？牠怎麼移動？'},
+{id:'bn32',s:'自然',c:'n-protect',type:'check',q:'下列哪些是愛護水域環境的做法？（全部選出來）',opts:['參加淨灘','不在溪邊亂丟垃圾','工廠廢水處理乾淨再排放','把溪裡的魚撈回家養'],ans:['參加淨灘','不在溪邊亂丟垃圾','工廠廢水處理乾淨再排放'],exp:'撈魚回家會破壞溪裡的生態。',hint:'一個一個想：對水裡的生物好不好？'},
+{id:'bn33',s:'自然',c:'n-protect',type:'tf',q:'工廠的熱廢水不用處理，直接排進海裡也沒關係。',ans:'✗',exp:'熱廢水會讓水溫升高，傷害水中生物，要處理後才能排放。',hint:'水突然變熱，魚會怎樣？'},
+{id:'bn34',s:'自然',c:'n-protect',type:'choice',q:'住在海邊的人們，比較可能發展出哪一種飲食習慣？',opts:['常吃魚、蝦等海鮮','常吃高山蔬菜','常喝小米酒','常吃山豬肉'],ans:'常吃魚、蝦等海鮮',exp:'不同環境的資源不同，海邊的人多利用海洋資源。',hint:'海邊最容易取得什麼食物？'}
+];
+
 </script>
 <script>
 "use strict";
@@ -749,8 +892,8 @@ const PROMPT_PIG = `你是「豬探長」，陪四年級的 Cassie 訂正錯題�
 6. 適度鼓勵，但不要浮誇；不要一次講太多。`;
 const DEFAULT_SETTINGS = () => ({
   model:'gemini-2.5-flash', grade:'四上',
-  subjects:[{name:'國語',ver:'康軒'},{name:'社會',ver:'康軒'},{name:'數學',ver:'翰林'}],
-  prompts:{expert:PROMPT_EXPERT, pig:PROMPT_PIG}, roundSize:5
+  subjects:[{name:'國語',ver:'康軒'},{name:'社會',ver:'康軒'},{name:'數學',ver:'翰林'},{name:'自然',ver:'康軒'}],
+  prompts:{expert:PROMPT_EXPERT, pig:PROMPT_PIG}, roundSize:10
 });
 const LS_DATA='ctb-data-v1', LS_KEY='ctb-gemini-key', LS_UI='ctb-ui';
 
@@ -765,9 +908,20 @@ function load(){
   }
   d.settings={...DEFAULT_SETTINGS(),...(d.settings||{})};
   d.settings.prompts={...DEFAULT_SETTINGS().prompts,...(d.settings.prompts||{})};
-  DB=d; save();
+  /* 升級：補觀念標籤、自然科、題庫進度 */
+  d.items.forEach(it=>{ if(!it.c&&CMAP[it.id]) it.c=CMAP[it.id]; });
+  if(!d.settings.subjects.some(x=>x.name==='自然')) d.settings.subjects.push({name:'自然',ver:'康軒'});
+  if(!d.bp) d.bp={};
+  d.v=2; DB=d;
+  BK=BANK.map(b=>({...b,bank:true,hist:[],streak:0,mastered:false,...(d.bp[b.id]||{})}));
+  save();
 }
-function save(){ if(!lsSet(LS_DATA,JSON.stringify(DB))) toast('儲存失敗：瀏覽器空間不足或被封鎖'); }
+let BK=[];
+function save(){
+  BK.forEach(b=>{ if(b.hist.length||b.mastered) DB.bp[b.id]={hist:b.hist.slice(-20),streak:b.streak||0,mastered:!!b.mastered}; });
+  if(!lsSet(LS_DATA,JSON.stringify(DB))) toast('儲存失敗：瀏覽器空間不足或被封鎖');
+}
+const findItem=id=>DB.items.find(i=>i.id===id)||BK.find(b=>b.id===id);
 const getKey=()=>lsGet(LS_KEY)||'';
 
 /* IndexedDB for photos */
@@ -866,40 +1020,63 @@ let RUN=null;
 function pigSay(html){return `<div class="pig"><svg viewBox="0 0 64 64"><use href="#pigface"/></svg><div class="bubble">${html}</div></div>`}
 function renderPracticeHome(){
   $('#p-run').hidden=true; const h=$('#p-home'); h.hidden=false;
-  const ui=uiGet(); const sel=ui.pSubj||'全部';
-  const pool=s=>DB.items.filter(i=>!i.mastered&&(s==='全部'||i.s===s));
-  const done=DB.items.filter(i=>i.mastered).length;
-  const n=DB.settings.roundSize||5;
+  const ui=uiGet(); let sel=ui.pSubj||'全部'; if(sel!=='全部'&&!subjNames().includes(sel)) sel='全部';
+  const wp=s=>DB.items.filter(i=>!i.mastered&&(s==='全部'||i.s===s));
+  const np=s=>BK.filter(i=>!i.mastered&&(s==='全部'||i.s===s));
+  const done=DB.items.filter(i=>i.mastered).length+BK.filter(i=>i.mastered).length;
   h.innerHTML=`
   <div class="card hero">
     <svg viewBox="0 0 64 64"><use href="#pigface"/></svg>
     <div>
       <div style="font-size:20px;font-weight:600">嗨 Cassie，我是豬探長！</div>
-      <div class="muted">今天一起破解幾題錯題吧。記得：<b style="color:var(--pig-d)">仔細看一看，用心想一想。</b></div>
+      <div class="muted">今天一起破解 10 題吧：一半是你的錯題，一半是新題目。記得：<b style="color:var(--pig-d)">仔細看一看，用心想一想。</b></div>
       <div class="stat-row">
-        <div class="stat"><b>${pool('全部').length}</b> 題待練習</div>
+        <div class="stat"><b>${wp('全部').length}</b> 題錯題待練</div>
+        <div class="stat"><b>${np('全部').length}</b> 題新題目</div>
         <div class="stat"><b>${done}</b> 題已克服</div>
       </div>
     </div>
   </div>
   <h2>選一科</h2>
-  <div class="chips" id="p-subj">${['全部',...subjNames()].map(s=>`<button class="chip ${s===sel?'on':''}" data-s="${esc(s)}">${esc(s)}（${pool(s).length}）</button>`).join('')}</div>
-  <h2>一次練幾題？</h2>
-  <div class="chips" id="p-n">${[3,5,8,10].map(k=>`<button class="chip ${k===n?'on':''}" data-n="${k}">${k} 題</button>`).join('')}</div>
-  <div class="actions" style="margin-top:22px"><button class="btn pri" id="p-start" style="font-size:19px;padding:12px 28px">開始練習</button></div>`;
+  <div class="chips" id="p-subj">${['全部',...subjNames()].map(s=>`<button class="chip ${s===sel?'on':''}" data-s="${esc(s)}">${esc(s)}<span class="small" style="opacity:.75">（錯 ${wp(s).length}・新 ${np(s).length}）</span></button>`).join('')}</div>
+  <p class="small muted" style="margin:10px 2px 0">${sel==='自然'?'自然還沒有錯題，這一回 10 題都是新題目。答錯的新題目會自動收進錯題本。':'錯題和新題目會交錯出現，新題目優先挑和錯題同一個觀念的。答錯的新題目會自動收進錯題本。'}</p>
+  <div class="actions" style="margin-top:22px"><button class="btn pri" id="p-start" style="font-size:19px;padding:12px 28px">開始練習 10 題</button></div>`;
   h.querySelectorAll('#p-subj .chip').forEach(b=>b.onclick=()=>{uiSet({pSubj:b.dataset.s});renderPracticeHome()});
-  h.querySelectorAll('#p-n .chip').forEach(b=>b.onclick=()=>{DB.settings.roundSize=+b.dataset.n;save();renderPracticeHome()});
-  $('#p-start').onclick=()=>startRun(sel,n);
+  $('#p-start').onclick=()=>startRun(sel,10);
 }
+const lastT=i=>i.hist&&i.hist.length?i.hist[i.hist.length-1].t:0;
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 function startRun(subj,n){
-  let pool=DB.items.filter(i=>!i.mastered&&(subj==='全部'||i.s===subj));
-  if(!pool.length){toast('這一科沒有待練習的題目了，太厲害了！');return}
-  const last=i=>i.hist.length?i.hist[i.hist.length-1].t:0;
-  pool.sort((a,b)=>((a.streak||0)-(b.streak||0))||(last(a)-last(b))||(Math.random()-.5));
-  RUN={queue:pool.slice(0,n).map(i=>({id:i.id,variant:false})),idx:0,ok:0,chat:[]};
+  const inS=i=>subj==='全部'||i.s===subj;
+  const byNeed=(a,b)=>((a.streak||0)-(b.streak||0))||(lastT(a)-lastT(b));
+  const wrong=shuffle(DB.items.filter(i=>!i.mastered&&inS(i))).sort(byNeed);
+  const fresh=shuffle(BK.filter(i=>!i.mastered&&inS(i)));
+  let W=Math.min(Math.ceil(n/2),wrong.length);
+  let N=Math.min(n-W,fresh.length);
+  if(W+N<n) W=Math.min(n-N,wrong.length);
+  const pickW=[];const usedC={};
+  for(const it of wrong){ if(pickW.length>=W) break; if(usedC[it.c]>=2) continue; pickW.push(it); usedC[it.c]=(usedC[it.c]||0)+1; }
+  for(const it of wrong){ if(pickW.length>=W) break; if(!pickW.includes(it)) pickW.push(it); }
+  const wc=new Set(pickW.map(i=>i.c)), ws=new Set(pickW.map(i=>i.s));
+  const rank=b=>(wc.has(b.c)?0:ws.has(b.s)?1:subj==='全部'&&b.s==='自然'?2:3);
+  fresh.sort((a,b)=>(rank(a)-rank(b))||byNeed(a,b));
+  const pickN=[];const usedN={};
+  for(const b of fresh){ if(pickN.length>=N) break; if(usedN[b.c]>=2) continue; pickN.push(b); usedN[b.c]=(usedN[b.c]||0)+1; }
+  for(const b of fresh){ if(pickN.length>=N) break; if(!pickN.includes(b)) pickN.push(b); }
+  if(subj==='全部'&&!pickN.some(b=>b.s==='自然')){const sci=fresh.find(b=>b.s==='自然'&&!pickN.includes(b)); if(sci&&pickN.length) pickN[pickN.length-1]=sci;}
+  const all=[...pickW,...pickN];
+  if(!all.length){toast('這一科的題目都克服了，太厲害了！');return}
+  /* 交錯排序：相鄰的題目盡量不同觀念、不同科目，錯題和新題目輪流 */
+  const order=[];const left=shuffle(all.slice());let wantBank=false;
+  while(left.length){
+    const p=order[order.length-1];
+    const score=x=>(p&&x.c===p.c?100:0)+(p&&x.s===p.s&&subj==='全部'?10:0)+((!!x.bank)!==wantBank?1:0);
+    left.sort((a,b)=>score(a)-score(b)); const x=left.shift(); order.push(x); wantBank=!x.bank;
+  }
+  RUN={queue:order.map(i=>({id:i.id,variant:false})),idx:0,ok:0,chat:[]};
   $('#p-home').hidden=true; $('#p-run').hidden=false; renderQ();
 }
-function curQ(){const e=RUN.queue[RUN.idx];const it=DB.items.find(i=>i.id===e.id);if(!it) return null;
+function curQ(){const e=RUN.queue[RUN.idx];const it=findItem(e.id);if(!it) return null;
   const src=e.variant&&it.v? {...it,...it.v,isVariant:true}:{...it,isVariant:false};
   return {e,it,q:src};}
 function renderQ(){
@@ -923,7 +1100,7 @@ function renderQ(){
   <div class="row"><button class="btn sm ghost" id="q-quit">← 結束</button><span class="sp"></span><span class="muted small">第 ${RUN.idx+1} / ${total} 題</span></div>
   <div class="prog"><i style="width:${(RUN.idx/total)*100}%"></i></div>
   <div class="card qcard">
-    <div class="qhead"><span class="tag">${esc(it.s)}</span><span class="tag">${esc(it.unit||'')}</span>${q.isVariant?'<span class="tag" style="background:var(--pig-l);color:var(--pig-d)">換數字挑戰</span>':''}</div>
+    <div class="qhead"><span class="tag">${esc(it.s)}</span>${it.bank?'<span class="tag" style="background:var(--ok-l);color:var(--ok)">新題目</span>':'<span class="tag c-概念不懂">錯題</span>'}${it.c&&CONCEPTS[it.c]?`<span class="tag">${esc(CONCEPTS[it.c])}</span>`:`<span class="tag">${esc(it.unit||'')}</span>`}${it.x?'<span class="tag" style="background:var(--pig-l);color:var(--pig-d)">比一比</span>':''}${q.isVariant?'<span class="tag" style="background:var(--pig-l);color:var(--pig-d)">換數字挑戰</span>':''}</div>
     ${isLong(q.q)?`<div class="look">🔍 仔細看一看：先找出題目在問什麼</div>`:''}
     <div class="qtext">${fmt(q.q)}</div>
     ${figSVG(q.fig)}
@@ -976,9 +1153,16 @@ function answer(v,btn){
       if(q.type==='tf'||q.type==='choice') area.querySelectorAll('.opt').forEach(b=>{if(b.dataset.o===q.ans) b.classList.add('right')});
       if(q.type==='check') area.querySelectorAll('.opt').forEach(b=>{if(q.ans.includes(b.dataset.o)) b.classList.add('right')});
       record(it,false);
+      if(it.bank) RUN.state.added=addFromBank(it,v);
       finishCard(false);
     }
   }
+}
+function addFromBank(b,v){
+  if(DB.items.some(i=>i.fromBank===b.id)) return false;
+  const stu=Array.isArray(v)?'選了：'+v.join('、'):(b.type==='num'?String(v)+(b.u?' '+b.u:''):String(v));
+  const n={id:uid(),fromBank:b.id,s:b.s,c:b.c,unit:CONCEPTS[b.c]||'',exam:'練習時答錯的新題目',date:today(),type:b.type,q:b.q,opts:b.opts,ans:b.ans,u:b.u,fig:b.fig,stu,cause:'概念不懂',exp:b.exp,hint:b.hint,hist:[],mastered:false,streak:0,photos:[]};
+  DB.items.unshift(n); save(); return true;
 }
 function lockOpts(){ $('#q-area').querySelectorAll('.opt,#q-submit,#q-num').forEach(b=>b.disabled=true); }
 function revealWrite(){
@@ -1005,7 +1189,7 @@ function finishCard(ok,isWrite){
   let html='';
   if(!isWrite){
     html+= ok? pigSay(`<b>${RUN.state.tries>1?'第二次答對了！有用心想喔。':praise}</b>${it.mastered?' 這題已經克服了！':''}`)
-             : pigSay(`沒關係，我們一起看答案。<b>錯了才知道哪裡要加強！</b>`);
+             : pigSay(`沒關係，我們一起看答案。<b>錯了才知道哪裡要加強！</b>${RUN.state.added?'<br>這題已經收進錯題本，下次再挑戰。':''}`);
     html+=`<div class="answerbox ${ok?'ok':'bad'}"><div class="muted small">正確答案</div><div style="font-size:20px;font-weight:600">${fmt(ansText(q))}</div></div>`;
     if(!q.isVariant&&it.exp) html+=`<div class="exp">${fmt(it.exp)}</div>`;
   }else{
@@ -1082,7 +1266,7 @@ function drawItems(){
   box.innerHTML=list.map(it=>{
     const okN=it.hist.filter(h=>h.ok).length, n=it.hist.length;
     return `<div class="card item" data-id="${it.id}">
-      <div class="row"><span class="tag">${esc(it.s)}</span><span class="tag">${esc(it.unit||'')}</span><span class="tag c-${esc(it.cause)}">${esc(it.cause||'未分類')}</span>${it.mastered?'<span class="tag done">已克服</span>':''}<span class="sp"></span><span class="small muted">${esc(it.date||'')}</span></div>
+      <div class="row"><span class="tag">${esc(it.s)}</span><span class="tag">${esc(it.unit||'')}</span>${it.c&&CONCEPTS[it.c]&&CONCEPTS[it.c]!==it.unit?`<span class="tag">${esc(CONCEPTS[it.c])}</span>`:''}<span class="tag c-${esc(it.cause)}">${esc(it.cause||'未分類')}</span>${it.mastered?'<span class="tag done">已克服</span>':''}<span class="sp"></span><span class="small muted">${esc(it.date||'')}</span></div>
       <div class="q">${fmt(it.q)}</div>
       ${figSVG(it.fig)}
       ${it.opts&&it.opts.length&&!isCmp(it.opts)&&it.opts.length<8?`<ul class="ol">${it.opts.map((o,i)=>`<li>(${i+1}) ${fmt(o)}</li>`).join('')}</ul>`:''}
@@ -1287,8 +1471,8 @@ function renderSettings(){
   $('#s-export').onclick=exportData;
   $('#s-import').onchange=importData;
   $('#s-wipe').onclick=async()=>{if(!confirm('確定清除全部錯題和設定？建議先匯出備份。'))return;if(!confirm('真的要清除嗎？這個動作無法復原。'))return;
-    try{localStorage.removeItem(LS_DATA)}catch(e){} await idb.clear(); DB={v:1,items:[],settings:DEFAULT_SETTINGS()};save();toast('已清除');renderSettings()};
-  $('#s-info').textContent=`目前共 ${DB.items.length} 題（已克服 ${DB.items.filter(i=>i.mastered).length} 題）。`;
+    try{localStorage.removeItem(LS_DATA)}catch(e){} await idb.clear(); lsSet(LS_DATA,JSON.stringify({v:1,items:[],settings:DEFAULT_SETTINGS(),bp:{}})); load();toast('已清除');renderSettings()};
+  $('#s-info').textContent=`錯題本共 ${DB.items.length} 題（已克服 ${DB.items.filter(i=>i.mastered).length} 題）；新題目 ${BK.length} 題（已克服 ${BK.filter(i=>i.mastered).length} 題）。`;
 }
 async function exportData(){
   const photos=await idb.all();
@@ -1300,7 +1484,7 @@ async function importData(e){
   const f=e.target.files[0]; if(!f) return;
   try{const j=JSON.parse(await f.text()); const d=j.data||j; if(!Array.isArray(d.items)) throw new Error('不是錯題本的備份檔');
     if(!confirm(`備份裡有 ${d.items.length} 題。匯入會取代目前的資料，確定嗎？`)) return;
-    DB={v:1,items:d.items,settings:{...DEFAULT_SETTINGS(),...d.settings}};
+    lsSet(LS_DATA,JSON.stringify({v:1,items:d.items,settings:{...DEFAULT_SETTINGS(),...d.settings},bp:d.bp||{}})); load();
     for(const [k,v] of Object.entries(j.photos||{})) await idb.put(k,v);
     save(); toast('匯入完成'); renderSettings(); updateSub();
   }catch(err){toast('匯入失敗：'+err.message)} finally{e.target.value=''}
