@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>豬探長的自然辦案室</title>
+<style>
+:root{--bg:#e8f3f1;--ink:#1f2a44;--pink:#f28aa5;--yel:#ffd56b;--ok:#2e9e6b;--no:#e8833a;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:20px/1.6 "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:26px;margin:4px 0}
+.sub{margin:0 0 12px;font-size:18px}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:20px;padding:16px;margin:12px 0}
+.pass{background:#fff7d6;border-left:8px solid var(--yel);padding:10px 14px;border-radius:10px;font-size:18px;margin-bottom:10px}
+button{font:inherit;color:var(--ink);background:#fff;border:3px solid var(--ink);border-radius:16px;padding:12px 16px;margin:6px 6px 6px 0;min-height:56px;cursor:pointer;text-align:left}
+button:focus-visible{outline:4px solid var(--pink);outline-offset:2px}
+.opt{display:block;width:100%}
+.unit{background:var(--yel)}
+.go{background:var(--pink);font-weight:700}
+.bad{background:#ffe3cf;border-color:var(--no);color:#7a3a10}
+.good{background:#d8f3e5;border-color:var(--ok)}
+.fb{margin-top:10px;font-size:19px}
+.step{font-weight:700;margin:6px 0}
+.tag{display:inline-block;background:var(--ink);color:#fff;border-radius:999px;padding:0 12px;font-size:16px}
+nav{display:flex;gap:6px;flex-wrap:wrap;padding:8px 16px;position:sticky;top:0;background:var(--bg);z-index:5}
+nav button{margin:0;min-height:48px;font-size:18px}
+summary{cursor:pointer;font-weight:700}
+h2{font-size:22px;margin:18px 0 4px}
+@media(min-width:900px){body{display:flex;align-items:flex-start}nav{flex-direction:column;flex-wrap:nowrap;width:180px;top:16px;padding:16px 8px 16px 16px}main{flex:1}}
+</style>
+</head>
+<body>
+<nav id="nav"><button data-n="h">🏠 首頁</button><button data-n="b">📒 錯題本</button><button data-n="a">📖 詳細解答</button></nav>
+<main id="app"></main>
+<script>
+const U={1:"地表的變動與地震",2:"水域環境與水生生物",3:"聲音與光",4:"電路與電池"};
+// k: 0=題目問「正確的」、1=題目問「不正確的」（有 k 才會出現「仔細看一看」步驟；p=閱讀短文）
+const Q=[
+{u:1,q:"風或流水作用時，礫石、沙、土壤哪一種被搬得最遠？",o:["礫石","沙","土壤","都一樣遠"],a:2,w:"顆粒越小、越輕，被搬得越遠。"},
+{u:1,q:"水稻最適合長在哪裡？",o:["有黏性的溼潤土壤","鬆散、排水好的沙土","堅硬的岩石縫隙"],a:0,w:"稻田的泥土黏黏、溼溼的。"},
+{u:1,q:"下列關於地震相關名詞的敘述，哪一項是不正確的？",o:["震央是引發地震的位置","震源深度是震央到震源的距離","地震規模是震源釋放出的能量大小","震度是人體感受或建築物受破壞的程度"],a:0,k:1,w:"引發地震的位置叫「震源」，不是震央。"},
+{u:1,q:"下列哪一個行為無法保護地表環境？",o:["在高山大範圍種植蔬菜","不隨意砍伐森林","參加植樹活動","整治河川"],a:0,k:1,w:"大範圍開墾高山會破壞原本的生態環境。"},
+{u:2,q:"睡蓮的根和地下莖長在水底泥土裡，葉漂浮在水面，屬於哪一種水生植物？",o:["漂浮性","沉水性","浮葉性","挺水性"],a:2,w:"葉子浮在水面，就是浮葉性。"},
+{u:2,q:"魚的哪一個構造可以控制游動方向？",o:["魚鰓","魚鱗","魚鰭","鰓蓋"],a:2,w:"魚鰓幫助呼吸，魚鱗保護身體，魚鰭控制方向。"},
+{u:2,p:"大王蓮的葉子平貼在水面生長，葉面直徑約 1～3 公尺，可承受 50～70 公斤的重量。與一般蓮葉不同，它的葉子邊緣向上轉折、直立；葉背長了許多銳利小刺，葉脈明顯凸出，像網子一樣向外延伸。",q:"根據短文，下列關於大王蓮的敘述，哪一項是正確的？",o:["屬於沉水性水生植物","葉緣向上轉折、直立","葉子直徑可達 50～70 公尺","葉背的小刺是為了好看"],a:1,k:0,w:"短文說葉子邊緣向上轉折、直立；50～70 是公斤，不是公尺。"},
+{u:2,q:"下列關於保護水域環境的做法，哪一項是不正確的？",o:["定期清理校園的生態池","在溪邊烤肉或撈魚","撿拾海岸邊的垃圾","禁止在水源保護區設立工廠"],a:1,k:1,w:"在溪邊烤肉、撈魚會影響水域環境和生物。"},
+{u:3,q:"用手撥動橡皮筋時，如果用較大的力，聲音會怎樣？",o:["變小","變大","不會改變"],a:1,w:"振動越大，聲音越大。"},
+{u:3,q:"下列哪一項物品，不是光的反射現象的應用？",o:["彎道旁的反光導標","玩手影遊戲","汽車後視鏡","路邊的凸面鏡"],a:1,k:1,w:"手影是光被擋住形成影子，是直線行進。"},
+{u:3,p:"小宇把雷射筆的光射進一個透明容器，他發現容器裡如果充滿煙，就能清楚看到光走的路線。",q:"做光的反射實驗時，為什麼要讓透明容器中充滿煙？",o:["光碰到煙才會反射","光在煙中才會直線前進","煙可以吸收光線","方便觀察光的行進路線"],a:3,w:"煙讓我們看得到光走過的路。"},
+{u:4,q:"下列哪一個物品可以連接在電路中，使燈泡發亮？",o:["橡皮筋","硬幣","色紙","木尺"],a:1,w:"硬幣是金屬，是電的良導體。"},
+{u:4,p:"小琦把電池、電線和燈泡連接在一起，形成通路，結果燈泡只亮了一下子就不亮了。",q:"可能是哪一個問題造成的？",o:["電路連接錯誤","燈泡的數量太少","電池的電力不夠","電線太長"],a:2,w:"通路有亮過，表示接法沒錯；後來不亮是電力用完了。"},
+{u:4,q:"原本一個電池和一個燈泡的電路中，再增加 3 個燈泡並聯，燈泡亮度會如何？",o:["變得較暗","變得較亮","保持不變","全部不亮"],a:2,w:"燈泡並聯，每個燈泡的亮度不會變。"},
+{u:4,q:"製作簡易電風扇時，要怎麼改良才可以轉得更快？",o:["再並聯一個電池","再串聯一個電池","把電池反過來連接","多連接一個燈泡"],a:1,w:"電池串聯，電力變大，轉得更快。"}
+];
+// 期中（單元1、2）A、B卷：是非題「單元|題目|○或╳」，選擇題「單元|題目|選項;選項|答案編號」
+const TF=`1|除了風、流水等自然因素，有些人類行為也會改變地表環境|○
+1|地球表面上的環境只有高山和海洋，沒有其他環境|╳
+1|地表上的空氣、水和不會移動的植物等都屬於非生物|╳
+1|沙丘上的地表面貌較容易受外力而變動，在上面生長的植物通常呈低矮的匍匐狀|○
+1|整治河川可以防止河水持續沖刷河岸|○
+1|地震是人類行為造成的，可能造成地表變動，並危害我們的安全|╳
+1|中央氣象署會在地震發生前發出國家級警報，提醒民眾提早準備|╳
+2|不同的環境有不同生物生存，例如松鼠在森林中棲息、溪流中可見到蝦和蟹|○
+2|生態池的水通常比較淺，陽光可以照射到池底，常有睡蓮、鯉魚和龜等生物生存|○
+2|布袋蓮和大萍都具有可儲存空氣的構造，可以漂浮在水面上生長|○
+2|水生植物大致可分為沉水性、漂浮性、浮葉性、挺水性等類型|○
+2|水蘊草的莖和葉可以伸出水面生長，屬於挺水性水生植物|╳
+2|魚的身體扁扁的，頭和尾比較細，中間比較粗，方便在水中運動|○
+2|所有的水生動物都只能利用鰓在水中呼吸，無法離開水中生活|╳
+2|水域環境是水生生物的家，乾淨的水域環境能讓水生生物健康的生長，因此我們應該愛護水域環境|○
+1|地球上有高山、平原、河流、海洋等地表環境，不同的地表環境各有特色|○
+1|不同植物適合的生長環境不同，例如水稻適合種在沙丘上、西瓜會從岩縫中長出|╳
+1|岩石、沙和土壤各有不同的特性，生活中的應用也不相同|○
+1|用放大鏡觀察，可以發現礫石、沙和土壤的顆粒大小都一樣，只是顏色不同|╳
+1|風和流水會把地表物質搬到其他地方堆起來，作用越強時，地表物質會被搬得越遠|○
+1|如果過度開發森林，下大雨後，裸露的地表便容易發生土石流|○
+1|在中央氣象署的地震報告中，震央是指引發地震的位置|╳
+1|地震發生時，應立即採「趴下、掩護、穩住」的動作，躲在桌下或牆角並保護頭部|○
+2|不同環境有不同的生物生存，例如松鼠是潮間帶常見的動物、生態池中常可見到溪蝦等|╳
+2|不同水域環境的水質、水流及陽光照射情形等都不太一樣，生長的水生生物也不同|○
+2|睡蓮的根和地下莖生長在水底的泥土裡，葉會漂浮在水面，屬於浮葉性水生植物|○
+2|水蘊草的莖、葉柔軟，會隨著水位高低而伸展或彎曲，也會隨水流擺動，減少水流的衝擊|○
+2|魚呼吸時會不斷擺動魚鰭，幫助含有空氣的水流入和流出身體|╳
+2|蛙在水中會用後腳的蹼游水，用肺和潮溼的皮膚呼吸|○
+2|把稀有的水生動物帶回家飼養，細心照顧，是保護動物的好方法|╳
+1|小翔平時進行防震演練，熟悉逃生路線，是正確的防災準備|○
+1|地震時應繼續看電視，關心最新地震資訊，是正確的防災準備|╳
+1|地震時應保護頭部，注意掉落物，是正確的防災準備|○
+1|地震後，檢查房屋是否有龜裂，是正確的防災準備|○
+1|地震可能引發火災|○|?
+1|地震可能造成河水乾涸|╳|?
+1|地震可能造成建築倒塌|○|?
+1|地震可能造成地層隆起|○|?
+1|地震可能形成堰塞湖|○|?
+1|地震可能造成水壩破裂|○|?
+2|水域環境調查時，觀察要注意安全，不可單獨行動，也不要去水深的地方|○|?
+2|水域環境調查時，看到荷花開得好美，可以摘下來帶回家種|╳|?
+2|水域環境調查時，發現不認識的水生動物，可以先拍照後再回家查詢|○|?
+2|把家中的金魚帶到水域環境放生，是正確的做法|╳|?`;
+const P=`荷花（蓮花）自古就被比喻為花中的君子，生長在泥濘的池水中仍能一塵不染。當水滴在荷葉上，荷葉並不會被沾溼，而是呈現一顆顆圓滾滾的水珠，原來荷葉表面布滿眼睛看不見的纖毛，纖毛上具有蠟質，灰塵和水珠不容易附著在葉面上。小水珠在葉面上滾動後會聚集成大水珠，並順便帶走葉面上的灰塵，達到清潔荷葉表面的效果，這種現象稱為「蓮葉效應」。現今，科學家已經能將蓮葉效應的原理應用在日常生活中，例如製造布料、清潔劑、光電產品等，以達到抗菌除臭、環保等功效。`;
+const PB=`大王蓮的根生長在水底的泥土裡，葉子平貼在水面生長。葉背的葉脈明顯凸出，像網子一樣向外延伸，形成許多四邊形小方格，小方格結構可提供表面張力作用所需的界面，分散葉子承受的重量。葉面有許多小凸起，增加葉片的浮力。`;
+const MC=`1|下列哪一項不是地震可能造成的地表變動？|斷層瀑布;乾旱;堰塞湖;地面隆起斷裂|2
+1|下列生物和生長環境的配對，哪一組是不正確的？|西瓜：鬆散、排水性良好的土壤;栗喉蜂虎：堅硬的岩石縫隙;招潮蟹：鬆軟的海濱泥灘地;水稻：有點黏性的溼潤土壤|2
+1|下列關於地表環境的敘述，哪一項是不正確的？|森林中有許多動物棲息;人類在地表興建各式建築物;沙丘沙塵飛揚，沒有生物能在此生存;地表有河流經過|3
+1|下列關於地表上岩石、沙和土壤的敘述，哪一項是正確的？|岩石由礫石碎裂而成;土壤可以種植農作物;土壤和沙的顆粒大小一樣大;建築物蓋在堅固的岩石上，其他的地表物質對人類來說可有可無|2
+1|在流水作用的實驗中，可以觀察到土堆產生了下列哪一種變化？|沙被搬得最遠;礫石被搬得最遠;土壤被搬得最遠;礫石、沙、土壤被搬得一樣遠|3
+1|下列哪一個行為可以保護地表環境？|不隨意開墾山坡地，保持原本的生態環境;砍伐森林改建為遊樂園;在河川地開挖砂石;在山區開闢礦場|1
+1|臺灣經常發生地震，下列哪一項是平時應做好的防災準備？|準備旅行背包;不用瓦斯爐烹煮食物;進行防震演練並熟悉逃生路線;將重物移到櫥櫃上方|3
+2|有水的環境就是水域環境，下列哪一項屬於水域環境？|生態池;高山;草地;森林|1
+2|將下列哪一種水生植物的葉柄切開後，可以觀察到一條條中空的管道？|布袋蓮;大萍;水蘊草;荷花|4
+2|大萍能漂浮在水面上的原理，和下列哪一種生活現象相同？|潮溼的衣服掛在太陽下晒乾;在游泳圈中打入空氣;水放入冷凍庫後變成冰塊;水會在細縫中移動|2
+2|下列哪一個不是荷花的特徵呢？|葉片能防水;有儲存空氣的構造;葉漂浮在水面;有生長在泥土裡的地下莖|3
+2|下列關於魚身體構造的敘述，哪一項是不正確的？|魚鰓可以幫助呼吸;鰓蓋可以開合幫助魚進食;魚鱗可以保護魚的身體;魚鰭可以控制游動方向|2
+2|下列環境和其所提供的生物資源配對，哪一項是不正確的？|山區：海帶;海洋：黑鮪魚;海邊：牡蠣;山區：茶葉|1
+1|下列生物與適合生存環境的配對，哪一項是正確的？|水稻：有黏性的溼潤土壤;西瓜：岩石縫隙;招潮蟹：海邊的沙丘;栗喉蜂虎：鬆散、排水性好的土壤|1
+1|下列關於岩石、沙和土壤的敘述，哪一項是不正確的？|是大部分生物生存的場所;岩石碎裂成的礫石顆粒最大;土壤的顆粒最小，摸起來細細的;農作物不論是種植在岩石、沙或土壤中，都可以生長良好|4
+1|進行風的作用實驗，哪一種地表物質會被搬得最遠？|都一樣遠;土壤;沙;礫石|2
+1|下列關於流水作用實驗的敘述，哪一項是正確的？|流水會把地表物質搬到其他地方堆積起來;顆粒越大的地表物質被搬得越遠;流水的作用越強，地表物質會被搬得更近;流水的強弱不會影響地表物質被搬運的情形|1
+1|在河川地開挖砂石，對周圍環境會造成什麼影響？|不會有任何影響;讓河岸更加牢固;改變河流和河岸邊的生態;河流由黃濁變清澈|3
+1|下列關於地震的敘述，哪一項是正確的？|地震可以在發生前準確的預測;震度越大，建築物受破壞的程度越小;世界通用的地震規模為芮氏規模;同一場地震中，每個地區的地震規模不一樣|3
+1|下列哪一項不是地震時應做的行為呢？|注意掉落物;釘牢櫥櫃;走樓梯逃生;關閉瓦斯|2
+2|拜訪水域環境時，攜帶下列哪一物品可以幫助我們對照水生生物的資料？|撈網;水生生物圖鑑;水桶;望遠鏡|2
+2|下列水生生物和生存環境的組合，哪一項是不正確的？|海豚：海洋;珊瑚：河流;睡蓮：生態池;藤壺：潮間帶|2
+2|下列哪一項不屬於睡蓮的特徵？|根生長在水底;葉柄會隨著水位而彎曲或伸展;葉面總是平貼在水面;整株沉在水中|4
+2|下列有關魚的敘述，哪一項是正確的？|魚鰓可維持平衡;魚鱗可幫助呼吸;魚鰭可控制游動方向;魚鰓可保護魚的身體|3
+2|下列水生動物的敘述，哪一項不正確？|蛙的後腳粗壯，能夠在陸地上跳躍;龜的腳上有蹼，能夠在水中游水;蟹用尾巴在水中游水;螺有殼，利用腹足爬行|3
+2|下列關於臺灣不同環境與資源應用的敘述，哪一項是正確的呢？|沙丘產茶葉，可做成飲品;山區產海帶，可做成湯品或涼拌小菜;鮪魚是蘭嶼重要的食物;西部海岸地區盛行蚵的美食文化|4
+2|我們可以採取什麼行動，來保護水域環境？|將家庭廢水直接排入河中;主動清理水域環境附近的垃圾;將水生生物帶回家飼養;砍伐河流上游的森林|2
+2|生態池的水位降低時，哪一種植物的花和葉會保持挺直伸出水面？|大萍;荷花;睡蓮;水蘊草|2
+2|生態池的水位降低時，哪一種植物會保持沉在水中，莖和葉在水中彎曲？|大萍;荷花;睡蓮;水蘊草|4
+2|生態池的水位降低時，哪一種植物的葉柄會跟著彎曲，但葉面仍然平貼在水面？|大萍;荷花;睡蓮;水蘊草|3
+2|如果生態池的水滿出來，哪一種植物最有可能整株隨著水流漂出來？|大萍;荷花;睡蓮;水蘊草|1
+2|下列何者常被比喻為「花中君子」？|牡丹;玫瑰;荷花;百合|3|${P}
+2|把水滴在荷葉上會呈現什麼現象？|呈現一顆顆圓滾滾的水珠;水會消失不見;水會被荷葉吸乾;水會均勻的分散在整片荷葉表面|1|${P}
+2|下列哪一項不是運用蓮葉效應可以達到的功效？|抗菌;除臭;環保;發亮|4|${P}
+2|大王蓮的根生長在水底的泥土裡，且葉子平貼在水面，屬於哪一種類型的水生植物？|漂浮性;沉水性;浮葉性;挺水性|3|${PB}
+2|大王蓮能載重，除了浮力之外，另一個重要因素是什麼？|表面張力;彈力;風力;磁力|1|${PB}`;
+TF.split("\n").forEach(l=>{const[u,s,a,f]=l.split("|");Q.push({u:+u,q:"是非題："+s+"（對嗎？）",o:["○ 對","╳ 錯"],a:a=="○"?0:1,w:"標準答案是「"+a+"」。"+(f?"（卷面文字看不到這題答案，依課文判斷，請大人核對）":"")})});
+MC.split("\n").forEach(l=>{const[u,s,o,a,p]=l.split("|"),op=o.split(";"),q={u:+u,q:s,o:op,a:a-1,w:"標準答案是「"+op[a-1]+"」。"},k=/不正確|不是|不屬於/.test(s)?1:/正確/.test(s)?0:undefined;if(k!==undefined)q.k=k;if(p)q.p=p;Q.push(q)});
+const FIG=`<svg viewBox="0 0 400 130" style="width:100%;max-width:480px;display:block;margin:8px 0 0" role="img" aria-label="四種水生植物示意圖：甲大萍、乙荷花、丙睡蓮、丁水蘊草"><rect y="62" width="400" height="56" fill="#bfe3f2"/><rect y="118" width="400" height="12" fill="#b9966b"/><g stroke="#2e7d4f" fill="none" stroke-width="3"><path d="M50 62v14M40 62l-5 12M60 62l5 12"/><path d="M150 118V30"/><path d="M250 118C250 90 262 78 262 62"/><path d="M340 118c-8-20 8-34 0-50M355 118c-8-20 8-34 0-44"/></g><g fill="#4caf6e"><ellipse cx="40" cy="58" rx="16" ry="6"/><ellipse cx="62" cy="58" rx="16" ry="6"/><ellipse cx="150" cy="30" rx="26" ry="7"/><ellipse cx="262" cy="60" rx="26" ry="5"/><ellipse cx="336" cy="86" rx="9" ry="4"/><ellipse cx="350" cy="98" rx="9" ry="4"/><ellipse cx="345" cy="72" rx="9" ry="4"/></g><circle cx="150" cy="18" r="8" fill="#f28aa5"/><circle cx="262" cy="55" r="5" fill="#fff" stroke="#f28aa5"/><g font-size="12" fill="#1f2a44" text-anchor="middle"><text x="50" y="127">甲 大萍</text><text x="150" y="127">乙 荷花</text><text x="250" y="127">丙 睡蓮</text><text x="345" y="127">丁 水蘊草</text></g></svg><div style="font-size:14px;margin-bottom:8px">示意圖：藍色是水，棕色是泥土</div>`;
+Q.forEach(q=>{if(q.u==2&&/睡蓮|大萍|荷花|水蘊草|浮葉性/.test(q.q))q.img=1});
+const CAUSE=["概念不懂","讀題漏看","粗心"];
+const $=document.getElementById("app");
+let pool=[],i=0,st={},score=0,sess=[];
+function load(){try{return JSON.parse(localStorage.getItem("pigWrong")||"[]")}catch(e){return[]}}
+function save(r){try{localStorage.setItem("pigWrong",JSON.stringify(r))}catch(e){}}
+function home(){
+ $.innerHTML=`<h1>🐷 豬探長的自然辦案室</h1><p class="sub">仔細看一看，用心想一想。選一個案件區開始吧！</p><div class="card">`+
+ Object.keys(U).map(k=>`<button class="unit opt" data-u="${k}">第 ${k} 單元：${U[k]}</button>`).join("")+
+ `<button class="go opt" data-u="0">全部混合辦案</button><button class="opt" data-book="1">📒 看我的錯題本</button></div>`;
+ $.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>start(+b.dataset.u));
+ $.querySelector("[data-book]").onclick=book;
+}
+function start(u){pool=Q.filter(q=>!u||q.u==u).sort(()=>Math.random()-.5).slice(0,10);i=0;score=0;sess=[];ask()}
+function ask(){st={tried:[],ok1:false,miss:false,wrong:false,done:false};draw("")}
+function draw(msg){
+ if(i>=pool.length)return end();
+ const q=pool[i],gate=q.k!==undefined&&!st.ok1;
+ let h=`<p class="sub"><span class="tag">案件 ${i+1} / ${pool.length}</span> 第 ${q.u} 單元</p><div class="card">`;
+ if(q.p)h+=`<div class="pass">${q.p}</div>`;
+ if(q.img)h+=FIG;
+ h+=`<div><b>${q.q}</b></div>`;
+ if(gate){
+  h+=`<p class="step">🔍 仔細看一看：這題要選哪一種？</p><button data-k="0">選「正確的」</button><button data-k="1">選「不正確的」</button>`;
+ }else{
+  if(q.k!==undefined)h+=`<p class="step">🧠 用心想一想：每個選項都檢查一遍。</p>`;
+  h+=q.o.map((t,j)=>`<button class="opt ${st.tried.includes(j)?"bad":""} ${st.done&&j==q.a?"good":""}" data-o="${j}" ${st.tried.includes(j)||st.done?"disabled":""}>${"①②③④"[j]} ${t}</button>`).join("");
+ }
+ h+=`<div class="fb" id="fb">${msg}</div></div>`;
+ $.innerHTML=h;
+ $.querySelectorAll("[data-k]").forEach(b=>b.onclick=()=>{
+  if(+b.dataset.k===q.k){st.ok1=true;draw("✅ 看清楚了！")}
+  else{st.miss=true;draw("線索還沒找齊，再讀一次題目：它問的是「正確」還是「不正確」？")}});
+ $.querySelectorAll("[data-o]").forEach(b=>b.onclick=()=>pick(+b.dataset.o));
+}
+function pick(j){
+ const q=pool[i];
+ if(j===q.a){
+  st.done=true;
+  if(!st.wrong&&!st.miss)score++;
+  draw(`🎉 推理得好！${q.w}<br><button class="go" id="nx">下一題</button>`);
+  document.getElementById("nx").onclick=()=>{i++;ask()};
+ }else{
+  st.tried.push(j);st.wrong=true;
+  draw(`線索還沒找齊，我們再查一次！<br>這次的線索是哪一種？<br>`+CAUSE.map(c=>`<button data-c="${c}">${c}</button>`).join(""));
+  $.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{
+   const r=load();r.push({q:q.q,u:q.u,c:b.dataset.c});save(r);sess.push(b.dataset.c);
+   draw("📒 記進錯題本了，再選一次吧！")});
+ }
+}
+function topCause(a){const m={};a.forEach(c=>m[c]=(m[c]||0)+1);return Object.keys(m).sort((x,y)=>m[y]-m[x])[0]}
+function end(){
+ const t=topCause(sess);
+ $.innerHTML=`<h1>🎖 結案！</h1><div class="card"><p>一次就答對：<b>${score}</b> / ${pool.length} 題</p><p>${t?`這次最常出現的是「<b>${t}</b>」，下次我們一起想辦法改進！`:"全部一次就破案，你是最棒的偵探！"}</p><button class="go" id="h">回辦案室</button><button id="b">📒 錯題本</button></div>`;
+ document.getElementById("h").onclick=home;document.getElementById("b").onclick=book;
+}
+function book(){
+ const r=load(),t=topCause(r.map(x=>x.c));
+ $.innerHTML=`<h1>📒 錯題本</h1><div class="card">`+(r.length?
+  `<p>最常出現：<b>${t}</b>（共 ${r.length} 筆）</p>`+r.slice(-30).reverse().map(x=>`<p>【${x.c}】第 ${x.u} 單元：${x.q}</p>`).join("")+`<button id="clr">清空錯題本</button>`
+  :`<p>目前沒有錯題，繼續保持！</p>`)+`<button class="go" id="h">回辦案室</button></div>`;
+ document.getElementById("h").onclick=home;
+ const c=document.getElementById("clr");if(c)c.onclick=()=>{if(confirm("確定要清空嗎？")){save([]);book()}};
+}
+function ans(){
+ let h=`<h1>📖 詳細解答</h1><p class="sub">先自己想一想，再點開題目看答案喔！</p>`;
+ for(const u in U)h+=`<h2>第 ${u} 單元：${U[u]}</h2>`+Q.filter(q=>q.u==u).map(q=>`<details class="card"><summary>${q.q}</summary>${q.p?`<div class="pass">${q.p}</div>`:""}<p>${q.o.map((t,j)=>(j==q.a?"✅ ":"▫️ ")+"①②③④"[j]+" "+t).join("<br>")}</p><p>${q.w}</p></details>`).join("");
+ $.innerHTML=h;
+}
+document.querySelectorAll("#nav [data-n]").forEach(b=>b.onclick=()=>{({h:home,b:book,a:ans})[b.dataset.n]();scrollTo(0,0)});
+home();
+</script>
+</body>
+</html>
