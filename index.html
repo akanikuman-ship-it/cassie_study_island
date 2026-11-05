@@ -47,6 +47,7 @@ h3{font-size:18px;margin:0 0 10px}
 .card{background:var(--card);border-radius:var(--r);padding:20px 22px;box-shadow:var(--sh)}
 .muted{color:var(--mute)}.small{font-size:14px}.tiny{font-size:12.5px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 20px;border-radius:14px;background:#fff;border:1px solid var(--line);font-weight:600;font-size:16px}
+a.btn{text-decoration:none;color:inherit}
 .btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
 .btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
 .btn.ghost{background:transparent;border-color:transparent}
@@ -630,6 +631,28 @@ function rich(text, opt = {}){
   }
   return h;
 }
+/* ================= 題型 ================= */
+const QT = {
+  '國語':['字形字音','部首','詞語意思與關係','成語運用','句型與修辭','課文理解','閱讀理解'],
+  '數學':['數的位值','計算','應用題（讀題）','併式','時鐘與旋轉','量角器與角度','分數概念','分數換算','單位換算','小數','圖形','統計圖表'],
+  '自然':['聲音','光','電路','用電安全','實驗與觀察','科學閱讀','地表與環境','水生生物'],
+  '社會':['地圖判讀','地形與產業','氣候','水資源','傳統住屋與器物','信仰與節慶','老街與社區','生活作息與曆法']
+};
+const SEED_QT = { k01:'字形字音',k02:'字形字音',k03:'成語運用',k04:'詞語意思與關係',k05:'課文理解',k06:'課文理解',k07:'字形字音',k08:'字形字音',k09:'字形字音',k10:'字形字音',k11:'部首',k12:'詞語意思與關係',k13:'詞語意思與關係',
+  m01:'數的位值',m02:'數的位值',m03:'數的位值',m04:'數的位值',m05:'數的位值',m06:'數的位值',m07:'數的位值',m08:'數的位值',m09:'應用題（讀題）',m10:'計算',m11:'計算',m12:'計算',m13:'計算',m14:'計算',m15:'應用題（讀題）',
+  m16:'量角器與角度',m17:'量角器與角度',m18:'量角器與角度',m19:'時鐘與旋轉',m20:'時鐘與旋轉',m21:'時鐘與旋轉',m22:'量角器與角度',m23:'量角器與角度',m24:'時鐘與旋轉',m25:'時鐘與旋轉',
+  m26:'分數概念',m27:'應用題（讀題）',m28:'分數概念',m29:'分數概念',m30:'分數換算',m31:'分數換算',m32:'分數換算',m33:'應用題（讀題）',m34:'單位換算',m35:'單位換算',m36:'應用題（讀題）',m37:'應用題（讀題）',
+  s01:'地圖判讀',s02:'地圖判讀',s03:'地形與產業',s04:'水資源',s05:'氣候',s06:'氣候',s07:'地形與產業',s08:'地形與產業',s09:'水資源',s10:'水資源',s11:'傳統住屋與器物',s12:'傳統住屋與器物',s13:'傳統住屋與器物',s14:'地圖判讀',s15:'氣候',s16:'氣候',s17:'傳統住屋與器物',s18:'傳統住屋與器物',s19:'地形與產業',s20:'氣候',s21:'傳統住屋與器物',s22:'地圖判讀' };
+function autoQt(q){
+  const k = q.kp || '', s = q.s;
+  if (s === '國語') { if (/注音|錯別字|形近字|部件|讀音/.test(k)) return '字形字音'; if (/成語/.test(k)) return '成語運用'; if (/詞語|關聯詞|一詞多義|詞義/.test(k)) return '詞語意思與關係'; if (/閱讀/.test(k)) return '閱讀理解'; if (/課文/.test(k)) return '課文理解'; return '句型與修辭'; }
+  if (s === '數學') { if (/應用/.test(k)) return '應用題（讀題）'; if (/併式/.test(k)) return '併式'; if (/商|除法/.test(k)) return '計算'; if (/小數/.test(k)) return '小數'; if (/三角形|全等/.test(k)) return '圖形'; if (/圖/.test(k)) return '統計圖表'; if (/公里|公尺/.test(k)) return '單位換算'; return k || '其他'; }
+  if (s === '自然') { if (/聲音/.test(k)) return '聲音'; if (/光/.test(k)) return '光'; if (/用電/.test(k)) return '用電安全'; if (/閱讀/.test(k)) return '科學閱讀'; if (/電|導體|馬達|串聯|並聯|通路/.test(k)) return '電路'; return k || '其他'; }
+  if (s === '社會') { if (/老街|新住民/.test(k)) return '老街與社區'; if (/曆|作息/.test(k)) return '生活作息與曆法'; if (/信仰|節|祭典/.test(k)) return '信仰與節慶'; return k || '其他'; }
+  return k || '其他';
+}
+const qtOf = it => it.qt || (it.bankId && QB[it.bankId] ? autoQt(QB[it.bankId]) : autoQt(it));
+const PERIODS = ['期中考前', '期末'];
 /* ================= 資料 ================= */
 const LS_DATA = 'cassie-app-v1', LS_OLD = 'ctb-data-v1', LS_KEY = 'ctb-gemini-key', LS_UI = 'cassie-ui';
 function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
@@ -651,10 +674,10 @@ const PROMPT_KID = `你是陪四年級的 Cassie 訂正題目的老師。
 4. 社會、自然題要指出課本裡的關鍵觀念，用一句話說清楚。
 5. 解說最後用一句話提醒下次讀題要注意的地方。`;
 const DEF_RANGE = { '國語':['第七課','第八課','第九課','第十課','第十一課','第十二課','期末複習（第七～十二課）'], '數學':['6、除法','7、三角形與全等','8、兩步驟問題與併式','9、二位小數','10、統計圖表'], '自然':['三、有趣的聲光現象','四、好玩的電路'], '社會':['第三單元','第四單元'] };
-const DEF_SETTINGS = () => ({ model:'gemini-2.5-flash', pass:85, qlen:10, goal:2, wrongDaily:5, examDate:'2027-01-07', examName:'期末考', range:JSON.parse(JSON.stringify(DEF_RANGE)), planStart:'', prompts:{expert:PROMPT_EXPERT, kid:PROMPT_KID} });
+const DEF_SETTINGS = () => ({ autoNews:true, period:'期末', model:'gemini-2.5-flash', pass:85, qlen:10, goal:2, wrongDaily:5, examDate:'2027-01-07', examName:'期末考', range:JSON.parse(JSON.stringify(DEF_RANGE)), planStart:'', prompts:{expert:PROMPT_EXPERT, kid:PROMPT_KID} });
 let DB;
 function fresh(){
-  return { v:2, created:today(), items:SEED.map(x => ({...x, src:'平時考', date:SEED_DATE, hist:[], mastered:false, streak:0})), sessions:[], qstats:{}, hidden:{}, reading:[], settings:DEF_SETTINGS() };
+  return { v:2, created:today(), items:SEED.map(x => ({...x, src:'平時考', period:'期中考前', qt:SEED_QT[x.id], date:SEED_DATE, hist:[], mastered:false, streak:0})), sessions:[], qstats:{}, hidden:{}, reading:[], settings:DEF_SETTINGS() };
 }
 function load(){
   let d = null;
@@ -676,6 +699,7 @@ function load(){
   delete d.settings.prompts.pig;
   d.items = d.items || []; d.sessions = d.sessions || []; d.qstats = d.qstats || {}; d.hidden = d.hidden || {}; d.reading = d.reading || [];
   if (!d.settings.planStart) d.settings.planStart = today();
+  d.items.forEach(i => { if (!i.period) i.period = (i.src === '平時考' && (i.date || '') < '2026-11-05') || SEED_QT[i.id] ? '期中考前' : d.settings.period || '期末'; if (!i.qt && SEED_QT[i.id]) i.qt = SEED_QT[i.id]; });
   if ((d.settings.rangeVer || 0) < 2) { Object.entries(DEF_RANGE).forEach(([s, us]) => { d.settings.range[s] = [...new Set([...(d.settings.range[s] || []), ...us])]; }); d.settings.rangeVer = 2; }
   DB = d; save();
 }
@@ -711,6 +735,7 @@ const IC = {
   note:'<path d="M5 3h10l4 4v14H5z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
   cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
   db:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
   star:'<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   ai:'<rect x="4" y="6" width="16" height="13" rx="3"/><path d="M12 2v4M9 12h.01M15 12h.01M9 16h6"/>',
@@ -719,7 +744,7 @@ const IC = {
 };
 const svg = n => `<svg viewBox="0 0 24 24">${IC[n]}</svg>`;
 const NAV_KID = [ ['today','今天','sun'], ['units','單元練習','book'], ['wrong','錯題練習','redo'], ['reading','閱讀','read'], ['shop','兌換所','gift'], ['history','紀錄','clock'] ];
-const NAV_PARENT = [ ['grp','學習狀況'], ['p-home','總覽','grid'], ['p-analysis','學習分析','chart'], ['p-history','學習紀錄','list'], ['p-wrong','錯題本','note'], ['p-plan','複習計畫','cal'],
+const NAV_PARENT = [ ['grp','學習狀況'], ['p-home','總覽','grid'], ['p-types','常錯題型','target'], ['p-analysis','學習分析','chart'], ['p-history','學習紀錄','list'], ['p-wrong','錯題本','note'], ['p-plan','複習計畫','cal'],
   ['grp','內容'], ['p-bank','題庫','db'], ['p-reading','閱讀文章','read'], ['p-points','點數與兌換（預留）','star'],
   ['grp','設定'], ['p-rules','規則設定','gear'], ['p-ai','AI 設定','ai'], ['p-backup','資料備份','save'] ];
 let VIEW = UI.view || 'today', MODE = UI.mode || 'kid';
@@ -784,11 +809,12 @@ function recordQ(q, ok){
   st.n++; if (ok) st.c++; else st.w++; st.last = Date.now();
 }
 /* ================= Gemini ================= */
-async function gemini(parts, {system, json} = {}){
+async function gemini(parts, {system, json, urlCtx} = {}){
   const key = getKey(); if (!key) throw new Error('請先到「AI 設定」填入 Gemini API Key');
   const body = { contents:[{ role:'user', parts }] };
   if (system) body.systemInstruction = { parts:[{ text:system }] };
-  if (json) body.generationConfig = { responseMimeType:'application/json' };
+  if (json && !urlCtx) body.generationConfig = { responseMimeType:'application/json' };
+  if (urlCtx) body.tools = [{ url_context:{} }];
   const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${DB.settings.model}:generateContent?key=${encodeURIComponent(key)}`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.error && j.error.message || ('連線失敗 ' + r.status));
@@ -836,7 +862,7 @@ function renderQuiz(){
     <div class="qcard">
       ${long && !q.psg ? `<div class="readtip">📌 <span>題目比較長：先找出<b>最後在問什麼</b>，再看條件。</span></div>` : ''}
       ${isNegQ(q) ? `<div class="readtip">⚠️ <span>注意！這題問的是<b style="color:var(--bad)">紅色底線</b>的那種。</span></div>` : ''}
-      ${q.psg ? `<div class="psg">${rich(q.psg)}</div>` : ''}
+      ${q.link ? `<div style="margin-bottom:12px"><a class="btn sm" href="${esc(q.link)}" target="_blank" rel="noopener">📰 回去看文章</a></div>` : ''}${q.psg ? `<div class="psg">${rich(q.psg)}</div>` : ''}
       <div class="qtext">${rich(q.q, {neg:true})}</div>
       ${q.fig ? (typeof q.fig === 'string' ? `<img class="qfig" src="${q.fig}" alt="題目附圖">` : routeFig(q.fig)) : ''}
       <div id="qin"></div>
@@ -948,7 +974,7 @@ function endQuiz(){
       let it = DB.items.find(x => x.bankId === q.id);
       const stu = Array.isArray(r.a) ? (q.labels ? r.a.map((v, i) => `${q.labels[i]}：${v}`).join('，') : r.a.join('、')) : String(r.a);
       if (it) { it.mastered = false; it.streak = 0; it.stu = stu; it.date = today(); }
-      else DB.items.push({ id:'b' + q.id + uid().slice(-3), bankId:q.id, s:q.s, unit:q.unit, exam:q.lesson, src:'單元練習', type:q.type, q:q.q, opts:q.opts, ans:q.ans, u:q.u, labels:q.labels, psg:q.psg, exp:q.exp, kp:q.kp, stu, cause:r.neg ? '讀題漏看' : '', causeAuto:r.neg, date:today(), hist:[], mastered:false, streak:0 });
+      else DB.items.push({ id:'b' + q.id + uid().slice(-3), bankId:q.id, s:q.s, unit:q.unit, exam:q.lesson, src:'單元練習', period:DB.settings.period, qt:autoQt(q), type:q.type, q:q.q, opts:q.opts, ans:q.ans, u:q.u, labels:q.labels, psg:q.psg, exp:q.exp, kp:q.kp, stu, cause:r.neg ? '讀題漏看' : '', causeAuto:r.neg, date:today(), hist:[], mastered:false, streak:0 });
     });
   }
   if (Z.mode === 'reading' && Z.reading) { const a = DB.reading.find(x => x.id === Z.reading); if (a) { a.done = today(); a.score = score; } }
@@ -1011,7 +1037,8 @@ VIEWS.today = el => {
   const k = today(), st = dayStatus(k), S = DB.settings;
   const plan = planFor().find(p => p.date === k);
   const left = dayDiff(k, S.examDate);
-  const wrongN = pendingWrong();
+  const wrongFp = DB.items.some(i => !i.mastered && i.period === S.period) ? S.period : '全部';
+  const wrongN = DB.items.filter(i => !i.mastered && (wrongFp === '全部' || i.period === wrongFp)).length;
   const wrongToday = sessOn(k).some(x => x.mode === 'wrong' && !x.left);
   const read = DB.reading.find(a => !a.done);
   el.innerHTML = `<h1>今天</h1><p class="sub">${fmtDay(k)}${left > 0 ? `　・　距離${esc(S.examName)}還有 <b style="color:var(--acc)">${left}</b> 天` : ''}</p>
@@ -1026,8 +1053,10 @@ VIEWS.today = el => {
     <h2>今天要做的事</h2><div id="tasks"></div>`;
   const tasks = [];
   (plan ? plan.items : []).forEach(it => tasks.push({ ic:S1(it.s), col:it.s, title:it.mix ? `${it.s}・${S.examName}範圍綜合練習` : `${it.s}・${lname(it.unit, it.lesson)}`, sub:'複習計畫', done:planItemDone(it, k), run:() => startUnitQuiz(it.s, it.mix ? '' : it.unit, it.mix ? '' : it.lesson) }));
-  if (wrongN) tasks.push({ ic:'↻', title:`錯題練習 ${Math.min(S.wrongDaily, wrongN)} 題`, sub:`還有 ${wrongN} 題沒克服`, done:wrongToday, run:() => startWrong() });
+  if (wrongN) tasks.push({ ic:'↻', title:`錯題練習 ${Math.min(S.wrongDaily, wrongN)} 題`, sub:`還有 ${wrongN} 題沒克服`, done:wrongToday, run:() => startWrong(null, wrongFp) });
+  const readToday = DB.reading.some(a => a.done === k);
   if (read) tasks.push({ ic:'📖', title:`閱讀：${read.title}`, sub:'讀完回答問題', done:false, run:() => startReading(read.id) });
+  else if (S.autoNews && getKey()) tasks.push({ ic:'🌍', title:'今天的國際新聞', sub:'讀一篇零蛋報兒童新聞，回答 4 題', done:readToday, run:() => dailyNews() });
   if (!tasks.length) tasks.push({ ic:'★', title:'自己挑一個單元練習', sub:'到「單元練習」選', done:false, run:() => go('units') });
   $('#tasks').innerHTML = tasks.map((t, i) => `<button class="task ${t.done ? 'done' : ''}" data-i="${i}"><div class="ic" ${t.col ? `style="background:${SS(t.col)};color:${SC(t.col)};font-weight:800"` : ''}>${t.ic}</div><div style="flex:1"><b>${esc(t.title)}</b><div class="small muted">${esc(t.sub)}</div></div><div class="check">${t.done ? '✓' : ''}</div></button>`).join('');
   $$('#tasks .task').forEach(b => b.onclick = () => tasks[+b.dataset.i].run());
@@ -1052,30 +1081,83 @@ VIEWS.units = (el, arg) => {
   $$('#ulist [data-u]').forEach(b => b.onclick = () => startUnitQuiz(s, b.dataset.u, b.dataset.l || ''));
 };
 /* ================= Cassie：錯題練習 ================= */
-function startWrong(filterS){
-  const due = DB.items.filter(i => !i.mastered && (!filterS || i.s === filterS));
+function startWrong(filterS, forceP){
+  const fp = forceP || UI.kp || DB.settings.period;
+  const due = DB.items.filter(i => !i.mastered && (!filterS || i.s === filterS) && (fp === '全部' || i.period === fp));
   if (!due.length) return toast('目前沒有要練習的錯題，太棒了！');
   const w = it => (it.hist && it.hist.length ? it.hist[it.hist.length - 1].d : 0) + Math.random() * 3.6e6;
   const pick = due.sort((a, b) => w(a) - w(b)).slice(0, DB.settings.wrongDaily).map(itemToQ);
   startQuiz({ title:'錯題練習' + (filterS ? '・' + filterS : ''), s:filterS || pick[0].s, mode:'wrong', qs:pick });
 }
 VIEWS.wrong = el => {
-  const by = {}; DB.items.forEach(i => { const o = by[i.s] = by[i.s] || { n:0, m:0 }; o.n++; if (i.mastered) o.m++; });
-  const pend = pendingWrong();
+  const fp = UI.kp || DB.settings.period;
+  const pool = DB.items.filter(i => fp === '全部' || i.period === fp);
+  const by = {}; pool.forEach(i => { const o = by[i.s] = by[i.s] || { n:0, m:0 }; o.n++; if (i.mastered) o.m++; });
+  const pend = pool.filter(i => !i.mastered).length;
   el.innerHTML = `<h1>錯題練習</h1><p class="sub">同一題連續答對 2 次，就算「克服」了。</p>
-    <div class="card" style="margin-bottom:18px"><div class="row"><div><div class="kpi">${pend}<small>題還沒克服</small></div><div class="small muted" style="margin-top:6px">已經克服 ${DB.items.length - pend} 題</div></div><span class="sp"></span><button class="btn pri" id="go" ${pend ? '' : 'disabled'}>開始練習 ${Math.min(DB.settings.wrongDaily, pend)} 題</button></div></div>
+    <div class="row" style="margin-bottom:14px">${[DB.settings.period, ...PERIODS.filter(p => p !== DB.settings.period), '全部'].map(x => `<button class="chip ${x === fp ? 'on' : ''}" data-kp="${x}">${x === '期中考前' ? '期中考前的錯題' : x === '期末' ? '期末的錯題' : '全部'}</button>`).join('')}</div>
+    <div class="card" style="margin-bottom:18px"><div class="row"><div><div class="kpi">${pend}<small>題還沒克服</small></div><div class="small muted" style="margin-top:6px">已經克服 ${pool.length - pend} 題</div></div><span class="sp"></span><button class="btn pri" id="go" ${pend ? '' : 'disabled'}>開始練習 ${Math.min(DB.settings.wrongDaily, pend)} 題</button></div></div>
     <div class="grid g4">${SUBJ.filter(s => by[s]).map(s => `<button class="stile" data-s="${s}" style="background:${SS(s)}"><div class="row"><span class="subj" style="background:${SC(s)}">${S1(s)}</span><b>${s}</b></div><div class="big" style="color:${SC(s)}">${by[s].n - by[s].m}</div><div class="small muted">題待練・已克服 ${by[s].m}</div></button>`).join('')}</div>`;
+  $$('[data-kp]').forEach(b => b.onclick = () => { UI.kp = b.dataset.kp; render(); });
   $('#go').onclick = () => startWrong();
   $$('.stile').forEach(b => b.onclick = () => startWrong(b.dataset.s));
 };
 /* ================= 閱讀 ================= */
+const NEWS_URL = 'https://zeroegg.tw/world';
+function pickJSON(t, obj){ const m = t.match(obj ? /\{[\s\S]*\}/ : /\[[\s\S]*\]/); if (!m) throw new Error('AI 回覆的格式看不懂，請再試一次'); return JSON.parse(m[0]); }
+async function fetchNewsList(){
+  const t = await gemini([{ text:`請讀取 ${NEWS_URL} 這個兒童國際新聞列表頁，列出頁面上最新的 12 篇文章。只輸出 JSON 陣列，不要其他文字：[{"title":"標題","url":"完整網址","summary":"一句話摘要（20 字內）"}]。url 必須是頁面上真的出現、以 https://zeroegg.tw/world/ 開頭的文章網址，不要自己編。` }], { urlCtx:true });
+  const list = pickJSON(t).filter(a => a && a.title && /^https:\/\/zeroegg\.tw\/world\/[\w-]+$/.test(String(a.url || '').trim())).map(a => ({ title:String(a.title), url:String(a.url).trim(), summary:String(a.summary || '') }));
+  if (!list.length) throw new Error('沒有抓到文章列表，請稍後再試');
+  DB.newsCache = { ts:Date.now(), list }; save(); return list;
+}
+async function makeNewsQuiz(n){
+  const have = DB.reading.find(r => r.url === n.url); if (have) return have;
+  const t = await gemini([{ text:`請讀取這篇給小學生看的新聞：${n.url}
+讀者是國小四年級的孩子，她讀長句子時常抓不到重點。請「只根據這篇文章的內容」出 4 題四選一的閱讀理解題：
+第1題：這篇新聞主要在說什麼（主旨）。
+第2題：找出文中的重要事實（人、事、時、地、物）。
+第3題：事情的原因或結果。
+第4題：文中某個詞語或句子的意思，或從文章可以推論出什麼。
+題目和選項用繁體中文、用字淺白；錯的選項要合理但看文章就能排除；不要和文章最後原本附的測驗題一樣。
+只輸出 JSON，不要其他文字：{"title":"文章標題","qs":[{"q":"題目","opts":["","","",""],"ans":"必須和 opts 其中一個完全相同","exp":"一句話說明答案在文章哪一段、怎麼找到"}]}` }], { urlCtx:true });
+  const j = pickJSON(t, true);
+  const qs = (j.qs || []).filter(q => q.q && Array.isArray(q.opts) && q.opts.length >= 2 && q.opts.includes(q.ans)).map(q => ({ type:'choice', q:String(q.q), opts:q.opts.map(String), ans:String(q.ans), exp:String(q.exp || '') }));
+  if (qs.length < 2) throw new Error('AI 出的題目格式不對，請再試一次');
+  const r = { id:'r' + uid(), title:String(j.title || n.title), url:n.url, source:'zeroegg', qs, added:today() };
+  DB.reading.push(r); save(); return r;
+}
+async function dailyNews(btn){
+  if (!getKey()) return toast('需要先在家長模式設定 AI，才能自動準備新聞');
+  const old = btn && btn.innerHTML; if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spin"></span> 正在準備今天的新聞…'; }
+  try {
+    let list = DB.newsCache && Date.now() - DB.newsCache.ts < 8 * 3600e3 ? DB.newsCache.list : await fetchNewsList();
+    const used = new Set(DB.reading.map(r => r.url));
+    let n = list.find(a => !used.has(a.url));
+    if (!n) { list = await fetchNewsList(); n = list.find(a => !used.has(a.url)); }
+    if (!n) throw new Error('最新的新聞都讀過了，明天再來！');
+    const r = await makeNewsQuiz(n); startReading(r.id);
+  } catch(e){ toast(e.message); if (btn) { btn.disabled = false; btn.innerHTML = old; } }
+}
 function startReading(id){
   const a = DB.reading.find(x => x.id === id); if (!a || !a.qs || !a.qs.length) return toast('這篇還沒有題目');
-  startQuiz({ title:'閱讀：' + a.title, s:'國語', mode:'reading', reading:a.id, qs:a.qs.map((q, i) => ({ ...q, id:a.id + '-' + i, s:'國語', psg:a.text, kp:'閱讀理解' })) });
+  const go1 = () => startQuiz({ title:'閱讀：' + a.title, s:'國語', mode:'reading', reading:a.id, qs:a.qs.map((q, i) => ({ ...q, id:a.id + '-' + i, s:'國語', psg:a.text, link:a.url, kp:'閱讀理解' })) });
+  if (!a.url) return go1();
+  VIEW = 'reading'; drawNav();
+  $('#main').innerHTML = `<div class="qwrap"><div class="qcard" style="text-align:center"><div style="font-size:46px">📰</div><h2 style="margin:6px 0">${esc(a.title)}</h2>
+    <p class="muted">步驟 1：打開文章，從頭讀到尾（可以打開注音）。<br>步驟 2：回到這裡，回答 ${a.qs.length} 題。</p>
+    <p class="small" style="background:#FFF6E0;border-radius:12px;padding:10px 14px;text-align:left">📌 讀的時候想一想：<b>這篇新聞在說誰？發生什麼事？為什麼？</b></p>
+    <div class="qact" style="justify-content:center"><a class="btn" href="${esc(a.url)}" target="_blank" rel="noopener">打開文章</a><button class="btn pri" id="rgo">我讀完了，開始回答</button></div>
+    <p class="tiny muted">新聞來源：零蛋報（zeroegg.tw）</p></div></div>`;
+  $('#rgo').onclick = go1;
 }
 VIEWS.reading = el => {
   const list = DB.reading.slice().reverse();
-  el.innerHTML = `<h1>閱讀</h1><p class="sub">先把文章讀完，再回答問題。</p>${list.length ? list.map(a => `<button class="task ${a.done ? 'done' : ''}" data-id="${a.id}"><div class="ic">📖</div><div style="flex:1"><b>${esc(a.title)}</b><div class="small muted">${a.qs.length} 題${a.done ? `・${a.score} 分` : ''}</div></div><div class="check">${a.done ? '✓' : '›'}</div></button>`).join('') : '<div class="empty">還沒有文章，請爸爸媽媽在家長模式新增。</div>'}`;
+  const doneToday = DB.reading.some(a => a.done === today());
+  el.innerHTML = `<h1>閱讀</h1><p class="sub">先把文章讀完，再回答問題。</p>
+    ${DB.settings.autoNews && getKey() ? `<button class="task" id="daily" style="margin-bottom:18px"><div class="ic" style="background:var(--s-國語)">🌍</div><div style="flex:1"><b>${doneToday ? '再讀一篇國際新聞' : '今天的國際新聞'}</b><div class="small muted">從零蛋報抓一篇最新的兒童國際新聞</div></div><div class="check">›</div></button>` : ''}
+    ${list.length ? list.map(a => `<button class="task ${a.done ? 'done' : ''}" data-id="${a.id}"><div class="ic">${a.source === 'zeroegg' ? '🌍' : '📖'}</div><div style="flex:1"><b>${esc(a.title)}</b><div class="small muted">${a.qs.length} 題${a.done ? `・${a.score} 分・${a.done}` : ''}</div></div><div class="check">${a.done ? '✓' : '›'}</div></button>`).join('') : '<div class="empty">還沒有文章。</div>'}`;
+  const d = $('#daily'); if (d) d.onclick = () => dailyNews(d);
   $$('[data-id]').forEach(b => b.onclick = () => startReading(b.dataset.id));
 };
 /* ================= 兌換所／點數（預留） ================= */
@@ -1177,35 +1259,89 @@ VIEWS['p-analysis'] = el => {
 };
 /* ================= 家長：錯題本 ================= */
 const CAUSES = ['概念不懂', '讀題漏看', '粗心'];
-VIEWS['p-wrong'] = el => {
-  const fs = UI.wf || '全部', fc = UI.wc || '全部', fm = UI.wm || '待練';
-  const list = DB.items.filter(i => (fs === '全部' || i.s === fs) && (fc === '全部' || (i.cause || '未分類') === fc) && (fm === '全部' || (fm === '待練' ? !i.mastered : i.mastered))).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  el.innerHTML = `<h1>錯題本</h1><p class="sub">平時考錯題和單元練習答錯的題目都在這裡。共 ${DB.items.length} 題，待練 ${pendingWrong()} 題。</p>
-    <div class="row" style="margin-bottom:8px"><button class="btn pri sm" id="addPhoto">＋ 拍照新增（AI）</button><button class="btn sm" id="addMan">＋ 手動新增</button></div>
-    <div class="row" style="margin:10px 0">${['全部', ...SUBJ].map(x => `<button class="chip ${x === fs ? 'on' : ''}" data-k="wf" data-v="${x}">${x}</button>`).join('')}</div>
-    <div class="row" style="margin-bottom:10px">${['全部', ...CAUSES, '未分類'].map(x => `<button class="chip ${x === fc ? 'on' : ''}" data-k="wc" data-v="${x}">${x}</button>`).join('')}<span class="sp"></span>${['待練', '已克服', '全部'].map(x => `<button class="chip ${x === fm ? 'on' : ''}" data-k="wm" data-v="${x}">${x}</button>`).join('')}</div>
+/* 待整理照片：存在 IndexedDB */
+const idb = { db:null,
+  open(){ return new Promise(res => { if (this.db) return res(this.db); try { const r = indexedDB.open('cassie-photos', 1); r.onupgradeneeded = () => r.result.createObjectStore('p', { keyPath:'id' }); r.onsuccess = () => { this.db = r.result; res(this.db); }; r.onerror = () => res(null); } catch(e){ res(null); } }); },
+  async tx(mode, fn){ const db = await this.open(); if (!db) throw new Error('這個瀏覽器不能存照片'); return new Promise((res, rej) => { const t = db.transaction('p', mode); const st = t.objectStore('p'); const r = fn(st); t.oncomplete = () => res(r && r.result); t.onerror = () => rej(t.error); }); },
+  put(o){ return this.tx('readwrite', st => st.put(o)); },
+  del(id){ return this.tx('readwrite', st => st.delete(id)); },
+  all(){ return this.tx('readonly', st => st.getAll()).catch(() => []); }
+};
+const trapsOf = it => { const q = itemToQ(it); const t = []; if (isNegQ(q)) t.push('反問題'); if ((q.q || '').length > 45 || q.psg) t.push('長題目'); if (q.type === 'check') t.push('多選題'); return t; };
+VIEWS['p-wrong'] = async el => {
+  const fp = UI.wp || DB.settings.period, fs = UI.wf || '全部', fc = UI.wc || '全部', fm = UI.wm || '全部';
+  const inP = i => fp === '全部' || i.period === fp;
+  const list = DB.items.filter(i => inP(i) && (fs === '全部' || i.s === fs) && (fc === '全部' || (i.cause || '未分類') === fc) && (fm === '全部' || (fm === '待練' ? !i.mastered : i.mastered))).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const cnt = p => DB.items.filter(i => i.period === p).length;
+  el.innerHTML = `<h1>錯題本</h1><p class="sub">期中考前 ${cnt('期中考前')} 題、期末 ${cnt('期末')} 題。新加入的錯題會放在「${esc(DB.settings.period)}」。</p>
+    <div class="card" style="margin-bottom:16px"><h3>新增小考錯題</h3><div class="row"><button class="btn pri sm" id="addPhoto">拍照，AI 辨識</button><button class="btn sm" id="savePhoto">先存照片，之後整理</button><button class="btn sm" id="addMan">手動新增</button><label class="btn sm" for="impJ">匯入錯題檔</label><input type="file" id="impJ" accept="application/json,.json" hidden></div>
+      <p class="tiny muted" style="margin:8px 0 0">沒有 API Key 時可以先存照片，或把照片傳給 Claude 整理成錯題檔再匯入。</p><div id="pend"></div></div>
+    <div class="row" style="margin-bottom:8px">${['期末', '期中考前', '全部'].map(x => `<button class="chip ${x === fp ? 'on' : ''}" data-k="wp" data-v="${x}">${x}</button>`).join('')}<span class="sp"></span><button class="btn sm" onclick="go('p-types')">看常錯題型 ›</button></div>
+    <div class="row" style="margin:8px 0">${['全部', ...SUBJ].map(x => `<button class="chip ${x === fs ? 'on' : ''}" data-k="wf" data-v="${x}">${x}</button>`).join('')}</div>
+    <div class="row" style="margin-bottom:10px">${['全部', ...CAUSES, '未分類'].map(x => `<button class="chip ${x === fc ? 'on' : ''}" data-k="wc" data-v="${x}">${x}</button>`).join('')}<span class="sp"></span>${['全部', '待練', '已克服'].map(x => `<button class="chip ${x === fm ? 'on' : ''}" data-k="wm" data-v="${x}">${x}</button>`).join('')}</div>
     <div id="wl">${list.length ? '' : '<div class="empty">沒有符合的題目。</div>'}</div>`;
   $$('[data-k]').forEach(b => b.onclick = () => { UI[b.dataset.k] = b.dataset.v; render(); });
   $('#addMan').onclick = () => editItem(null);
-  $('#addPhoto').onclick = photoAdd;
+  $('#addPhoto').onclick = () => photoAdd();
+  $('#savePhoto').onclick = savePhotos;
+  $('#impJ').onchange = importItems;
   $('#wl').insertAdjacentHTML('beforeend', list.map(i => { const q = itemToQ(i); return `<div class="wrongitem">
-    <div class="row small"><span class="subj" style="background:${SC(i.s)};width:24px;height:24px;font-size:12px">${S1(i.s)}</span><span class="muted">${esc(i.exam || i.unit || '')}・${esc(i.src || '')}・${esc(i.date || '')}</span><span class="sp"></span>${i.mastered ? '<span class="tag" style="background:var(--ok-soft);color:var(--ok)">已克服</span>' : `<span class="tag">連對 ${i.streak || 0}/2</span>`}</div>
+    <div class="row small"><span class="subj" style="background:${SC(i.s)};width:24px;height:24px;font-size:12px">${S1(i.s)}</span><span class="tag" style="background:${SS(i.s)};color:${SC(i.s)}">${esc(qtOf(i))}</span><span class="muted">${esc(i.exam || i.unit || '')}・${esc(i.src || '')}・${esc(i.date || '')}</span>${trapsOf(i).map(t => `<span class="tag">${t}</span>`).join('')}<span class="sp"></span>${i.mastered ? '<span class="tag" style="background:var(--ok-soft);color:var(--ok)">已克服</span>' : `<span class="tag">連對 ${i.streak || 0}/2</span>`}</div>
     ${q.psg ? `<details class="small" style="margin-top:6px"><summary class="muted">閱讀短文</summary>${rich(q.psg)}</details>` : ''}
     <div style="margin:8px 0;font-size:18px">${rich(q.q, { neg:true })}</div>${q.fig ? (typeof q.fig === 'string' ? `<img class="qfig" src="${q.fig}" style="max-width:420px" alt="">` : routeFig(q.fig)) : ''}
     ${i.stu ? `<div class="small">Cassie 的答案：<span class="ans-bad">${rich(i.stu)}</span></div>` : ''}<div class="small">正確答案：<span class="ans-ok">${rich(showAnswer(q))}</span></div>${q.exp ? `<div class="small muted exp" style="margin-top:4px">${rich(q.exp)}</div>` : ''}
-    <div class="row" style="margin-top:10px"><select class="t" style="width:auto;padding:6px 10px" data-cause="${i.id}"><option value="">錯因：未分類</option>${CAUSES.map(c => `<option ${i.cause === c ? 'selected' : ''}>${c}</option>`).join('')}</select>${i.causeAuto && i.cause === '讀題漏看' ? '<span class="tiny muted">系統依「反問題」先標，可改</span>' : ''}<span class="sp"></span>${getKey() ? `<button class="btn sm" data-diag="${i.id}">AI 診斷</button>` : ''}<button class="btn sm" data-edit="${i.id}">編輯</button><button class="btn sm ghost" data-del="${i.id}" style="color:var(--bad)">刪除</button></div>
+    <div class="row" style="margin-top:10px"><select class="t" style="width:auto;padding:6px 10px" data-cause="${i.id}"><option value="">錯因：未分類</option>${CAUSES.map(c => `<option ${i.cause === c ? 'selected' : ''}>${c}</option>`).join('')}</select><select class="t" style="width:auto;padding:6px 10px" data-qt="${i.id}">${[...new Set([...(QT[i.s] || []), qtOf(i)])].map(t => `<option ${qtOf(i) === t ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>${i.causeAuto && i.cause === '讀題漏看' ? '<span class="tiny muted">系統依「反問題」先標，可改</span>' : ''}<span class="sp"></span>${getKey() ? `<button class="btn sm" data-diag="${i.id}">AI 診斷</button>` : ''}<button class="btn sm" data-edit="${i.id}">編輯</button><button class="btn sm ghost" data-del="${i.id}" style="color:var(--bad)">刪除</button></div>
     <div data-diagout="${i.id}"></div></div>`; }).join(''));
   $$('[data-cause]').forEach(s => s.onchange = () => { const it = DB.items.find(x => x.id === s.dataset.cause); it.cause = s.value; it.causeAuto = false; save(); toast('已更新錯因'); });
+  $$('[data-qt]').forEach(s => s.onchange = () => { const it = DB.items.find(x => x.id === s.dataset.qt); it.qt = s.value; save(); toast('已更新題型'); });
   $$('[data-del]').forEach(b => b.onclick = () => { if (!confirm('刪除這一題？')) return; DB.items = DB.items.filter(x => x.id !== b.dataset.del); save(); render(); });
   $$('[data-edit]').forEach(b => b.onclick = () => editItem(DB.items.find(x => x.id === b.dataset.edit)));
   $$('[data-diag]').forEach(b => b.onclick = async () => { const it = DB.items.find(x => x.id === b.dataset.diag); b.disabled = true; b.innerHTML = '<span class="spin"></span>'; try { const t = await gemini([{ text:qPlain(itemToQ(it)) + '\n孩子的答案：' + (it.stu || '（未記錄）') }], { system:DB.settings.prompts.expert }); $(`[data-diagout="${it.id}"]`).innerHTML = `<div class="fb tip"><div class="exp small">${esc(t)}</div></div>`; } catch(e){ toast(e.message); } b.disabled = false; b.textContent = 'AI 診斷'; });
+  drawPending();
 };
+async function drawPending(){
+  const box = $('#pend'); if (!box) return;
+  const ps = (await idb.all()) || [];
+  if (!ps.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `<h3 style="margin-top:16px">待整理的小考照片（${ps.length}）</h3><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(170px,1fr))">${ps.sort((a, b) => b.ts - a.ts).map(p => `<div style="border:1px solid var(--line);border-radius:12px;padding:8px"><img src="${p.img}" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover" alt=""><div class="small"><b style="color:${SC(p.s)}">${p.s}</b> ${esc(p.exam || '')}</div><div class="tiny muted">${p.date}・${esc(p.period)}</div><div class="row" style="gap:4px;margin-top:6px">${getKey() ? `<button class="btn sm" data-pai="${p.id}">AI 辨識</button>` : ''}<a class="btn sm" href="${p.img}" download="小考-${p.s}-${p.date}.jpg">下載</a><button class="btn sm ghost" data-pdel="${p.id}" style="color:var(--bad)">刪除</button></div></div>`).join('')}</div>`;
+  box.querySelectorAll('[data-pdel]').forEach(b => b.onclick = async () => { if (!confirm('刪除這張照片？')) return; await idb.del(b.dataset.pdel); drawPending(); });
+  box.querySelectorAll('[data-pai]').forEach(b => b.onclick = () => { const p = ps.find(x => x.id === b.dataset.pai); photoAdd(p); });
+}
+function savePhotos(){
+  modal(`<h3>先存小考照片</h3><p class="small muted">照片存在這台 iPad，之後再用 AI 辨識，或下載後傳給 Claude 整理。</p>
+    <div class="row"><select class="t" id="sp-s" style="width:auto">${SUBJ.map(s => `<option>${s}</option>`).join('')}</select><select class="t" id="sp-p" style="width:auto">${PERIODS.map(p => `<option ${p === DB.settings.period ? 'selected' : ''}>${p}</option>`).join('')}</select><input class="t" id="sp-e" placeholder="小考名稱，例如：數學第六單元小考" style="flex:1"></div>
+    <input type="file" id="sp-f" accept="image/*" multiple style="margin:14px 0"><div class="row"><span class="sp"></span><button class="btn" id="sp-c">取消</button><button class="btn pri" id="sp-ok">存起來</button></div>`, (box, close) => {
+    box.querySelector('#sp-c').onclick = close;
+    box.querySelector('#sp-ok').onclick = async () => {
+      const files = [...box.querySelector('#sp-f').files]; if (!files.length) return toast('請先選照片');
+      const s = box.querySelector('#sp-s').value, period = box.querySelector('#sp-p').value, exam = box.querySelector('#sp-e').value.trim();
+      try { for (const f of files) { const img = await resizeImage(f, 1600, .82); await idb.put({ id:'p' + uid(), ts:Date.now(), s, period, exam, date:today(), img }); } close(); toast(`已存 ${files.length} 張`); drawPending(); } catch(e){ toast(e.message); }
+    };
+  });
+}
+function cleanItem(a, def){
+  const s = SUBJ.includes(a.s) ? a.s : def.s;
+  const type = TYPE_NAME[a.type] ? a.type : 'write';
+  let ans = a.ans; if (type === 'check' && !Array.isArray(ans)) ans = String(ans || '').split(/[、,，]/).map(x => x.trim()).filter(Boolean); if (type !== 'check') ans = String(ans ?? '');
+  const opts = Array.isArray(a.opts) && a.opts.length ? a.opts.map(String) : undefined;
+  if (!a.q || ans === '' || (type === 'choice' && (!opts || !opts.includes(ans))) || (type === 'check' && (!opts || !ans.every(x => opts.includes(x))))) return null;
+  return { id:'m' + uid(), s, type, q:String(a.q), opts, ans, u:a.u || '', stu:a.stu || '', cause:CAUSES.includes(a.cause) ? a.cause : '', qt:a.qt || '', unit:a.unit || def.exam || '', exam:a.exam || def.exam || a.unit || '', exp:a.exp || '', src:a.src || '小考', period:PERIODS.includes(a.period) ? a.period : def.period, date:a.date || today(), hist:[], mastered:false, streak:0 };
+}
+async function importItems(e){
+  const f = e.target.files[0]; if (!f) return;
+  try { const j = JSON.parse(await f.text()); const arr = Array.isArray(j) ? j : j.items || (j.data && j.data.items) || [];
+    const add = arr.map(a => cleanItem(a, { s:'國語', exam:'', period:DB.settings.period })).filter(Boolean);
+    if (!add.length) throw new Error('檔案裡沒有可以用的錯題');
+    DB.items.push(...add); save(); toast(`已匯入 ${add.length} 題${arr.length > add.length ? `（${arr.length - add.length} 題格式不對略過）` : ''}`); render();
+  } catch(err){ toast('匯入失敗：' + err.message); }
+}
 const TYPE_NAME = { choice:'選擇題', tf:'是非題', check:'多選題', num:'填數字', write:'寫在紙上' };
 function editItem(it){
-  const isNew = !it; it = it ? { ...it } : { s:'國語', type:'choice', q:'', opts:['', '', '', ''], ans:'', cause:'', date:today(), src:'平時考', exam:'' };
-  if (it.bankId) return toast('從題庫來的題目只能改錯因');
-  const close = modal(`<h3>${isNew ? '新增錯題' : '編輯錯題'}</h3>
-    <div class="row"><select class="t" id="e-s" style="width:auto">${SUBJ.map(s => `<option ${s === it.s ? 'selected' : ''}>${s}</option>`).join('')}</select><select class="t" id="e-type" style="width:auto">${Object.entries(TYPE_NAME).map(([k, v]) => `<option value="${k}" ${k === it.type ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+  const isNew = !it; it = it ? { ...it } : { s:'國語', type:'choice', q:'', opts:['', '', '', ''], ans:'', cause:'', date:today(), src:'小考', exam:'', period:DB.settings.period, qt:'' };
+  if (it.bankId) return toast('從題庫來的題目只能改錯因和題型');
+  modal(`<h3>${isNew ? '新增錯題' : '編輯錯題'}</h3>
+    <div class="row"><select class="t" id="e-s" style="width:auto">${SUBJ.map(s => `<option ${s === it.s ? 'selected' : ''}>${s}</option>`).join('')}</select><select class="t" id="e-type" style="width:auto">${Object.entries(TYPE_NAME).map(([k, v]) => `<option value="${k}" ${k === it.type ? 'selected' : ''}>${v}</option>`).join('')}</select><select class="t" id="e-p" style="width:auto">${PERIODS.map(p => `<option ${p === it.period ? 'selected' : ''}>${p}</option>`).join('')}</select></div>
+    <label class="f">題型</label><input class="t" id="e-qt" list="e-qtl" value="${esc(it.qt || '')}" placeholder="選一個或自己輸入"><datalist id="e-qtl"></datalist>
     <label class="f">考試／單元</label><input class="t" id="e-exam" value="${esc(it.exam || it.unit || '')}">
     <label class="f">題目</label><textarea class="t" id="e-q" style="min-height:80px">${esc(it.q)}</textarea>
     <div id="e-optw"><label class="f">選項（一行一個；多選題的答案用「、」分隔）</label><textarea class="t" id="e-opts" style="min-height:90px">${esc((it.opts || []).join('\n'))}</textarea></div>
@@ -1213,12 +1349,12 @@ function editItem(it){
     <label class="f">Cassie 原本的答案</label><input class="t" id="e-stu" value="${esc(it.stu || '')}">
     <label class="f">說明（給孩子看的解題步驟）</label><textarea class="t" id="e-exp" style="min-height:70px">${esc(it.exp || '')}</textarea>
     <div class="row" style="margin-top:16px"><span class="sp"></span><button class="btn" id="e-c">取消</button><button class="btn pri" id="e-ok">儲存</button></div>`, (box, close) => {
-    const tog = () => box.querySelector('#e-optw').classList.toggle('hide', !['choice', 'check'].includes(box.querySelector('#e-type').value));
-    box.querySelector('#e-type').onchange = tog; tog();
+    const g = id => box.querySelector(id).value.trim();
+    const tog = () => { box.querySelector('#e-optw').classList.toggle('hide', !['choice', 'check'].includes(g('#e-type'))); box.querySelector('#e-qtl').innerHTML = (QT[g('#e-s')] || []).map(t => `<option value="${t}">`).join(''); };
+    box.querySelector('#e-type').onchange = tog; box.querySelector('#e-s').onchange = tog; tog();
     box.querySelector('#e-c').onclick = close;
     box.querySelector('#e-ok').onclick = () => {
-      const g = id => box.querySelector(id).value.trim();
-      it.s = g('#e-s'); it.type = g('#e-type'); it.exam = g('#e-exam'); it.unit = it.unit || it.exam; it.q = g('#e-q'); it.stu = g('#e-stu'); it.exp = g('#e-exp');
+      it.s = g('#e-s'); it.type = g('#e-type'); it.period = g('#e-p'); it.qt = g('#e-qt'); it.exam = g('#e-exam'); it.unit = it.unit || it.exam; it.q = g('#e-q'); it.stu = g('#e-stu'); it.exp = g('#e-exp');
       if (['choice', 'check'].includes(it.type)) it.opts = g('#e-opts').split('\n').map(x => x.trim()).filter(Boolean); else delete it.opts;
       it.ans = it.type === 'check' ? g('#e-ans').split(/[、,，]/).map(x => x.trim()).filter(Boolean) : g('#e-ans');
       if (!it.q || !it.ans || (it.type === 'choice' && !it.opts.includes(it.ans)) || (it.type === 'check' && !it.ans.every(a => it.opts.includes(a)))) return toast('題目、答案要填，而且答案要和選項文字一樣');
@@ -1227,37 +1363,66 @@ function editItem(it){
     };
   });
 }
-function resizeImage(file, max, q){ return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => { const img = new Image(); img.onload = () => { const s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', q)); }; img.onerror = () => rej(new Error('無法讀取圖片（請用 JPG 或 PNG）')); img.src = fr.result; }; fr.onerror = rej; fr.readAsDataURL(file); }); }
-function photoAdd(){
-  if (!getKey()) return toast('請先到「AI 設定」填入 Gemini API Key');
-  modal(`<h3>拍照新增錯題</h3><p class="small muted">AI 會找出老師打叉或訂正的題目，你確認後再存入。</p>
-    <div class="row"><select class="t" id="p-s" style="width:auto">${SUBJ.map(s => `<option>${s}</option>`).join('')}</select><input class="t" id="p-exam" placeholder="考試名稱，例如：數學第六單元平時考" style="flex:1"></div>
-    <input type="file" id="p-f" accept="image/*" multiple style="margin:14px 0">
+function resizeImage(file, max, q){ return new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => { const img = new Image(); img.onload = () => { const s = Math.min(1, max / Math.max(img.width, img.height)); const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', q)); }; img.onerror = () => rej(new Error('無法讀取圖片（請用 JPG 或 PNG；HEIC 請先轉檔）')); img.src = fr.result; }; fr.onerror = rej; fr.readAsDataURL(file); }); }
+function photoAdd(pending){
+  if (!getKey()) return toast('請先到「AI 設定」填入 Gemini API Key，或改用「先存照片」');
+  modal(`<h3>${pending ? '用 AI 辨識這張照片' : '拍照新增錯題'}</h3><p class="small muted">AI 會找出老師打叉或訂正的題目，並標上題型和錯因，你確認後再存入。</p>
+    <div class="row"><select class="t" id="p-s" style="width:auto">${SUBJ.map(s => `<option ${pending && pending.s === s ? 'selected' : ''}>${s}</option>`).join('')}</select><select class="t" id="p-p" style="width:auto">${PERIODS.map(p => `<option ${(pending ? pending.period : DB.settings.period) === p ? 'selected' : ''}>${p}</option>`).join('')}</select><input class="t" id="p-exam" value="${esc(pending ? pending.exam : '')}" placeholder="小考名稱，例如：數學第六單元小考" style="flex:1"></div>
+    ${pending ? `<img src="${pending.img}" style="max-width:100%;max-height:220px;margin:12px 0;border-radius:10px" alt="">` : '<input type="file" id="p-f" accept="image/*" multiple style="margin:14px 0">'}
     <div id="p-out"></div><div class="row" style="margin-top:12px"><span class="sp"></span><button class="btn" id="p-c">關閉</button><button class="btn pri" id="p-go">AI 辨識</button></div>`, (box, close) => {
     let found = [];
     box.querySelector('#p-c').onclick = close;
     box.querySelector('#p-go').onclick = async () => {
-      const files = [...box.querySelector('#p-f').files]; if (!files.length) return toast('請先選照片');
-      const s = box.querySelector('#p-s').value, exam = box.querySelector('#p-exam').value.trim(), btn = box.querySelector('#p-go'); btn.disabled = true;
-      const ask = `年級：四年級上學期，科目：${s}（${s === '數學' ? '翰林' : '康軒'}版）。這是孩子的考卷照片。請找出「老師打叉、扣分或用紅筆訂正」的錯題，只輸出 JSON 陣列：
-[{"type":"choice|tf|check|num|write","q":"完整題目（含必要情境，不含題號）","opts":["選項文字"],"ans":"正確答案","u":"單位","stu":"孩子原本寫的答案","cause":"概念不懂|讀題漏看|粗心","unit":"單元或課次","exp":"給孩子看的解說；數學一定要一步一步列算式"}]
+      const imgs = pending ? [pending.img] : await Promise.all([...box.querySelector('#p-f').files].map(f => resizeImage(f, 1600, .85))).catch(e => { toast(e.message); return []; });
+      if (!imgs.length) return toast('請先選照片');
+      const s = box.querySelector('#p-s').value, period = box.querySelector('#p-p').value, exam = box.querySelector('#p-exam').value.trim(), btn = box.querySelector('#p-go'); btn.disabled = true;
+      const ask = `年級：四年級上學期，科目：${s}（${s === '數學' ? '翰林' : '康軒'}版）。這是孩子的小考考卷照片。請找出「老師打叉、扣分或用紅筆訂正」的錯題，只輸出 JSON 陣列：
+[{"type":"choice|tf|check|num|write","q":"完整題目（含必要情境，不含題號）","opts":["選項文字"],"ans":"正確答案","u":"單位","stu":"孩子原本寫的答案","cause":"概念不懂|讀題漏看|粗心","qt":"題型","unit":"單元或課次","exp":"給孩子看的解說；數學一定要一步一步列算式"}]
+題型 qt 請從這些選一個：${(QT[s] || []).join('、')}；都不合適才自己寫一個短名稱。
 規則：選擇題 choice；是非題 tf（ans 填 ○ 或 ✗）；多選 check（ans 是陣列）；答案是一個數字的 num（ans 只寫數字）；要手寫的 write。choice、check 的 ans 必須和 opts 的文字完全一樣。分數寫成 {整數|分子|分母}。看不清楚的題目請略過，不要猜。`;
-      for (let i = 0; i < files.length; i++) {
-        btn.innerHTML = `<span class="spin"></span> 第 ${i + 1}/${files.length} 張`;
-        try { const img = await resizeImage(files[i], 1600, .85); const t = await gemini([{ text:ask }, { inline_data:{ mime_type:'image/jpeg', data:img.split(',')[1] } }], { system:DB.settings.prompts.expert, json:true });
+      for (let i = 0; i < imgs.length; i++) {
+        btn.innerHTML = `<span class="spin"></span> 第 ${i + 1}/${imgs.length} 張`;
+        try { const t = await gemini([{ text:ask }, { inline_data:{ mime_type:'image/jpeg', data:imgs[i].split(',')[1] } }], { system:DB.settings.prompts.expert, json:true });
           let arr = JSON.parse(t.replace(/^```json|```$/g, '').trim()); if (!Array.isArray(arr)) arr = arr.items || [];
-          arr.forEach(a => { const type = TYPE_NAME[a.type] ? a.type : 'write'; let ans = a.ans; if (type === 'check' && !Array.isArray(ans)) ans = String(ans || '').split(/[、,，]/).map(x => x.trim()).filter(Boolean); if (type !== 'check') ans = String(ans ?? '');
-            found.push({ id:'m' + uid(), s, type, q:String(a.q || ''), opts:Array.isArray(a.opts) && a.opts.length ? a.opts.map(String) : undefined, ans, u:a.u || '', stu:a.stu || '', cause:CAUSES.includes(a.cause) ? a.cause : '', unit:a.unit || exam, exam:exam || a.unit || '', exp:a.exp || '', src:'平時考', date:today(), hist:[], mastered:false, streak:0, _on:true }); });
+          arr.forEach(a => { const it = cleanItem({ ...a, s, period, src:'小考' }, { s, exam, period }); if (it) { it._on = true; found.push(it); } });
         } catch(e){ toast(`第 ${i + 1} 張：${e.message}`); }
       }
       btn.disabled = false; btn.textContent = 'AI 辨識';
       const out = box.querySelector('#p-out');
-      out.innerHTML = found.length ? `<p class="small">找到 ${found.length} 題，取消勾選不要的：</p>${found.map((f, i) => `<label class="li small" style="align-items:flex-start"><input type="checkbox" checked data-i="${i}" style="margin-top:5px"><div>${rich(f.q)}<div class="muted">答案：${rich(Array.isArray(f.ans) ? f.ans.join('、') : f.ans)}　她寫：${esc(f.stu)}　${esc(f.cause)}</div></div></label>`).join('')}<button class="btn ok" id="p-save" style="margin-top:10px">存入錯題本</button>` : '<p class="small muted">沒有辨識到錯題，可以改用手動新增。</p>';
+      out.innerHTML = found.length ? `<p class="small">找到 ${found.length} 題，取消勾選不要的：</p>${found.map((f, i) => `<label class="li small" style="align-items:flex-start"><input type="checkbox" checked data-i="${i}" style="margin-top:5px"><div><span class="tag">${esc(f.qt || '未分題型')}</span> ${rich(f.q)}<div class="muted">答案：${rich(Array.isArray(f.ans) ? f.ans.join('、') : f.ans)}　她寫：${esc(f.stu)}　${esc(f.cause)}</div></div></label>`).join('')}<button class="btn ok" id="p-save" style="margin-top:10px">存入錯題本</button>` : '<p class="small muted">沒有辨識到錯題，可以改用手動新增。</p>';
       out.querySelectorAll('input[type=checkbox]').forEach(c => c.onchange = () => found[+c.dataset.i]._on = c.checked);
-      const sv = out.querySelector('#p-save'); if (sv) sv.onclick = () => { const add = found.filter(f => f._on).map(({ _on, ...f }) => f); DB.items.push(...add); save(); close(); render(); toast(`已存入 ${add.length} 題`); };
+      const sv = out.querySelector('#p-save'); if (sv) sv.onclick = async () => { const add = found.filter(f => f._on).map(({ _on, ...f }) => f); DB.items.push(...add); save(); if (pending && confirm('已存入。要把這張照片從「待整理」刪掉嗎？')) await idb.del(pending.id); close(); render(); toast(`已存入 ${add.length} 題`); };
     };
   });
 }
+/* ================= 家長：常錯題型 ================= */
+VIEWS['p-types'] = el => {
+  const fp = UI.tp || '全部', fs = UI.ts || '全部';
+  const items = DB.items.filter(i => (fp === '全部' || i.period === fp) && (fs === '全部' || i.s === fs));
+  const by = {}; items.forEach(i => { const k = i.s + '｜' + qtOf(i); const o = by[k] = by[k] || { s:i.s, qt:qtOf(i), n:0, m:0, c:{}, tr:{}, list:[] }; o.n++; if (i.mastered) o.m++; const c = i.cause || '未分類'; o.c[c] = (o.c[c] || 0) + 1; trapsOf(i).forEach(t => o.tr[t] = (o.tr[t] || 0) + 1); o.list.push(i); });
+  const rows = Object.values(by).sort((a, b) => b.n - a.n);
+  const maxN = Math.max(1, ...rows.map(r => r.n));
+  const tot = items.length, cause = c => items.filter(i => (i.cause || '未分類') === c).length, trap = t => items.filter(i => trapsOf(i).includes(t)).length;
+  const pct = n => tot ? Math.round(n / tot * 100) : 0;
+  // 單元練習答對率（依題型）
+  const acc = {}; Object.entries(DB.qstats).forEach(([id, st]) => { const q = QB[id]; if (!q || (fs !== '全部' && q.s !== fs)) return; const k = q.s + '｜' + autoQt(q); const o = acc[k] = acc[k] || { s:q.s, qt:autoQt(q), n:0, c:0 }; o.n += st.n; o.c += st.c; });
+  const accRows = Object.values(acc).filter(o => o.n >= 3).sort((a, b) => a.c / a.n - b.c / b.n);
+  const top = rows.slice(0, 3);
+  const summary = tot ? `${fp === '全部' ? '' : fp + '的'}錯題共 ${tot} 題。最常錯的題型是${top.map(r => `<b>${r.s}「${esc(r.qt)}」</b>（${r.n} 題）`).join('、')}。錯因裡「概念不懂」占 ${pct(cause('概念不懂'))}%、「讀題漏看」占 ${pct(cause('讀題漏看'))}%、「粗心」占 ${pct(cause('粗心'))}%；${trap('反問題') ? `有 ${trap('反問題')} 題是「不、錯誤」這類反問題，` : ''}${trap('長題目')} 題是長題目${trap('多選題') ? `，${trap('多選題')} 題是多選題` : ''}。` : '';
+  el.innerHTML = `<h1>常錯題型</h1><p class="sub">整理錯題本裡的題目，看 Cassie 最常在哪一類題目失分、為什麼失分。題型可以在錯題本裡改。</p>
+    <div class="row" style="margin-bottom:8px">${['全部', ...PERIODS].map(x => `<button class="chip ${x === fp ? 'on' : ''}" data-k="tp" data-v="${x}">${x}</button>`).join('')}<span class="sp"></span>${['全部', ...SUBJ].map(x => `<button class="chip ${x === fs ? 'on' : ''}" data-k="ts" data-v="${x}">${x}</button>`).join('')}</div>
+    ${tot ? `<div class="card" style="margin:12px 0"><p style="margin:0">${summary}</p>${getKey() ? '<div class="row" style="margin-top:10px"><span class="sp"></span><button class="btn sm" id="aiRep">請 AI 寫弱點分析和練習建議</button></div><div id="aiOut"></div>' : ''}</div>` : '<div class="empty">這個範圍還沒有錯題。</div>'}
+    ${tot ? `<div class="grid g4" style="margin-bottom:6px">${[['概念不懂', cause('概念不懂')], ['讀題漏看', cause('讀題漏看')], ['粗心', cause('粗心')], ['未分類', cause('未分類')]].map(([k, n]) => `<div class="card"><div class="small muted">${k}</div><div class="kpi">${n}<small>題・${pct(n)}%</small></div></div>`).join('')}</div>
+    <h2>題型排行 <span class="small muted" style="font-weight:400">點一列看題目</span></h2><div class="card">${rows.map((r, i) => `<div class="li" style="display:block;cursor:pointer" data-r="${i}"><div class="row"><span class="subj" style="background:${SC(r.s)};width:26px;height:26px;font-size:13px">${S1(r.s)}</span><b style="flex:1">${esc(r.qt)}</b><span class="small muted">${Object.entries(r.c).sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} ${n}`).join('・')}</span><b style="min-width:52px;text-align:right">${r.n} 題</b></div>
+      <div class="bar"><i style="width:${r.n / maxN * 100}%;background:${SC(r.s)}"></i></div><div class="tiny muted" style="margin-top:4px">${Object.entries(r.tr).map(([t, n]) => `${t} ${n}`).join('・') || '　'}${r.m ? `　已克服 ${r.m}` : ''}</div><div class="hide" data-rl="${i}"></div></div>`).join('')}</div>
+    <h2>讀題陷阱 <span class="small muted" style="font-weight:400">錯題中有幾題屬於這一種</span></h2><div class="grid g4">${['反問題', '長題目', '多選題'].map(t => `<div class="card"><div class="small muted">${t}</div><div class="kpi">${trap(t)}<small>題・${pct(trap(t))}%</small></div><div class="tiny muted" style="margin-top:6px">${t === '反問題' ? '題目有「不、錯誤、無法」' : t === '長題目' ? '超過 45 字或有短文' : '要選出全部正確的'}</div></div>`).join('')}</div>` : ''}
+    <h2>單元練習答對率（依題型） <span class="small muted" style="font-weight:400">作答 3 次以上，低的在前</span></h2><div class="card">${accRows.length ? accRows.map(o => { const p = Math.round(o.c / o.n * 100); return `<div style="padding:8px 0"><div class="row"><span class="subj" style="background:${SC(o.s)};width:24px;height:24px;font-size:12px">${S1(o.s)}</span><span style="flex:1">${esc(o.qt)}</span><span class="small muted">${o.c}/${o.n}</span><b style="min-width:48px;text-align:right" class="${p < 85 ? 'fail' : 'pass'}">${p}%</b></div><div class="bar"><i style="width:${p}%;background:${p < 60 ? 'var(--bad)' : p < 85 ? 'var(--acc)' : 'var(--ok)'}"></i></div></div>`; }).join('') : '<div class="empty">Cassie 做過單元練習後，這裡會出現每種題型的答對率。</div>'}</div>`;
+  $$('[data-k]').forEach(b => b.onclick = () => { UI[b.dataset.k] = b.dataset.v; render(); });
+  $$('[data-r]').forEach(d => d.onclick = e => { if (e.target.closest('[data-rl]')) return; const i = +d.dataset.r, box = d.querySelector(`[data-rl="${i}"]`); if (box.classList.toggle('hide')) return; box.innerHTML = rows[i].list.map(it => { const q = itemToQ(it); return `<div style="border-top:1px dashed var(--line);margin-top:8px;padding-top:8px" class="small">${rich(q.q, { neg:true })}<div>她寫：<span class="ans-bad">${rich(it.stu || '—')}</span>　正解：<span class="ans-ok">${rich(showAnswer(q))}</span>　<span class="muted">${esc(it.cause || '未分類')}・${esc(it.period)}</span></div></div>`; }).join(''); });
+  const ar = $('#aiRep'); if (ar) ar.onclick = async () => { ar.disabled = true; ar.innerHTML = '<span class="spin"></span> 分析中';
+    const sample = items.slice(0, 80).map(i => { const q = itemToQ(i); return `[${i.s}｜${qtOf(i)}｜${i.cause || '未分類'}｜${trapsOf(i).join('/') || '-'}] ${q.q.slice(0, 80)}｜她寫：${(i.stu || '').slice(0, 30)}｜正解：${String(showAnswer(q)).slice(0, 30)}`; }).join('\n');
+    try { const t = await gemini([{ text:`以下是四年級孩子 Cassie 的錯題清單（格式：[科目｜題型｜錯因｜讀題陷阱] 題目｜她寫｜正解）。請用繁體中文寫給家長：1. 最常錯的 3 種題型和共同原因（引用 1～2 題當例子）；2. 這些錯是觀念問題還是讀題問題；3. 期末考前每天 10～15 分鐘可以做的具體練習方法。精簡列點。\n\n${sample}` }], { system:DB.settings.prompts.expert }); $('#aiOut').innerHTML = `<div class="fb tip"><div class="exp small">${esc(t)}</div></div>`; ar.remove(); } catch(e){ toast(e.message); ar.disabled = false; ar.textContent = '請 AI 寫弱點分析和練習建議'; } };
+};
 /* ================= 家長：複習計畫 ================= */
 VIEWS['p-plan'] = el => {
   const S = DB.settings, k = today(), plan = planFor();
@@ -1284,10 +1449,18 @@ VIEWS['p-bank'] = (el, arg) => {
 };
 /* ================= 家長：閱讀文章 ================= */
 VIEWS['p-reading'] = el => {
-  el.innerHTML = `<h1>閱讀文章</h1><p class="sub">貼上一篇兒童新聞或短文，AI 會出 3 題理解題；也可以自己出題。</p>
-    <div class="card"><label class="f">標題</label><input class="t" id="r-t"><label class="f">文章內容</label><textarea class="t" id="r-x" style="min-height:180px"></textarea>
+  el.innerHTML = `<h1>閱讀文章</h1><p class="sub">從零蛋報國際新聞抓文章自動出題，或貼上自己找的短文。</p>
+    <div class="card" style="margin-bottom:16px"><div class="row"><h3 style="margin:0;flex:1">零蛋報・國際新聞</h3><label class="small row"><input type="checkbox" id="r-auto" ${DB.settings.autoNews ? 'checked' : ''}> Cassie 每天自動有一篇</label></div>
+      <p class="small muted">AI 會讀取 zeroegg.tw/world 的最新文章，依內容出 4 題（主旨、事實、因果、詞意或推論）。文章本身不會存進 App，Cassie 是點連結到零蛋報網站閱讀。${getKey() ? '' : '<b style="color:var(--bad)">需要先到「AI 設定」填 API Key。</b>'}</p>
+      <div class="row"><button class="btn sm pri" id="r-list" ${getKey() ? '' : 'disabled'}>抓最新文章列表</button>${DB.newsCache ? `<span class="tiny muted">上次更新 ${fmtTime(DB.newsCache.ts)}</span>` : ''}</div><div id="r-news"></div></div>
+    <div class="card"><h3>貼上自己的文章</h3><label class="f">標題</label><input class="t" id="r-t"><label class="f">文章內容</label><textarea class="t" id="r-x" style="min-height:180px"></textarea>
     <div class="row" style="margin-top:12px"><span class="sp"></span><button class="btn pri" id="r-ai">${getKey() ? 'AI 出題並新增' : '需要先設定 AI'}</button></div></div>
-    <h2>文章列表</h2><div class="card">${DB.reading.length ? DB.reading.slice().reverse().map(a => `<div class="li"><div style="flex:1"><b>${esc(a.title)}</b><div class="small muted">${a.qs.length} 題・${a.done ? `已完成 ${a.score} 分` : '還沒做'}</div></div><button class="btn sm" data-view="${a.id}">看題目</button><button class="btn sm ghost" data-del="${a.id}" style="color:var(--bad)">刪除</button></div>`).join('') : '<div class="empty">還沒有文章。</div>'}</div>`;
+    <h2>文章列表</h2><div class="card">${DB.reading.length ? DB.reading.slice().reverse().map(a => `<div class="li"><div style="flex:1"><b>${esc(a.title)}</b><div class="small muted">${a.source === 'zeroegg' ? '零蛋報・' : ''}${a.qs.length} 題・${a.done ? `已完成 ${a.score} 分` : '還沒做'}</div></div>${a.url ? `<a class="btn sm" href="${esc(a.url)}" target="_blank" rel="noopener">原文</a>` : ''}<button class="btn sm" data-view="${a.id}">看題目</button><button class="btn sm ghost" data-del="${a.id}" style="color:var(--bad)">刪除</button></div>`).join('') : '<div class="empty">還沒有文章。</div>'}</div>`;
+  $('#r-auto').onchange = e => { DB.settings.autoNews = e.target.checked; save(); toast('已儲存'); };
+  const drawNews = list => { const used = new Set(DB.reading.map(r => r.url)); $('#r-news').innerHTML = list.map((n, i) => `<div class="li"><div style="flex:1"><a href="${esc(n.url)}" target="_blank" rel="noopener"><b>${esc(n.title)}</b></a><div class="small muted">${esc(n.summary)}</div></div>${used.has(n.url) ? '<span class="small pass">已加入</span>' : `<button class="btn sm" data-ni="${i}">出題加入</button>`}</div>`).join('');
+    $$('[data-ni]').forEach(b => b.onclick = async () => { b.disabled = true; b.innerHTML = '<span class="spin"></span>'; try { await makeNewsQuiz(list[+b.dataset.ni]); toast('已加入，Cassie 在「閱讀」看得到'); render(); } catch(e){ toast(e.message); b.disabled = false; b.textContent = '出題加入'; } }); };
+  if (DB.newsCache) drawNews(DB.newsCache.list);
+  $('#r-list').onclick = async () => { const b = $('#r-list'); b.disabled = true; b.innerHTML = '<span class="spin"></span> 讀取中'; try { drawNews(await fetchNewsList()); } catch(e){ toast(e.message); } b.disabled = false; b.textContent = '抓最新文章列表'; };
   $('#r-ai').onclick = async () => {
     const title = $('#r-t').value.trim(), text = $('#r-x').value.trim(); if (!title || text.length < 50) return toast('請填標題和至少 50 字的內容');
     const b = $('#r-ai'); b.disabled = true; b.innerHTML = '<span class="spin"></span> 出題中';
@@ -1310,6 +1483,7 @@ VIEWS['p-rules'] = el => {
       <label class="f">每天目標：幾回單元練習過關</label><input class="t" type="number" id="s-goal" value="${S.goal}" min="1" max="10">
       <label class="f">每次錯題練習題數</label><input class="t" type="number" id="s-wd" value="${S.wrongDaily}" min="1" max="20"></div>
     <div class="card"><h3>考試與複習計畫</h3>
+      <label class="f">現在新加入的錯題算哪一段</label><select class="t" id="s-per">${PERIODS.map(p => `<option ${p === S.period ? 'selected' : ''}>${p}</option>`).join('')}</select>
       <label class="f">考試名稱</label><input class="t" id="s-en" value="${esc(S.examName)}">
       <label class="f">考試第一天</label><input class="t" type="date" id="s-ed" value="${S.examDate}">
       <label class="f">考試範圍（綜合練習和複習計畫會用到）</label>
@@ -1317,6 +1491,7 @@ VIEWS['p-rules'] = el => {
     </div></div>`;
   const num = (id, k, lo, hi) => $(id).onchange = e => { const v = Math.max(lo, Math.min(hi, parseInt(e.target.value) || lo)); S[k] = v; e.target.value = v; save(); toast('已儲存'); };
   num('#s-pass', 'pass', 50, 100); num('#s-qlen', 'qlen', 3, 30); num('#s-goal', 'goal', 1, 10); num('#s-wd', 'wrongDaily', 1, 20);
+  $('#s-per').onchange = e => { S.period = e.target.value; save(); toast('已儲存'); };
   $('#s-en').onchange = e => { S.examName = e.target.value.trim() || '考試'; save(); toast('已儲存'); };
   $('#s-ed').onchange = e => { if (e.target.value) { S.examDate = e.target.value; save(); toast('已儲存'); } };
   $$('[data-rs]').forEach(c => c.onchange = () => { const s = c.dataset.rs, u = c.dataset.ru; S.range[s] = (S.range[s] || []).filter(x => x !== u); if (c.checked) S.range[s].push(u); save(); toast('已更新範圍'); });
@@ -1346,9 +1521,9 @@ VIEWS['p-backup'] = el => {
     <div class="card"><div class="row"><button class="btn pri" id="b-ex">匯出備份</button><label class="btn" for="b-im">匯入備份</label><input type="file" id="b-im" accept="application/json,.json" hidden><span class="sp"></span><button class="btn ghost" id="b-wipe" style="color:var(--bad)">清除全部資料</button></div>
     <p class="small muted" style="margin-bottom:0">匯入支援這個 App 的備份檔，也支援舊「錯題本」匯出的備份檔（只會加入錯題，不會覆蓋紀錄）。</p>
     <p class="small muted">目前：錯題 ${DB.items.length} 題・作答紀錄 ${DB.sessions.length} 筆・閱讀 ${DB.reading.length} 篇・題庫 ${BANK.length} 題（題庫內建在網頁中）。</p></div>`;
-  $('#b-ex').onclick = () => { const blob = new Blob([JSON.stringify({ app:'cassie-learn', exported:new Date().toISOString(), data:DB })], { type:'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Cassie學習備份-${today()}.json`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast('已匯出'); };
+  $('#b-ex').onclick = async () => { const photos = await idb.all(); const blob = new Blob([JSON.stringify({ app:'cassie-learn', exported:new Date().toISOString(), data:DB, photos })], { type:'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `Cassie學習備份-${today()}.json`; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast('已匯出'); };
   $('#b-im').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const j = JSON.parse(await f.text());
-    if (j.app === 'cassie-learn' && j.data) { if (!confirm('匯入會取代目前所有資料，確定嗎？')) return; lsSet(LS_DATA, JSON.stringify(j.data)); load(); toast('已匯入'); render(); }
+    if (j.app === 'cassie-learn' && j.data) { if (!confirm('匯入會取代目前所有資料，確定嗎？')) return; lsSet(LS_DATA, JSON.stringify(j.data)); load(); for (const p of (j.photos || [])) await idb.put(p).catch(() => {}); toast('已匯入'); render(); }
     else if (j.app === 'cassie-ctb' && j.data && Array.isArray(j.data.items)) { const have = new Set(DB.items.map(i => i.id)); const add = j.data.items.filter(i => !have.has(i.id)).map(i => ({ src:'平時考', ...i })); DB.items.push(...add); save(); toast(`加入 ${add.length} 題舊錯題`); render(); }
     else throw new Error('看不懂這個檔案'); } catch(err){ toast('匯入失敗：' + err.message); } };
   $('#b-wipe').onclick = () => { if (!confirm('確定清除全部資料？建議先匯出備份。')) return; if (!confirm('真的要清除嗎？這個動作無法復原。')) return; try { localStorage.removeItem(LS_DATA); } catch(e){} DB = null; load(); render(); toast('已清除'); };
